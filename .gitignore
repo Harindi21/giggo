@@ -1,0 +1,24 @@
+# Python
+ml-service/venv/
+__pycache__/
+*.pyc
+
+# Spring Boot / Maven
+backend/target/
+*.class
+
+# Flutter / Dart
+mobile/build/
+mobile/.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# IDE + OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Secrets — never commit these
+.env
+*.env
