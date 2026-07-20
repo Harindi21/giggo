@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+# Reject pushing branches that don't follow the naming convention.
+
+branch=$(git rev-parse --abbrev-ref HEAD)
+pattern='^(main|(feature|fix|chore|docs)/.+)$'
+
+if ! printf '%s' "$branch" | grep -Eq "$pattern"; then
+  echo "Push rejected — branch name '$branch' is not allowed."
+  echo "Use one of: feature/..., fix/..., chore/..., docs/..., or main"
+  exit 1
+fi
