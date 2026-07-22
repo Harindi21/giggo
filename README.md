@@ -41,3 +41,12 @@ Examples:
 2. Commit as you go (hooks check each message)
 3. Push and open a Pull Request into `main`
 4. Let CI checks pass, then merge
+
+
+## Domain & SSL strategy
+
+- **Staging:** uses the hosting provider's free subdomain with built-in SSL
+  (e.g. `https://giggo-backend.onrender.com`). No custom domain required.
+- **Production:** custom domain + Cloudflare DNS/SSL to be configured before
+  public beta. Deferred — requires domain purchase and a live server.
+- App is proxy-aware via `server.forward-headers-strategy=framework`.
