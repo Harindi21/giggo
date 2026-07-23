@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../features/home/presentation/screens/home_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -7,8 +8,7 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/',
       name: 'home',
-      builder: (context, state) =>
-          const Scaffold(body: Center(child: Text('GIGGO — home'))),
+      builder: (context, state) => const HomeScreen(),
     ),
   ],
 );

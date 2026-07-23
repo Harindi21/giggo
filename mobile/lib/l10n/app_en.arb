@@ -1,0 +1,33 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "GIGGO",
+  "@appTitle": {
+    "description": "Application name"
+  },
+
+  "homeGreeting": "Find trusted professionals near you",
+  "@homeGreeting": {
+    "description": "Subtitle shown on the home screen"
+  },
+
+  "searchHint": "Search services",
+  "@searchHint": {
+    "description": "Placeholder in the search box"
+  },
+
+  "serviceCategories": "Service Categories",
+  "@serviceCategories": {
+    "description": "Section heading on home"
+  },
+
+  "bookNow": "Book Now",
+  "@bookNow": {
+    "description": "Primary call-to-action button"
+  },
+
+  "viewTasks": "View Tasks",
+  "@viewTasks": {
+    "description": "Button to open the task list"
+  }
+}
