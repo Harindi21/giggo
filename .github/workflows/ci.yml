@@ -33,9 +33,9 @@ jobs:
       - name: Install dependencies
         working-directory: ml-service
         run: pip install -r requirements.txt
-      - name: Import check
+      - name: Run tests
         working-directory: ml-service
-        run: python -c "import main; print('ml-service imports OK')"
+        run: python -m pytest -q
 
   mobile:
     name: Mobile (Flutter)
