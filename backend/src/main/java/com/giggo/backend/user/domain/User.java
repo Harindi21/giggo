@@ -51,6 +51,9 @@ public class User {
     @Column(name = "is_active", nullable = false)
     private boolean active;
 
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified;
+    
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 

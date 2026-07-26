@@ -19,6 +19,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailVerificationService emailVerificationService;
 
     @Transactional
     public UserResponse register(RegisterRequest request) {
@@ -41,8 +42,9 @@ public class UserService {
                 .active(true)
                 .build();
 
-        return UserResponse.from(userRepository.save(user));
-    }
+        User saved = userRepository.save(user);
+        emailVerificationService.issueCode(saved);
+        return UserResponse.from(saved);    }
 
     /** Stores every number in one canonical form: +947XXXXXXXX */
     private String normalisePhone(String raw) {
