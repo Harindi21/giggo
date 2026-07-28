@@ -1,6 +1,7 @@
 package com.giggo.backend.user.api;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,10 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.giggo.backend.common.dto.ApiResponse;
 import com.giggo.backend.user.api.dto.LoginRequest;
 import com.giggo.backend.user.api.dto.LoginResponse;
+import com.giggo.backend.user.api.dto.RefreshRequest;
 import com.giggo.backend.user.api.dto.RegisterRequest;
 import com.giggo.backend.user.api.dto.ResendCodeRequest;
 import com.giggo.backend.user.api.dto.UserResponse;
 import com.giggo.backend.user.api.dto.VerifyEmailRequest;
+import com.giggo.backend.user.domain.User;
 import com.giggo.backend.user.service.AuthService;
 import com.giggo.backend.user.service.EmailVerificationService;
 import com.giggo.backend.user.service.UserService;
@@ -51,5 +54,16 @@ public class AuthController {
     @PostMapping("/login")
     public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         return ApiResponse.ok(authService.login(request));
+    }
+
+    @PostMapping("/refresh")
+    public ApiResponse<LoginResponse> refresh(@Valid @RequestBody RefreshRequest request) {
+        return ApiResponse.ok(authService.refresh(request.refreshToken()));
+    }
+
+    @PostMapping("/logout")
+    public ApiResponse<Void> logout(@AuthenticationPrincipal User user) {
+        authService.logout(user);
+        return ApiResponse.ok(null);
     }
 }
