@@ -13,7 +13,9 @@ public record UserResponse(
         String fullName,
         UserRole role,
         boolean active,
-        OffsetDateTime createdAt
+        OffsetDateTime createdAt,
+        boolean emailVerified
+
 ) {
     public static UserResponse from(User user) {
         return new UserResponse(
@@ -23,7 +25,8 @@ public record UserResponse(
                 user.getFullName(),
                 user.getRole(),
                 user.isActive(),
-                user.getCreatedAt()
+                user.getCreatedAt(),
+                user.isEmailVerified()
         );
     }
 }
