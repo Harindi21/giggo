@@ -1,17 +1,19 @@
 package com.giggo.backend.user.service;
 
-import com.giggo.backend.common.config.JwtProperties;
-import com.giggo.backend.user.domain.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Service;
-
-import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
+
+import javax.crypto.SecretKey;
+
+import org.springframework.stereotype.Service;
+
+import com.giggo.backend.common.config.JwtProperties;
+import com.giggo.backend.user.domain.User;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
@@ -45,7 +47,7 @@ public class JwtService {
                     .parseSignedClaims(token)
                     .getPayload();
             return UUID.fromString(claims.getSubject());
-        } catch (SignatureException | IllegalArgumentException | io.jsonwebtoken.JwtException e) {
+        } catch (io.jsonwebtoken.JwtException | IllegalArgumentException e) {
             return null;
         }
     }
