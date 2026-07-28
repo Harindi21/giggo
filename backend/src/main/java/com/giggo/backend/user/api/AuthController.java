@@ -8,10 +8,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.giggo.backend.common.dto.ApiResponse;
+import com.giggo.backend.user.api.dto.LoginRequest;
+import com.giggo.backend.user.api.dto.LoginResponse;
 import com.giggo.backend.user.api.dto.RegisterRequest;
 import com.giggo.backend.user.api.dto.ResendCodeRequest;
 import com.giggo.backend.user.api.dto.UserResponse;
 import com.giggo.backend.user.api.dto.VerifyEmailRequest;
+import com.giggo.backend.user.service.AuthService;
 import com.giggo.backend.user.service.EmailVerificationService;
 import com.giggo.backend.user.service.UserService;
 
@@ -24,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
     private final UserService userService;
+    private final AuthService authService;
     private final EmailVerificationService emailVerificationService;
 
     @PostMapping("/register")
@@ -43,5 +47,9 @@ public class AuthController {
         emailVerificationService.resend(request.email());
         return ApiResponse.ok(null);
     }
-}
 
+    @PostMapping("/login")
+    public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        return ApiResponse.ok(authService.login(request));
+    }
+}
