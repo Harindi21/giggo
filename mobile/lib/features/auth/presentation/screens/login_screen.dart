@@ -50,13 +50,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Text(
                   'Welcome back',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
-                Text('Log in to continue',
-                    style: TextStyle(color: AppColors.textMuted)),
+                Text(
+                  'Log in to continue',
+                  style: TextStyle(color: AppColors.textMuted),
+                ),
                 const SizedBox(height: 32),
 
                 if (state.error != null) ...[
@@ -66,8 +68,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       color: AppColors.error.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text(state.error!,
-                        style: const TextStyle(color: AppColors.error)),
+                    child: Text(
+                      state.error!,
+                      style: const TextStyle(color: AppColors.error),
+                    ),
                   ),
                   const SizedBox(height: 16),
                 ],
@@ -87,15 +91,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   decoration: InputDecoration(
                     labelText: 'Password',
                     suffixIcon: IconButton(
-                      icon: Icon(_obscure
-                          ? Icons.visibility
-                          : Icons.visibility_off),
+                      icon: Icon(
+                        _obscure ? Icons.visibility : Icons.visibility_off,
+                      ),
                       onPressed: () => setState(() => _obscure = !_obscure),
                     ),
                   ),
-                  validator: (v) => (v == null || v.isEmpty)
-                      ? 'Enter your password'
-                      : null,
+                  validator: (v) =>
+                      (v == null || v.isEmpty) ? 'Enter your password' : null,
                 ),
                 const SizedBox(height: 28),
 
@@ -106,20 +109,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.white),
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
                       : const Text('Log in'),
                 ),
                 const SizedBox(height: 16),
 
-                Row(children: const [
-                  Expanded(child: Divider()),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
-                    child: Text('or'),
-                  ),
-                  Expanded(child: Divider()),
-                ]),
+                Row(
+                  children: const [
+                    Expanded(child: Divider()),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      child: Text('or'),
+                    ),
+                    Expanded(child: Divider()),
+                  ],
+                ),
                 const SizedBox(height: 16),
 
                 // Google placeholder — wired up in P1.3
@@ -127,7 +134,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                          content: Text('Google sign-in coming soon')),
+                        content: Text('Google sign-in coming soon'),
+                      ),
                     );
                   },
                   icon: const Icon(Icons.g_mobiledata, size: 28),
