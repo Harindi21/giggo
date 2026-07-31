@@ -4,10 +4,16 @@ import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/verify_email_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/auth/presentation/screens/login_screen.dart';
 
 final appRouter = GoRouter(
-  initialLocation: '/role',
+  initialLocation: '/login',
   routes: [
+    GoRoute(
+      path: '/login',
+      name: 'login',
+      builder: (context, state) => const LoginScreen(),
+    ),
     GoRoute(
       path: '/role',
       name: 'role',

@@ -7,6 +7,9 @@ import '../../../core/network/dio_client.dart';
 import 'models/register_request.dart';
 import 'models/user_model.dart';
 
+import 'models/login_request.dart';
+import 'models/auth_result.dart';
+
 class AuthRepository {
   final Dio _dio;
   AuthRepository(this._dio);
@@ -19,6 +22,19 @@ class AuthRepository {
       );
       final data = res.data['data'] as Map<String, dynamic>;
       return UserModel.fromJson(data);
+    } on DioException catch (e) {
+      throw ApiException(_messageFrom(e));
+    }
+  }
+
+  Future<AuthResult> login(LoginRequest request) async {
+    try {
+      final res = await _dio.post(
+        '${ApiConfig.apiPrefix}/auth/login',
+        data: request.toJson(),
+      );
+      final data = res.data['data'] as Map<String, dynamic>;
+      return AuthResult.fromJson(data);
     } on DioException catch (e) {
       throw ApiException(_messageFrom(e));
     }
@@ -39,4 +55,7 @@ class AuthRepository {
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepository(ref.watch(dioProvider));
-});
+}
+
+
+);
