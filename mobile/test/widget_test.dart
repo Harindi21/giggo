@@ -7,6 +7,6 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: GiggoApp()));
     await tester.pumpAndSettle();
 
-    expect(find.text('Find trusted professionals near you'), findsOneWidget);
+    expect(find.text('Welcome to GIGGO'), findsOneWidget);
   });
 }
