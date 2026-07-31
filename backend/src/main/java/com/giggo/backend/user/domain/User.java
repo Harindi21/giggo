@@ -60,6 +60,12 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
 
+    @Column(name = "failed_login_attempts", nullable = false)
+    private int failedLoginAttempts;
+
+    @Column(name = "lockout_until")
+    private java.time.OffsetDateTime lockoutUntil;
+
     @PrePersist
     void onCreate() {
         OffsetDateTime now = OffsetDateTime.now();
