@@ -1,11 +1,15 @@
 package com.giggo.backend.user.service;
 
+import java.util.UUID;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.giggo.backend.common.exception.DuplicateResourceException;
+import com.giggo.backend.common.exception.ResourceNotFoundException;
 import com.giggo.backend.user.api.dto.RegisterRequest;
+import com.giggo.backend.user.api.dto.UpdateProfileRequest;
 import com.giggo.backend.user.api.dto.UserResponse;
 import com.giggo.backend.user.domain.User;
 import com.giggo.backend.user.domain.UserRole;
@@ -44,7 +48,16 @@ public class UserService {
 
         User saved = userRepository.save(user);
         emailVerificationService.issueCode(saved);
-        return UserResponse.from(saved);    }
+        return UserResponse.from(saved);
+    }
+
+    @Transactional
+    public UserResponse updateProfile(UUID userId, UpdateProfileRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        user.setFullName(request.fullName().trim());
+        return UserResponse.from(user); // JPA saves the change on commit
+    }
 
     /** Stores every number in one canonical form: +947XXXXXXXX */
     private String normalisePhone(String raw) {
