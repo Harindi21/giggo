@@ -5,6 +5,7 @@ import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/verify_email_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/login',
@@ -18,6 +19,11 @@ final appRouter = GoRouter(
       path: '/role',
       name: 'role',
       builder: (context, state) => const RoleSelectionScreen(),
+    ),
+    GoRoute(
+      path: '/profile',
+      name: 'profile',
+      builder: (context, state) => const ProfileScreen(),
     ),
     GoRoute(
       path: '/register',
