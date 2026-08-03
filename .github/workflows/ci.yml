@@ -16,9 +16,9 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Build
+      - name: Build and test
         working-directory: backend
-        run: mvn -B -DskipTests package
+        run: mvn -B verify
 
   ml-service:
     name: ML service (FastAPI)
