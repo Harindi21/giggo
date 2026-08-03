@@ -66,6 +66,9 @@ public class User {
     @Column(name = "lockout_until")
     private java.time.OffsetDateTime lockoutUntil;
 
+    @Column(name = "deleted_at")
+    private java.time.OffsetDateTime deletedAt;
+
     @PrePersist
     void onCreate() {
         OffsetDateTime now = OffsetDateTime.now();
