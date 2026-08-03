@@ -1,0 +1,155 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../../core/network/api_exception.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../data/profile_repository.dart';
+
+class ProfileScreen extends ConsumerWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profileAsync = ref.watch(profileProvider);
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('My Profile')),
+      body: profileAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(e.toString(), textAlign: TextAlign.center),
+          ),
+        ),
+        data: (user) => ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            Center(
+              child: CircleAvatar(
+                radius: 44,
+                backgroundColor: AppColors.primary,
+                child: Text(
+                  user.fullName.isNotEmpty
+                      ? user.fullName[0].toUpperCase()
+                      : '?',
+                  style: const TextStyle(fontSize: 34, color: Colors.white),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            _EditableRow(
+              label: 'Full name',
+              value: user.fullName,
+              onEdit: () => _editName(context, ref, user.fullName),
+            ),
+            _ReadOnlyRow(label: 'Email', value: user.email),
+            _ReadOnlyRow(label: 'Phone', value: user.phone),
+            _ReadOnlyRow(label: 'Role', value: user.role),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _editName(
+    BuildContext context,
+    WidgetRef ref,
+    String current,
+  ) async {
+    final controller = TextEditingController(text: current);
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Edit name'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+          decoration: const InputDecoration(labelText: 'Full name'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+
+    if (newName == null || newName.isEmpty || newName == current) return;
+
+    try {
+      await ref.read(profileRepositoryProvider).updateName(newName);
+      ref.invalidate(profileProvider); // re-fetch fresh data
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Name updated')));
+      }
+    } on ApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    }
+  }
+}
+
+class _EditableRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final VoidCallback onEdit;
+
+  const _EditableRow({
+    required this.label,
+    required this.value,
+    required this.onEdit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(
+        label,
+        style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+      ),
+      subtitle: Text(
+        value,
+        style: const TextStyle(fontSize: 16, color: AppColors.textBody),
+      ),
+      trailing: IconButton(
+        icon: const Icon(Icons.edit, size: 20),
+        onPressed: onEdit,
+      ),
+    );
+  }
+}
+
+class _ReadOnlyRow extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _ReadOnlyRow({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(
+        label,
+        style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+      ),
+      subtitle: Text(
+        value,
+        style: const TextStyle(fontSize: 16, color: AppColors.textBody),
+      ),
+    );
+  }
+}
