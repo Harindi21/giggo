@@ -1,5 +1,6 @@
 package com.giggo.backend.user.service;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,9 +11,11 @@ import com.giggo.backend.common.exception.DuplicateResourceException;
 import com.giggo.backend.common.exception.ResourceNotFoundException;
 import com.giggo.backend.user.api.dto.RegisterRequest;
 import com.giggo.backend.user.api.dto.UpdateProfileRequest;
+import com.giggo.backend.user.api.dto.UserDataExport;
 import com.giggo.backend.user.api.dto.UserResponse;
 import com.giggo.backend.user.domain.User;
 import com.giggo.backend.user.domain.UserRole;
+import com.giggo.backend.user.repository.RefreshTokenRepository;
 import com.giggo.backend.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService emailVerificationService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
     public UserResponse register(RegisterRequest request) {
@@ -79,5 +83,34 @@ public class UserService {
             throw new IllegalArgumentException("Role must be CUSTOMER or PROVIDER");
         }
         return role;
+    }
+
+    @Transactional(readOnly = true)
+    public UserDataExport exportData(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return UserDataExport.from(user);
+    }
+
+    @Transactional
+    public void deleteAccount(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        String anonId = user.getId().toString();
+
+        // Overwrite every identifying field.
+        user.setEmail("deleted-" + anonId + "@giggo.invalid");
+        user.setPhone(null);
+        user.setFullName("Deleted User");
+        user.setPasswordHash("DELETED");           // no valid password can produce this hash
+        user.setActive(false);
+        user.setEmailVerified(false);
+        user.setDeletedAt(OffsetDateTime.now());
+
+        userRepository.save(user);
+
+        // Kill all sessions so the anonymized account can't keep operating.
+        refreshTokenRepository.revokeAllForUser(userId);
     }
 }
