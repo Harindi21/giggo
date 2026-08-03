@@ -1,0 +1,3 @@
+# Throwaway JWT secret used only in a now-deleted test config file.
+# Not a real credential — safe to ignore.
+4aa7cb35cdad10bfa1aeab09fa930391b18c8003:backend/src/test/resources/application.properties:generic-api-key:11
