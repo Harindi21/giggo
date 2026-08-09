@@ -6,48 +6,51 @@ import java.util.UUID;
 
 import com.giggo.backend.provider.domain.ProviderProfile;
 
-public record ProviderProfileResponse(
+/** Full provider representation for the provider detail screen. */
+public record ProviderDetailResponse(
         UUID id,
         UUID userId,
         String fullName,
+        String headline,
         String bio,
         int yearsExperience,
-        boolean available,
-        String headline,
         String district,
         String addressLine,
         Double latitude,
         Double longitude,
-        BigDecimal basePrice,
-        BigDecimal hourlyRate,
+        String avatarUrl,
         BigDecimal avgRating,
         int ratingCount,
         int jobsCompleted,
+        BigDecimal basePrice,
+        BigDecimal hourlyRate,
+        boolean available,
         boolean verified,
-        String avatarUrl,
         List<SkillResponse> skills
 ) {
-    public static ProviderProfileResponse from(ProviderProfile p) {
-        return new ProviderProfileResponse(
+    public static ProviderDetailResponse from(ProviderProfile p) {
+        return new ProviderDetailResponse(
                 p.getId(),
                 p.getUser().getId(),
                 p.getUser().getFullName(),
+                p.getHeadline(),
                 p.getBio(),
                 p.getYearsExperience(),
-                p.isAvailable(),
-                p.getHeadline(),
                 p.getDistrict(),
                 p.getAddressLine(),
                 p.getLatitude(),
                 p.getLongitude(),
-                p.getBasePrice(),
-                p.getHourlyRate(),
+                p.getAvatarUrl(),
                 p.getAvgRating(),
                 p.getRatingCount(),
                 p.getJobsCompleted(),
+                p.getBasePrice(),
+                p.getHourlyRate(),
+                p.isAvailable(),
                 p.isVerified(),
-                p.getAvatarUrl(),
-                p.getSkills().stream().map(SkillResponse::from).toList()
+                p.getSkills().stream()
+                        .sorted((a, b) -> a.getName().compareToIgnoreCase(b.getName()))
+                        .map(SkillResponse::from).toList()
         );
     }
 }

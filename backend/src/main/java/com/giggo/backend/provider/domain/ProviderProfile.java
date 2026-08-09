@@ -1,5 +1,6 @@
 package com.giggo.backend.provider.domain;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -46,6 +47,53 @@ public class ProviderProfile {
 
     @Column(name = "available", nullable = false)
     private boolean available;
+
+    /** Short public tagline, e.g. "Experienced Plumber". */
+    @Column(name = "headline", length = 150)
+    private String headline;
+
+    @Column(name = "district", length = 100)
+    private String district;
+
+    @Column(name = "address_line", length = 255)
+    private String addressLine;
+
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
+    /** Fixed call-out fee for a job (LKR). */
+    @Column(name = "base_price", nullable = false)
+    @Builder.Default
+    private BigDecimal basePrice = BigDecimal.ZERO;
+
+    /** Charge per estimated working hour (LKR). */
+    @Column(name = "hourly_rate", nullable = false)
+    @Builder.Default
+    private BigDecimal hourlyRate = BigDecimal.ZERO;
+
+    /** Bayesian composite rating (0 = no reviews). Denormalised for list rendering. */
+    @Column(name = "avg_rating", nullable = false)
+    @Builder.Default
+    private BigDecimal avgRating = BigDecimal.ZERO;
+
+    @Column(name = "rating_count", nullable = false)
+    @Builder.Default
+    private int ratingCount = 0;
+
+    @Column(name = "jobs_completed", nullable = false)
+    @Builder.Default
+    private int jobsCompleted = 0;
+
+    /** True once KYC is approved (P2). */
+    @Column(name = "verified", nullable = false)
+    @Builder.Default
+    private boolean verified = false;
+
+    @Column(name = "avatar_url", length = 500)
+    private String avatarUrl;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
