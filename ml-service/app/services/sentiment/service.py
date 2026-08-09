@@ -32,13 +32,24 @@ _MOSTLY_SINHALA = 0.5
 
 class SentimentService:
     def __init__(self, backend: str = "lexicon") -> None:
-        if backend == "transformer":
-            # A HuggingFace RoBERTa backend (BRD recommendation) plugs in here.
-            # Not bundled by default to keep the image light; fall back safely.
-            logger.warning("Sentiment backend 'transformer' not installed; using lexicon backend.")
-        self._english = VaderAnalyzer()
+        self._english = self._build_english(backend)
         self._sinhala = SinhalaKeywordAnalyzer()
         self.version = f"composite:{self._english.version}+{self._sinhala.version}"
+
+    @staticmethod
+    def _build_english(backend: str):
+        """English analyzer per config; RoBERTa when requested, else VADER.
+        Falls back to VADER if the transformer deps aren't installed."""
+        if backend == "transformer":
+            try:
+                from .transformer import TransformerAnalyzer
+
+                return TransformerAnalyzer()
+            except Exception as exc:  # missing transformers/torch, model load error, etc.
+                logger.warning(
+                    "Transformer backend unavailable (%s); falling back to VADER lexicon.", exc
+                )
+        return VaderAnalyzer()
 
     def analyze(self, text: str) -> SentimentResult:
         si = self._sinhala.analyze(text, language="si")
