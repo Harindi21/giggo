@@ -1,0 +1,18 @@
+# Optional image with the RoBERTa sentiment backend enabled.
+# Larger image, needs ~1 GB+ RAM at runtime. The default Dockerfile (VADER) is
+# lighter and fine for free tiers.
+#   docker build -f Dockerfile.transformer -t giggo-ml-transformer .
+FROM python:3.14-slim
+WORKDIR /app
+
+COPY requirements.txt requirements-transformer.txt ./
+RUN pip install --no-cache-dir -r requirements.txt -r requirements-transformer.txt
+
+# Bake the model into the image so the first request isn't slow.
+RUN python -c "from transformers import pipeline; pipeline('sentiment-analysis', model='cardiffnlp/twitter-roberta-base-sentiment-latest', top_k=None)"
+
+COPY app/ app/
+
+ENV SENTIMENT_BACKEND=transformer
+EXPOSE 8000
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
