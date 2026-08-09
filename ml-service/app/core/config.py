@@ -8,5 +8,8 @@ class Settings(BaseSettings):
     environment: str = "local"
     api_key: str = "local-dev-key"
 
+    # Sentiment backend: "lexicon" (VADER, default) or "transformer" (RoBERTa, future).
+    sentiment_backend: str = "lexicon"
+
 
 settings = Settings()
