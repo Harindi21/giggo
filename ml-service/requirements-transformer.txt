@@ -1,0 +1,10 @@
+# Optional heavy backend for the RoBERTa sentiment model.
+# Enable with SENTIMENT_BACKEND=transformer, then:  pip install -r requirements-transformer.txt
+#
+# These are intentionally NOT in requirements.txt: torch + transformers are
+# hundreds of MB and the model needs ~1 GB+ RAM at runtime — more than free
+# hosting tiers provide. Use a paid tier (or a bigger container). The model is
+# downloaded on first use and cached. If these deps are absent, the service
+# falls back automatically to the VADER lexicon backend.
+transformers>=4.40,<5
+torch>=2.2
