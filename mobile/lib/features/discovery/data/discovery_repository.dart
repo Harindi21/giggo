@@ -15,7 +15,9 @@ class DiscoveryRepository {
     try {
       final res = await _dio.get('${ApiConfig.apiPrefix}/catalog/categories');
       final list = res.data['data'] as List<dynamic>;
-      return list.map((e) => Category.fromJson(e as Map<String, dynamic>)).toList();
+      return list
+          .map((e) => Category.fromJson(e as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw ApiException(_message(e));
     }
@@ -23,9 +25,13 @@ class DiscoveryRepository {
 
   Future<List<Skill>> getSkills(String categoryId) async {
     try {
-      final res = await _dio.get('${ApiConfig.apiPrefix}/catalog/categories/$categoryId/skills');
+      final res = await _dio.get(
+        '${ApiConfig.apiPrefix}/catalog/categories/$categoryId/skills',
+      );
       final list = res.data['data'] as List<dynamic>;
-      return list.map((e) => Skill.fromJson(e as Map<String, dynamic>)).toList();
+      return list
+          .map((e) => Skill.fromJson(e as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw ApiException(_message(e));
     }
@@ -41,14 +47,17 @@ class DiscoveryRepository {
       final params = <String, dynamic>{};
       if (categoryId != null) params['categoryId'] = categoryId;
       if (skillId != null) params['skillId'] = skillId;
-      if (district != null && district.isNotEmpty) params['district'] = district;
+      if (district != null && district.isNotEmpty)
+        params['district'] = district;
       if (query != null && query.isNotEmpty) params['q'] = query;
       final res = await _dio.get(
         '${ApiConfig.apiPrefix}/providers',
         queryParameters: params,
       );
       final list = res.data['data'] as List<dynamic>;
-      return list.map((e) => ProviderCard.fromJson(e as Map<String, dynamic>)).toList();
+      return list
+          .map((e) => ProviderCard.fromJson(e as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw ApiException(_message(e));
     }
@@ -65,7 +74,8 @@ class DiscoveryRepository {
 
   String _message(DioException e) {
     final data = e.response?.data;
-    if (data is Map && data['message'] is String) return data['message'] as String;
+    if (data is Map && data['message'] is String)
+      return data['message'] as String;
     if (e.response?.statusCode == 401) {
       return 'Your session expired. Please log in again.';
     }

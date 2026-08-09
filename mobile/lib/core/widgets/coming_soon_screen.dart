@@ -5,7 +5,12 @@ import 'giggo_wordmark.dart';
 
 /// Placeholder for tabs/features that arrive in a later WBS phase.
 class ComingSoonScreen extends StatelessWidget {
-  const ComingSoonScreen({super.key, required this.title, required this.icon, this.message});
+  const ComingSoonScreen({
+    super.key,
+    required this.title,
+    required this.icon,
+    this.message,
+  });
 
   final String title;
   final IconData icon;
@@ -28,7 +33,10 @@ class ComingSoonScreen extends StatelessWidget {
               Text(
                 message ?? '$title is coming soon.',
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
+                style: const TextStyle(
+                  color: AppColors.textMuted,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),

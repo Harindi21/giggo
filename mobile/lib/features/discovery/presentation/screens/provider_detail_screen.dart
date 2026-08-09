@@ -44,7 +44,13 @@ class ProviderDetailScreen extends ConsumerWidget {
                 if (p.bio != null && p.bio!.isNotEmpty) ...[
                   _sectionTitle('About'),
                   const SizedBox(height: 6),
-                  Text(p.bio!, style: const TextStyle(color: AppColors.textBody, height: 1.4)),
+                  Text(
+                    p.bio!,
+                    style: const TextStyle(
+                      color: AppColors.textBody,
+                      height: 1.4,
+                    ),
+                  ),
                   const SizedBox(height: 20),
                 ],
                 if (p.skills.isNotEmpty) ...[
@@ -53,7 +59,9 @@ class ProviderDetailScreen extends ConsumerWidget {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: [for (final s in p.skills) Chip(label: Text(s.name))],
+                    children: [
+                      for (final s in p.skills) Chip(label: Text(s.name)),
+                    ],
                   ),
                   const SizedBox(height: 20),
                 ],
@@ -93,7 +101,11 @@ class ProviderDetailScreen extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Row(
                   children: [
-                    ProviderAvatar(name: p.fullName, imageUrl: p.avatarUrl, radius: 38),
+                    ProviderAvatar(
+                      name: p.fullName,
+                      imageUrl: p.avatarUrl,
+                      radius: 38,
+                    ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
@@ -113,25 +125,49 @@ class ProviderDetailScreen extends ConsumerWidget {
                               ),
                               if (p.verified) ...[
                                 const SizedBox(width: 6),
-                                const Icon(Icons.verified, size: 18, color: AppColors.accent),
+                                const Icon(
+                                  Icons.verified,
+                                  size: 18,
+                                  color: AppColors.accent,
+                                ),
                               ],
                             ],
                           ),
                           if (p.headline != null) ...[
                             const SizedBox(height: 2),
-                            Text(p.headline!, style: const TextStyle(color: Colors.white70, fontSize: 13)),
+                            Text(
+                              p.headline!,
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 13,
+                              ),
+                            ),
                           ],
                           const SizedBox(height: 6),
-                          RatingStars(rating: p.avgRating, count: p.ratingCount, size: 16, showValue: true),
+                          RatingStars(
+                            rating: p.avgRating,
+                            count: p.ratingCount,
+                            size: 16,
+                            showValue: true,
+                          ),
                           if (p.district != null) ...[
                             const SizedBox(height: 6),
                             Row(
                               children: [
-                                const Icon(Icons.location_on_outlined, size: 14, color: Colors.white54),
+                                const Icon(
+                                  Icons.location_on_outlined,
+                                  size: 14,
+                                  color: Colors.white54,
+                                ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  [p.addressLine, p.district].where((e) => e != null && e.isNotEmpty).join(', '),
-                                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                                  [p.addressLine, p.district]
+                                      .where((e) => e != null && e.isNotEmpty)
+                                      .join(', '),
+                                  style: const TextStyle(
+                                    color: Colors.white54,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ],
                             ),
@@ -154,8 +190,11 @@ class ProviderDetailScreen extends ConsumerWidget {
       children: [
         _stat('${p.jobsCompleted}', 'Jobs done'),
         _stat('${p.yearsExperience} yr', 'Experience'),
-        _stat(p.available ? 'Available' : 'Busy', 'Status',
-            color: p.available ? AppColors.success : AppColors.warning),
+        _stat(
+          p.available ? 'Available' : 'Busy',
+          'Status',
+          color: p.available ? AppColors.success : AppColors.warning,
+        ),
       ],
     );
   }
@@ -164,11 +203,19 @@ class ProviderDetailScreen extends ConsumerWidget {
     return Expanded(
       child: Column(
         children: [
-          Text(value,
-              style: TextStyle(
-                  fontWeight: FontWeight.w800, fontSize: 16, color: color ?? AppColors.textPrimary)),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 16,
+              color: color ?? AppColors.textPrimary,
+            ),
+          ),
           const SizedBox(height: 2),
-          Text(label, style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted)),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted),
+          ),
         ],
       ),
     );
@@ -185,7 +232,10 @@ class ProviderDetailScreen extends ConsumerWidget {
         children: [
           _priceRow('Base fee', 'Rs. ${p.basePrice.toStringAsFixed(0)}'),
           const SizedBox(height: 8),
-          _priceRow('Work fee', 'Rs. ${p.hourlyRate.toStringAsFixed(0)} / hour'),
+          _priceRow(
+            'Work fee',
+            'Rs. ${p.hourlyRate.toStringAsFixed(0)} / hour',
+          ),
           const SizedBox(height: 8),
           _priceRow('Travel', 'Rs. 50 / km', muted: true),
           const Divider(height: 20),
@@ -202,11 +252,19 @@ class ProviderDetailScreen extends ConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(color: muted ? AppColors.textMuted : AppColors.textBody)),
-        Text(value,
-            style: TextStyle(
-                fontWeight: FontWeight.w700,
-                color: muted ? AppColors.textMuted : AppColors.textPrimary)),
+        Text(
+          label,
+          style: TextStyle(
+            color: muted ? AppColors.textMuted : AppColors.textBody,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: muted ? AppColors.textMuted : AppColors.textPrimary,
+          ),
+        ),
       ],
     );
   }
@@ -222,9 +280,18 @@ class ProviderDetailScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Starting from', style: TextStyle(fontSize: 11, color: AppColors.textMuted)),
-                  Text('Rs. ${p.basePrice.toStringAsFixed(0)}',
-                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: AppColors.textPrimary)),
+                  const Text(
+                    'Starting from',
+                    style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+                  ),
+                  Text(
+                    'Rs. ${p.basePrice.toStringAsFixed(0)}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 18,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -234,7 +301,11 @@ class ProviderDetailScreen extends ConsumerWidget {
                     ? () {
                         // Booking flow is wired in Phase B (P4).
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Booking flow arrives in the next update.')),
+                          const SnackBar(
+                            content: Text(
+                              'Booking flow arrives in the next update.',
+                            ),
+                          ),
                         );
                       }
                     : null,
@@ -248,26 +319,34 @@ class ProviderDetailScreen extends ConsumerWidget {
   }
 
   Widget _sectionTitle(String text) => Text(
-        text,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
-      );
+    text,
+    style: const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w800,
+      color: AppColors.textPrimary,
+    ),
+  );
 
   Widget _error(BuildContext context, String msg) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.error_outline, color: AppColors.textMuted, size: 40),
-              const SizedBox(height: 8),
-              Text(msg, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textMuted)),
-              const SizedBox(height: 12),
-              OutlinedButton(
-                onPressed: () => Navigator.of(context).maybePop(),
-                child: const Text('Go back'),
-              ),
-            ],
+    child: Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.error_outline, color: AppColors.textMuted, size: 40),
+          const SizedBox(height: 8),
+          Text(
+            msg,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: AppColors.textMuted),
           ),
-        ),
-      );
+          const SizedBox(height: 12),
+          OutlinedButton(
+            onPressed: () => Navigator.of(context).maybePop(),
+            child: const Text('Go back'),
+          ),
+        ],
+      ),
+    ),
+  );
 }

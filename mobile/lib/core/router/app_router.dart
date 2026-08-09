@@ -19,22 +19,33 @@ final appRouter = GoRouter(
   initialLocation: '/login',
   routes: [
     // ---- Auth (outside the shell) ----
-    GoRoute(path: '/login', name: 'login', builder: (c, s) => const LoginScreen()),
-    GoRoute(path: '/role', name: 'role', builder: (c, s) => const RoleSelectionScreen()),
+    GoRoute(
+      path: '/login',
+      name: 'login',
+      builder: (c, s) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/role',
+      name: 'role',
+      builder: (c, s) => const RoleSelectionScreen(),
+    ),
     GoRoute(
       path: '/register',
       name: 'register',
-      builder: (c, s) => RegisterScreen(role: s.uri.queryParameters['role'] ?? 'CUSTOMER'),
+      builder: (c, s) =>
+          RegisterScreen(role: s.uri.queryParameters['role'] ?? 'CUSTOMER'),
     ),
     GoRoute(
       path: '/verify-email',
       name: 'verify-email',
-      builder: (c, s) => VerifyEmailScreen(email: s.uri.queryParameters['email'] ?? ''),
+      builder: (c, s) =>
+          VerifyEmailScreen(email: s.uri.queryParameters['email'] ?? ''),
     ),
 
     // ---- Main app (bottom-nav shell) ----
     StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) => MainScaffold(navigationShell: navigationShell),
+      builder: (context, state, navigationShell) =>
+          MainScaffold(navigationShell: navigationShell),
       branches: [
         // Home / discovery
         StatefulShellBranch(
@@ -55,12 +66,16 @@ final appRouter = GoRouter(
                 GoRoute(
                   path: 'search',
                   name: 'search',
-                  builder: (c, s) => ProviderListScreen(initialQuery: s.uri.queryParameters['q']),
+                  builder: (c, s) => ProviderListScreen(
+                    initialQuery: s.uri.queryParameters['q'],
+                  ),
                 ),
                 GoRoute(
                   path: 'provider/:providerId',
                   name: 'provider',
-                  builder: (c, s) => ProviderDetailScreen(providerId: s.pathParameters['providerId']!),
+                  builder: (c, s) => ProviderDetailScreen(
+                    providerId: s.pathParameters['providerId']!,
+                  ),
                 ),
               ],
             ),
@@ -89,7 +104,8 @@ final appRouter = GoRouter(
               builder: (c, s) => const ComingSoonScreen(
                 title: 'My Tasks',
                 icon: Icons.list_alt_rounded,
-                message: 'Your bookings and job tracking arrive in the next update.',
+                message:
+                    'Your bookings and job tracking arrive in the next update.',
               ),
             ),
           ],
@@ -97,7 +113,11 @@ final appRouter = GoRouter(
         // Profile
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/profile', name: 'profile', builder: (c, s) => const ProfileScreen()),
+            GoRoute(
+              path: '/profile',
+              name: 'profile',
+              builder: (c, s) => const ProfileScreen(),
+            ),
           ],
         ),
       ],

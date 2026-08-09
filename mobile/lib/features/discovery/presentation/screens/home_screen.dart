@@ -127,9 +127,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 fillColor: Colors.white,
                 filled: true,
                 hintText: 'Search services or providers',
-                prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: AppColors.textMuted,
+                ),
                 suffixIcon: IconButton(
-                  icon: const Icon(Icons.arrow_forward, color: AppColors.accent),
+                  icon: const Icon(
+                    Icons.arrow_forward,
+                    color: AppColors.accent,
+                  ),
                   onPressed: () => _submitSearch(_searchCtrl.text),
                 ),
               ),
@@ -157,7 +163,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: [
                   Text(
                     'Explore your tasks',
-                    style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                   SizedBox(height: 4),
                   Text(
@@ -171,7 +180,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ElevatedButton(
               onPressed: () => context.go('/tasks'),
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
               ),
               child: const Text('View Tasks'),
             ),
@@ -186,17 +198,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       child: Card(
         child: ListTile(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           leading: CircleAvatar(
             backgroundColor: AppColors.surfaceBlue.withValues(alpha: 0.7),
             child: Icon(_iconFor(c.name), color: AppColors.primary),
           ),
           title: Text(
             c.name,
-            style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
           ),
           subtitle: c.description != null
-              ? Text(c.description!, maxLines: 1, overflow: TextOverflow.ellipsis)
+              ? Text(
+                  c.description!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                )
               : null,
           trailing: const Icon(Icons.chevron_right, color: AppColors.textMuted),
           onTap: () => context.push(
@@ -246,18 +267,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _error(String msg) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            const Icon(Icons.cloud_off, color: AppColors.textMuted, size: 40),
-            const SizedBox(height: 8),
-            Text(msg, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textMuted)),
-            const SizedBox(height: 12),
-            OutlinedButton(
-              onPressed: () => ref.invalidate(categoriesProvider),
-              child: const Text('Retry'),
-            ),
-          ],
+    padding: const EdgeInsets.all(24),
+    child: Column(
+      children: [
+        const Icon(Icons.cloud_off, color: AppColors.textMuted, size: 40),
+        const SizedBox(height: 8),
+        Text(
+          msg,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: AppColors.textMuted),
         ),
-      );
+        const SizedBox(height: 12),
+        OutlinedButton(
+          onPressed: () => ref.invalidate(categoriesProvider),
+          child: const Text('Retry'),
+        ),
+      ],
+    ),
+  );
 }

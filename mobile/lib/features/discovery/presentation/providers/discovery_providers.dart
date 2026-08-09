@@ -10,7 +10,10 @@ final categoriesProvider = FutureProvider<List<Category>>((ref) {
 });
 
 /// Skills within a category.
-final skillsProvider = FutureProvider.family<List<Skill>, String>((ref, categoryId) {
+final skillsProvider = FutureProvider.family<List<Skill>, String>((
+  ref,
+  categoryId,
+) {
   return ref.watch(discoveryRepositoryProvider).getSkills(categoryId);
 });
 
@@ -21,7 +24,12 @@ class ProviderQuery {
   final String? district;
   final String? query;
 
-  const ProviderQuery({this.categoryId, this.skillId, this.district, this.query});
+  const ProviderQuery({
+    this.categoryId,
+    this.skillId,
+    this.district,
+    this.query,
+  });
 
   ProviderQuery copyWith({
     Object? categoryId = _keep,
@@ -54,16 +62,20 @@ class ProviderQuery {
 /// Provider search results for a set of filters.
 final providerSearchProvider =
     FutureProvider.family<List<ProviderCard>, ProviderQuery>((ref, q) {
-  return ref.watch(discoveryRepositoryProvider).searchProviders(
-        categoryId: q.categoryId,
-        skillId: q.skillId,
-        district: q.district,
-        query: q.query,
-      );
-});
+      return ref
+          .watch(discoveryRepositoryProvider)
+          .searchProviders(
+            categoryId: q.categoryId,
+            skillId: q.skillId,
+            district: q.district,
+            query: q.query,
+          );
+    });
 
 /// Full detail for one provider.
-final providerDetailProvider =
-    FutureProvider.family<ProviderDetail, String>((ref, id) {
+final providerDetailProvider = FutureProvider.family<ProviderDetail, String>((
+  ref,
+  id,
+) {
   return ref.watch(discoveryRepositoryProvider).getProvider(id);
 });

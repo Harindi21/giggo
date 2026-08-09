@@ -21,8 +21,14 @@ class GiggoWordmark extends StatelessWidget {
           height: 1,
         ),
         children: [
-          TextSpan(text: 'GIG', style: TextStyle(color: baseColor)),
-          const TextSpan(text: 'GO', style: TextStyle(color: AppColors.accent)),
+          TextSpan(
+            text: 'GIG',
+            style: TextStyle(color: baseColor),
+          ),
+          const TextSpan(
+            text: 'GO',
+            style: TextStyle(color: AppColors.accent),
+          ),
         ],
       ),
     );

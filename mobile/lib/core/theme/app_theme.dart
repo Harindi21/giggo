@@ -65,7 +65,10 @@ class AppTheme {
         filled: true,
         fillColor: AppColors.surfaceBlue.withValues(alpha: 0.55),
         hintStyle: const TextStyle(color: AppColors.textMuted),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusField),
           borderSide: BorderSide.none,
@@ -115,7 +118,10 @@ class AppTheme {
         elevation: 0,
       ),
 
-      dividerTheme: const DividerThemeData(color: AppColors.divider, thickness: 1),
+      dividerTheme: const DividerThemeData(
+        color: AppColors.divider,
+        thickness: 1,
+      ),
     );
   }
 }

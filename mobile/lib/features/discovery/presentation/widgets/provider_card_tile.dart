@@ -8,7 +8,12 @@ import '../../data/models/provider_models.dart';
 /// White provider card for list/search screens — avatar, name (+ verified),
 /// headline/district, stars, price and a "Book Now" pill (mockup image27).
 class ProviderCardTile extends StatelessWidget {
-  const ProviderCardTile({super.key, required this.provider, this.onTap, this.onBook});
+  const ProviderCardTile({
+    super.key,
+    required this.provider,
+    this.onTap,
+    this.onBook,
+  });
 
   final ProviderCard provider;
   final VoidCallback? onTap;
@@ -25,7 +30,11 @@ class ProviderCardTile extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ProviderAvatar(name: provider.fullName, imageUrl: provider.avatarUrl, radius: 28),
+              ProviderAvatar(
+                name: provider.fullName,
+                imageUrl: provider.avatarUrl,
+                radius: 28,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -47,19 +56,33 @@ class ProviderCardTile extends StatelessWidget {
                         ),
                         if (provider.verified) ...[
                           const SizedBox(width: 4),
-                          const Icon(Icons.verified, size: 16, color: AppColors.info),
+                          const Icon(
+                            Icons.verified,
+                            size: 16,
+                            color: AppColors.info,
+                          ),
                         ],
                       ],
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      [provider.headline, provider.district].where((e) => e != null && e.isNotEmpty).join(' · '),
+                      [
+                        provider.headline,
+                        provider.district,
+                      ].where((e) => e != null && e.isNotEmpty).join(' · '),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 12.5, color: AppColors.textMuted),
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        color: AppColors.textMuted,
+                      ),
                     ),
                     const SizedBox(height: 6),
-                    RatingStars(rating: provider.avgRating, count: provider.ratingCount, size: 15),
+                    RatingStars(
+                      rating: provider.avgRating,
+                      count: provider.ratingCount,
+                      size: 15,
+                    ),
                   ],
                 ),
               ),
@@ -75,7 +98,10 @@ class ProviderCardTile extends StatelessWidget {
                       fontSize: 13,
                     ),
                   ),
-                  const Text('from', style: TextStyle(fontSize: 10, color: AppColors.textMuted)),
+                  const Text(
+                    'from',
+                    style: TextStyle(fontSize: 10, color: AppColors.textMuted),
+                  ),
                   const SizedBox(height: 8),
                   SizedBox(
                     height: 32,
@@ -83,7 +109,10 @@ class ProviderCardTile extends StatelessWidget {
                       onPressed: onBook ?? onTap,
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(horizontal: 14),
-                        textStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                        textStyle: const TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       child: const Text('Book Now'),
                     ),

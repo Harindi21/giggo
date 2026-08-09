@@ -36,20 +36,20 @@ class ProviderCard {
   });
 
   factory ProviderCard.fromJson(Map<String, dynamic> json) => ProviderCard(
-        id: json['id'] as String,
-        userId: json['userId'] as String,
-        fullName: json['fullName'] as String,
-        headline: json['headline'] as String?,
-        district: json['district'] as String?,
-        avatarUrl: json['avatarUrl'] as String?,
-        avgRating: _toDouble(json['avgRating']),
-        ratingCount: _toInt(json['ratingCount']),
-        jobsCompleted: _toInt(json['jobsCompleted']),
-        basePrice: _toDouble(json['basePrice']),
-        hourlyRate: _toDouble(json['hourlyRate']),
-        available: json['available'] as bool? ?? true,
-        verified: json['verified'] as bool? ?? false,
-      );
+    id: json['id'] as String,
+    userId: json['userId'] as String,
+    fullName: json['fullName'] as String,
+    headline: json['headline'] as String?,
+    district: json['district'] as String?,
+    avatarUrl: json['avatarUrl'] as String?,
+    avgRating: _toDouble(json['avgRating']),
+    ratingCount: _toInt(json['ratingCount']),
+    jobsCompleted: _toInt(json['jobsCompleted']),
+    basePrice: _toDouble(json['basePrice']),
+    hourlyRate: _toDouble(json['hourlyRate']),
+    available: json['available'] as bool? ?? true,
+    verified: json['verified'] as bool? ?? false,
+  );
 }
 
 /// Full provider for the detail screen.
@@ -97,26 +97,26 @@ class ProviderDetail {
   });
 
   factory ProviderDetail.fromJson(Map<String, dynamic> json) => ProviderDetail(
-        id: json['id'] as String,
-        userId: json['userId'] as String,
-        fullName: json['fullName'] as String,
-        headline: json['headline'] as String?,
-        bio: json['bio'] as String?,
-        yearsExperience: _toInt(json['yearsExperience']),
-        district: json['district'] as String?,
-        addressLine: json['addressLine'] as String?,
-        latitude: (json['latitude'] as num?)?.toDouble(),
-        longitude: (json['longitude'] as num?)?.toDouble(),
-        avatarUrl: json['avatarUrl'] as String?,
-        avgRating: _toDouble(json['avgRating']),
-        ratingCount: _toInt(json['ratingCount']),
-        jobsCompleted: _toInt(json['jobsCompleted']),
-        basePrice: _toDouble(json['basePrice']),
-        hourlyRate: _toDouble(json['hourlyRate']),
-        available: json['available'] as bool? ?? true,
-        verified: json['verified'] as bool? ?? false,
-        skills: (json['skills'] as List<dynamic>? ?? [])
-            .map((e) => Skill.fromJson(e as Map<String, dynamic>))
-            .toList(),
-      );
+    id: json['id'] as String,
+    userId: json['userId'] as String,
+    fullName: json['fullName'] as String,
+    headline: json['headline'] as String?,
+    bio: json['bio'] as String?,
+    yearsExperience: _toInt(json['yearsExperience']),
+    district: json['district'] as String?,
+    addressLine: json['addressLine'] as String?,
+    latitude: (json['latitude'] as num?)?.toDouble(),
+    longitude: (json['longitude'] as num?)?.toDouble(),
+    avatarUrl: json['avatarUrl'] as String?,
+    avgRating: _toDouble(json['avgRating']),
+    ratingCount: _toInt(json['ratingCount']),
+    jobsCompleted: _toInt(json['jobsCompleted']),
+    basePrice: _toDouble(json['basePrice']),
+    hourlyRate: _toDouble(json['hourlyRate']),
+    available: json['available'] as bool? ?? true,
+    verified: json['verified'] as bool? ?? false,
+    skills: (json['skills'] as List<dynamic>? ?? [])
+        .map((e) => Skill.fromJson(e as Map<String, dynamic>))
+        .toList(),
+  );
 }

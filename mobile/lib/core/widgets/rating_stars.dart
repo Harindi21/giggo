@@ -37,7 +37,9 @@ class RatingStars extends StatelessWidget {
           Icon(
             rating >= i
                 ? Icons.star_rounded
-                : (rating >= i - 0.5 ? Icons.star_half_rounded : Icons.star_outline_rounded),
+                : (rating >= i - 0.5
+                      ? Icons.star_half_rounded
+                      : Icons.star_outline_rounded),
             size: size,
             color: AppColors.accent,
           ),
