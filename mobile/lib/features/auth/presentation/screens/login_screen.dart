@@ -30,7 +30,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final ok = await ref
         .read(authControllerProvider.notifier)
         .login(_emailCtrl.text, _passwordCtrl.text);
-    if (ok && mounted) context.go('/');
+    if (ok && mounted) context.go('/home');
   }
 
   @override

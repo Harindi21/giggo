@@ -42,6 +42,14 @@ public class ProviderProfileService {
 
         profile.setBio(req.bio());
         profile.setYearsExperience(req.yearsExperience());
+        profile.setHeadline(req.headline());
+        profile.setDistrict(req.district());
+        profile.setAddressLine(req.addressLine());
+        profile.setLatitude(req.latitude());
+        profile.setLongitude(req.longitude());
+        if (req.basePrice() != null) profile.setBasePrice(req.basePrice());
+        if (req.hourlyRate() != null) profile.setHourlyRate(req.hourlyRate());
+        if (req.available() != null) profile.setAvailable(req.available());
 
         if (req.skillIds() != null) {
             Set<Skill> skills = new HashSet<>(skillRepository.findAllById(req.skillIds()));
