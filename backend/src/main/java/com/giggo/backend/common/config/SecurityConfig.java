@@ -49,6 +49,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/health").permitAll()
+                        // WebSocket handshake is public; the STOMP CONNECT frame is
+                        // authenticated by StompAuthChannelInterceptor (JWT).
+                        .requestMatchers("/ws/**", "/ws-sockjs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable())
