@@ -101,11 +101,20 @@ public class TrackingConsentService {
                         .orElseThrow(() -> new ResourceNotFoundException("No tracking consent for this job")));
     }
 
-    /** Used by the location broadcaster (P5.3) to decide whether sharing is permitted. */
+    /** True if the job has an active GRANTED consent (any participant may view). */
     @Transactional(readOnly = true)
     public boolean isSharingAllowed(UUID jobId) {
         return repository.findByJobIdAndStatus(jobId, GRANTED)
                 .map(TrackingConsent::isActive)
+                .orElse(false);
+    }
+
+    /** True only if sharing is active AND the given user is the provider on that consent. */
+    @Transactional(readOnly = true)
+    public boolean canShareLocation(UUID jobId, UUID providerUserId) {
+        return repository.findByJobIdAndStatus(jobId, GRANTED)
+                .filter(TrackingConsent::isActive)
+                .map(c -> c.getProviderId().equals(providerUserId))
                 .orElse(false);
     }
 
