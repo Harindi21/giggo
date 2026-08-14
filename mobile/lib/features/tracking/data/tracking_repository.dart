@@ -41,8 +41,9 @@ class TrackingRepository {
 
   String _message(DioException e) {
     final data = e.response?.data;
-    if (data is Map && data['message'] is String)
+    if (data is Map && data['message'] is String) {
       return data['message'] as String;
+    }
     return 'Could not reach the tracking service.';
   }
 }

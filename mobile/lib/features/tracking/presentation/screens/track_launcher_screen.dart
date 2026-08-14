@@ -34,10 +34,12 @@ class _TrackLauncherScreenState extends State<TrackLauncherScreen> {
       return;
     }
     final params = <String, String>{};
-    if (_latCtrl.text.trim().isNotEmpty)
+    if (_latCtrl.text.trim().isNotEmpty) {
       params['destLat'] = _latCtrl.text.trim();
-    if (_lngCtrl.text.trim().isNotEmpty)
+    }
+    if (_lngCtrl.text.trim().isNotEmpty) {
       params['destLng'] = _lngCtrl.text.trim();
+    }
     final query = params.entries.map((e) => '${e.key}=${e.value}').join('&');
     context.push('/track/$jobId${query.isEmpty ? '' : '?$query'}');
   }
