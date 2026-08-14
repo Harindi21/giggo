@@ -3,6 +3,7 @@ package com.giggo.backend.review.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,6 +46,7 @@ class ReviewServiceTest {
     @Mock UserRepository userRepository;
     @Mock SentimentClient sentimentClient;
     @Mock BookingService bookingService;
+    @Mock BayesianRatingCalculator bayesianCalculator;
 
     private ReviewService service;
 
@@ -55,7 +57,7 @@ class ReviewServiceTest {
     @BeforeEach
     void setUp() {
         service = new ReviewService(reviewRepository, bookingRepository, providerRepository,
-                userRepository, sentimentClient, bookingService);
+                userRepository, sentimentClient, bookingService, bayesianCalculator);
         ReflectionTestUtils.setField(service, "starWeight", new BigDecimal("0.6"));
         ReflectionTestUtils.setField(service, "textWeight", new BigDecimal("0.4"));
         lenient().when(reviewRepository.save(any(Review.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -74,10 +76,11 @@ class ReviewServiceTest {
         when(sentimentClient.analyze(any())).thenReturn(Optional.of(
                 new SentimentResult("positive", 0.9, 5, 0.95, "satisfaction", "en")));
         ProviderProfile profile = ProviderProfile.builder()
-                .avgRating(new BigDecimal("4.00")).ratingCount(10).build();
+                .avgRating(new BigDecimal("4.00")).ratingCount(10).ratingSum(new BigDecimal("40.00")).build();
         when(providerRepository.findByUserId(providerUserId)).thenReturn(Optional.of(profile));
         when(userRepository.findById(customerId)).thenReturn(Optional.of(
                 User.builder().id(customerId).fullName("Ann").build()));
+        when(bayesianCalculator.compute(anyInt(), any())).thenReturn(new BigDecimal("4.05"));
 
         ReviewResponse r = service.submit(customerId, bookingId, new CreateReviewRequest(4, "great, fast and tidy"));
 
@@ -85,9 +88,10 @@ class ReviewServiceTest {
         assertThat(r.enhancedRating()).isEqualByComparingTo("4.40"); // 4*0.6 + 5*0.4
         assertThat(r.reviewerName()).isEqualTo("Ann");
         verify(bookingService).markRated(bookingId);
-        // provider average updated incrementally: (4.00*10 + 4.40) / 11
+        // count + raw sum advance; avg comes from the Bayesian calculator
         assertThat(profile.getRatingCount()).isEqualTo(11);
-        assertThat(profile.getAvgRating()).isEqualByComparingTo("4.04");
+        assertThat(profile.getRatingSum()).isEqualByComparingTo("44.40"); // 40.00 + 4.40
+        assertThat(profile.getAvgRating()).isEqualByComparingTo("4.05");
     }
 
     @Test

@@ -83,6 +83,11 @@ public class ProviderProfile {
     @Builder.Default
     private int ratingCount = 0;
 
+    /** Raw sum of enhanced ratings; the Bayesian avg_rating is derived from this (P6.3). */
+    @Column(name = "rating_sum", nullable = false)
+    @Builder.Default
+    private BigDecimal ratingSum = BigDecimal.ZERO;
+
     @Column(name = "jobs_completed", nullable = false)
     @Builder.Default
     private int jobsCompleted = 0;
