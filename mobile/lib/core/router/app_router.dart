@@ -9,6 +9,8 @@ import '../../features/discovery/presentation/screens/home_screen.dart';
 import '../../features/discovery/presentation/screens/provider_detail_screen.dart';
 import '../../features/discovery/presentation/screens/provider_list_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/tracking/presentation/screens/track_launcher_screen.dart';
+import '../../features/tracking/presentation/screens/tracking_screen.dart';
 import '../widgets/coming_soon_screen.dart';
 import '../widgets/main_scaffold.dart';
 
@@ -40,6 +42,15 @@ final appRouter = GoRouter(
       name: 'verify-email',
       builder: (c, s) =>
           VerifyEmailScreen(email: s.uri.queryParameters['email'] ?? ''),
+    ),
+    GoRoute(
+      path: '/track/:jobId',
+      name: 'track',
+      builder: (c, s) => TrackingScreen(
+        jobId: s.pathParameters['jobId']!,
+        destLat: double.tryParse(s.uri.queryParameters['destLat'] ?? ''),
+        destLng: double.tryParse(s.uri.queryParameters['destLng'] ?? ''),
+      ),
     ),
 
     // ---- Main app (bottom-nav shell) ----
@@ -101,12 +112,7 @@ final appRouter = GoRouter(
             GoRoute(
               path: '/tasks',
               name: 'tasks',
-              builder: (c, s) => const ComingSoonScreen(
-                title: 'My Tasks',
-                icon: Icons.list_alt_rounded,
-                message:
-                    'Your bookings and job tracking arrive in the next update.',
-              ),
+              builder: (c, s) => const TrackLauncherScreen(),
             ),
           ],
         ),
