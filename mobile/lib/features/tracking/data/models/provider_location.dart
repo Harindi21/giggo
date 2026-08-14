@@ -18,7 +18,8 @@ class ProviderLocation {
     this.at,
   });
 
-  factory ProviderLocation.fromJson(Map<String, dynamic> json) => ProviderLocation(
+  factory ProviderLocation.fromJson(Map<String, dynamic> json) =>
+      ProviderLocation(
         jobId: json['jobId'] as String,
         latitude: (json['latitude'] as num).toDouble(),
         longitude: (json['longitude'] as num).toDouble(),

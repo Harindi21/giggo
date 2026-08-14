@@ -49,7 +49,9 @@ class TrackingSocketClient {
     _connecting = true;
     _emit(SocketStatus.connecting);
     final token = await getToken();
-    final headers = {if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token'};
+    final headers = {
+      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+    };
 
     _client = StompClient(
       config: StompConfig(
@@ -112,7 +114,9 @@ class TrackingSocketClient {
         final body = frame.body;
         if (body == null || body.isEmpty) return;
         try {
-          final loc = ProviderLocation.fromJson(jsonDecode(body) as Map<String, dynamic>);
+          final loc = ProviderLocation.fromJson(
+            jsonDecode(body) as Map<String, dynamic>,
+          );
           _jobStreams[jobId]?.add(loc);
         } catch (_) {
           // Ignore malformed frames rather than crash the stream.

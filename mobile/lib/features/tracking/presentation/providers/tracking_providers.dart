@@ -24,7 +24,10 @@ final socketStatusProvider = StreamProvider<SocketStatus>((ref) {
 });
 
 /// Live provider position for a job; subscribing (re)connects the socket.
-final jobLocationProvider = StreamProvider.family<ProviderLocation, String>((ref, jobId) {
+final jobLocationProvider = StreamProvider.family<ProviderLocation, String>((
+  ref,
+  jobId,
+) {
   final client = ref.watch(trackingSocketClientProvider);
   ref.onDispose(() => client.stopTracking(jobId));
   return client.locationStream(jobId);
