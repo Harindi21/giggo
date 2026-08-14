@@ -20,12 +20,16 @@ import lombok.RequiredArgsConstructor;
 public class ProviderDiscoveryService {
 
     private final ProviderProfileRepository profileRepository;
+    private final FairRankingReorderer fairRanking;
 
     @Transactional(readOnly = true)
     public List<ProviderCardResponse> search(UUID categoryId, UUID skillId, String district, String q) {
         String qn = (q == null || q.isBlank()) ? null : q.trim();
         String dn = (district == null || district.isBlank()) ? null : district.trim();
-        return profileRepository.search(categoryId, skillId, dn, qn).stream()
+        var ranked = profileRepository.search(categoryId, skillId, dn, qn);
+        // Fairness pass: give under-represented districts visibility in the top results (P6.6).
+        var fair = fairRanking.reorder(ranked, ProviderProfile::getDistrict);
+        return fair.stream()
                 .map(ProviderCardResponse::from)
                 .toList();
     }
