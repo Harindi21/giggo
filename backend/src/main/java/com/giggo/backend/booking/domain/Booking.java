@@ -97,6 +97,25 @@ public class Booking {
     @Column(name = "total_price", nullable = false)
     private BigDecimal totalPrice;
 
+    // ---- lifecycle audit (P4.3) ----
+    @Column(name = "accepted_at")
+    private OffsetDateTime acceptedAt;
+
+    @Column(name = "started_at")
+    private OffsetDateTime startedAt;
+
+    @Column(name = "completed_at")
+    private OffsetDateTime completedAt;
+
+    @Column(name = "cancelled_at")
+    private OffsetDateTime cancelledAt;
+
+    @Column(name = "cancelled_by")
+    private UUID cancelledBy;
+
+    @Column(name = "cancel_reason", length = 500)
+    private String cancelReason;
+
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 

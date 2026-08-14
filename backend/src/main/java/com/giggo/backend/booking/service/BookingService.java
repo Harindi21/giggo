@@ -1,6 +1,7 @@
 package com.giggo.backend.booking.service;
 
 import java.time.OffsetDateTime;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -100,6 +101,88 @@ public class BookingService {
         return bookings.stream()
                 .map(b -> BookingResponse.from(b, names.get(b.getSkillId())))
                 .toList();
+    }
+
+    // ---- Job state machine (P4.3) ----
+
+    private static final Map<JobStatus, Set<JobStatus>> ALLOWED = Map.of(
+            JobStatus.REQUESTED, EnumSet.of(JobStatus.ACCEPTED, JobStatus.DECLINED, JobStatus.CANCELLED, JobStatus.EXPIRED),
+            JobStatus.ACCEPTED, EnumSet.of(JobStatus.EN_ROUTE, JobStatus.CANCELLED),
+            JobStatus.EN_ROUTE, EnumSet.of(JobStatus.STARTED, JobStatus.CANCELLED),
+            JobStatus.STARTED, EnumSet.of(JobStatus.COMPLETED),
+            JobStatus.COMPLETED, EnumSet.of(JobStatus.RATED, JobStatus.PAID),
+            JobStatus.RATED, EnumSet.of(JobStatus.PAID));
+
+    @Transactional
+    public BookingResponse accept(UUID providerId, UUID id) {
+        return providerAction(providerId, id, JobStatus.ACCEPTED);
+    }
+
+    @Transactional
+    public BookingResponse decline(UUID providerId, UUID id) {
+        return providerAction(providerId, id, JobStatus.DECLINED);
+    }
+
+    @Transactional
+    public BookingResponse enRoute(UUID providerId, UUID id) {
+        return providerAction(providerId, id, JobStatus.EN_ROUTE);
+    }
+
+    @Transactional
+    public BookingResponse start(UUID providerId, UUID id) {
+        return providerAction(providerId, id, JobStatus.STARTED);
+    }
+
+    @Transactional
+    public BookingResponse complete(UUID providerId, UUID id) {
+        return providerAction(providerId, id, JobStatus.COMPLETED);
+    }
+
+    /** Either party may cancel, but only before work has started. */
+    @Transactional
+    public BookingResponse cancel(UUID userId, UUID id, String reason) {
+        Booking booking = getEntity(id);
+        if (!booking.involves(userId)) {
+            throw new ForbiddenOperationException("You are not part of this booking");
+        }
+        transition(booking, JobStatus.CANCELLED);
+        booking.setCancelledBy(userId);
+        booking.setCancelReason(reason);
+        return respond(bookingRepository.save(booking));
+    }
+
+    private BookingResponse providerAction(UUID providerId, UUID id, JobStatus target) {
+        Booking booking = getEntity(id);
+        if (!booking.getProviderId().equals(providerId)) {
+            throw new ForbiddenOperationException("Only the assigned provider can update this job");
+        }
+        transition(booking, target);
+        return respond(bookingRepository.save(booking));
+    }
+
+    private void transition(Booking booking, JobStatus target) {
+        if (!ALLOWED.getOrDefault(booking.getStatus(), Set.of()).contains(target)) {
+            throw new IllegalArgumentException(
+                    "Cannot change a %s booking to %s".formatted(booking.getStatus(), target));
+        }
+        OffsetDateTime now = OffsetDateTime.now();
+        booking.setStatus(target);
+        switch (target) {
+            case ACCEPTED -> booking.setAcceptedAt(now);
+            case STARTED -> booking.setStartedAt(now);
+            case COMPLETED -> booking.setCompletedAt(now);
+            case CANCELLED -> booking.setCancelledAt(now);
+            default -> { }
+        }
+    }
+
+    private Booking getEntity(UUID id) {
+        return bookingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+    }
+
+    private BookingResponse respond(Booking booking) {
+        return BookingResponse.from(booking, skillName(booking.getSkillId()));
     }
 
     private String skillName(UUID skillId) {
