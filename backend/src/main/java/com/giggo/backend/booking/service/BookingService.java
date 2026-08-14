@@ -147,6 +147,15 @@ public class BookingService {
         return providerAction(providerId, id, JobStatus.COMPLETED);
     }
 
+    /** Marks a COMPLETED job RATED once its review lands (called by the review service). */
+    @Transactional
+    public void markRated(UUID bookingId) {
+        Booking booking = getEntity(bookingId);
+        transition(booking, JobStatus.RATED);
+        bookingRepository.save(booking);
+        recordEvent(booking.getId(), JobStatus.RATED, OffsetDateTime.now());
+    }
+
     /** Either party may cancel, but only before work has started. */
     @Transactional
     public BookingResponse cancel(UUID userId, UUID id, String reason) {
