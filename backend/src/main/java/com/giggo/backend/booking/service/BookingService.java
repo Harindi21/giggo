@@ -8,15 +8,20 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.giggo.backend.booking.api.dto.BookingResponse;
 import com.giggo.backend.booking.api.dto.CreateBookingRequest;
 import com.giggo.backend.booking.api.dto.PricingBreakdownResponse;
+import com.giggo.backend.booking.api.dto.StatusEventResponse;
 import com.giggo.backend.booking.domain.Booking;
+import com.giggo.backend.booking.domain.BookingStatusEvent;
 import com.giggo.backend.booking.domain.JobStatus;
+import com.giggo.backend.booking.event.BookingStatusChangedEvent;
 import com.giggo.backend.booking.repository.BookingRepository;
+import com.giggo.backend.booking.repository.BookingStatusEventRepository;
 import com.giggo.backend.common.exception.ForbiddenOperationException;
 import com.giggo.backend.common.exception.ResourceNotFoundException;
 import com.giggo.backend.provider.domain.ProviderProfile;
@@ -34,9 +39,11 @@ public class BookingService {
     private static final int DEFAULT_EXPIRY_MINUTES = 30;
 
     private final BookingRepository bookingRepository;
+    private final BookingStatusEventRepository eventRepository;
     private final ProviderProfileRepository providerRepository;
     private final SkillRepository skillRepository;
     private final PricingService pricingService;
+    private final ApplicationEventPublisher events;
 
     @Transactional
     public BookingResponse create(UUID customerId, CreateBookingRequest req) {
@@ -80,7 +87,9 @@ public class BookingService {
                 .totalPrice(price.totalPrice())
                 .build();
 
-        return BookingResponse.from(bookingRepository.save(booking), skill.getName());
+        Booking saved = bookingRepository.save(booking);
+        recordEvent(saved.getId(), saved.getStatus(), saved.getCreatedAt());
+        return BookingResponse.from(saved, skill.getName());
     }
 
     @Transactional(readOnly = true)
@@ -148,7 +157,7 @@ public class BookingService {
         transition(booking, JobStatus.CANCELLED);
         booking.setCancelledBy(userId);
         booking.setCancelReason(reason);
-        return respond(bookingRepository.save(booking));
+        return saveAndRecord(booking);
     }
 
     private BookingResponse providerAction(UUID providerId, UUID id, JobStatus target) {
@@ -157,7 +166,7 @@ public class BookingService {
             throw new ForbiddenOperationException("Only the assigned provider can update this job");
         }
         transition(booking, target);
-        return respond(bookingRepository.save(booking));
+        return saveAndRecord(booking);
     }
 
     private void transition(Booking booking, JobStatus target) {
@@ -183,6 +192,31 @@ public class BookingService {
 
     private BookingResponse respond(Booking booking) {
         return BookingResponse.from(booking, skillName(booking.getSkillId()));
+    }
+
+    private BookingResponse saveAndRecord(Booking booking) {
+        Booking saved = bookingRepository.save(booking);
+        recordEvent(saved.getId(), saved.getStatus(), OffsetDateTime.now());
+        return respond(saved);
+    }
+
+    private void recordEvent(UUID bookingId, JobStatus status, OffsetDateTime at) {
+        OffsetDateTime when = (at != null) ? at : OffsetDateTime.now();
+        eventRepository.save(BookingStatusEvent.builder()
+                .bookingId(bookingId).status(status).at(when).build());
+        events.publishEvent(new BookingStatusChangedEvent(bookingId, status, when));
+    }
+
+    /** Ordered status history for a booking (participants only). */
+    @Transactional(readOnly = true)
+    public List<StatusEventResponse> timeline(UUID userId, UUID id) {
+        Booking booking = getEntity(id);
+        if (!booking.involves(userId)) {
+            throw new ForbiddenOperationException("You are not part of this booking");
+        }
+        return eventRepository.findByBookingIdOrderByAtAsc(id).stream()
+                .map(StatusEventResponse::from)
+                .toList();
     }
 
     private String skillName(UUID skillId) {
