@@ -47,6 +47,7 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final SentimentClient sentimentClient;
     private final BookingService bookingService;
+    private final BayesianRatingCalculator bayesianCalculator;
 
     @Value("${giggo.rating.star-weight:0.6}")
     private BigDecimal starWeight;
@@ -123,13 +124,14 @@ public class ReviewService {
         if (profile == null) {
             return;
         }
-        int oldCount = profile.getRatingCount();
-        BigDecimal oldAvg = profile.getAvgRating() == null ? BigDecimal.ZERO : profile.getAvgRating();
-        int newCount = oldCount + 1;
-        BigDecimal newAvg = oldAvg.multiply(BigDecimal.valueOf(oldCount)).add(enhanced)
-                .divide(BigDecimal.valueOf(newCount), 2, RoundingMode.HALF_UP);
-        profile.setAvgRating(newAvg);
+        int newCount = profile.getRatingCount() + 1;
+        BigDecimal newSum = (profile.getRatingSum() == null ? BigDecimal.ZERO : profile.getRatingSum())
+                .add(enhanced);
+        BigDecimal rawAverage = newSum.divide(BigDecimal.valueOf(newCount), 10, RoundingMode.HALF_UP);
+
         profile.setRatingCount(newCount);
+        profile.setRatingSum(newSum);
+        profile.setAvgRating(bayesianCalculator.compute(newCount, rawAverage)); // Bayesian, not naive avg
         providerRepository.save(profile);
     }
 
