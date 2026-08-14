@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,10 +17,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import com.giggo.backend.booking.domain.Booking;
+import com.giggo.backend.booking.domain.BookingStatusEvent;
 import com.giggo.backend.booking.domain.JobStatus;
 import com.giggo.backend.booking.repository.BookingRepository;
+import com.giggo.backend.booking.repository.BookingStatusEventRepository;
 import com.giggo.backend.common.exception.ForbiddenOperationException;
 import com.giggo.backend.provider.repository.ProviderProfileRepository;
 import com.giggo.backend.provider.repository.SkillRepository;
@@ -28,9 +33,11 @@ import com.giggo.backend.provider.repository.SkillRepository;
 class BookingLifecycleTest {
 
     @Mock BookingRepository bookingRepository;
+    @Mock BookingStatusEventRepository eventRepository;
     @Mock ProviderProfileRepository providerRepository;
     @Mock SkillRepository skillRepository;
     @Mock PricingService pricingService;
+    @Mock ApplicationEventPublisher events;
 
     private BookingService service;
 
@@ -40,7 +47,8 @@ class BookingLifecycleTest {
 
     @BeforeEach
     void setUp() {
-        service = new BookingService(bookingRepository, providerRepository, skillRepository, pricingService);
+        service = new BookingService(bookingRepository, eventRepository, providerRepository,
+                skillRepository, pricingService, events);
         lenient().when(bookingRepository.save(any(Booking.class))).thenAnswer(inv -> inv.getArgument(0));
     }
 
@@ -104,5 +112,23 @@ class BookingLifecycleTest {
         when(bookingRepository.findById(id)).thenReturn(Optional.of(booking(JobStatus.STARTED)));
         assertThatThrownBy(() -> service.cancel(customerId, id, null))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("timeline returns ordered events for a participant; outsider forbidden")
+    void timeline() {
+        when(bookingRepository.findById(id)).thenReturn(Optional.of(booking(JobStatus.COMPLETED)));
+        when(eventRepository.findByBookingIdOrderByAtAsc(id)).thenReturn(List.of(
+                BookingStatusEvent.builder().bookingId(id).status(JobStatus.REQUESTED)
+                        .at(OffsetDateTime.now().minusMinutes(5)).build(),
+                BookingStatusEvent.builder().bookingId(id).status(JobStatus.COMPLETED)
+                        .at(OffsetDateTime.now()).build()));
+
+        var events = service.timeline(customerId, id);
+        assertThat(events).hasSize(2);
+        assertThat(events.get(0).status()).isEqualTo(JobStatus.REQUESTED);
+
+        assertThatThrownBy(() -> service.timeline(UUID.randomUUID(), id))
+                .isInstanceOf(ForbiddenOperationException.class);
     }
 }

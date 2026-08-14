@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.giggo.backend.booking.api.dto.BookingResponse;
 import com.giggo.backend.booking.api.dto.CreateBookingRequest;
+import com.giggo.backend.booking.api.dto.StatusEventResponse;
 import com.giggo.backend.booking.service.BookingService;
 import com.giggo.backend.common.dto.ApiResponse;
 import com.giggo.backend.user.domain.User;
@@ -49,5 +50,12 @@ public class BookingController {
     @GetMapping
     public ApiResponse<List<BookingResponse>> listMine(@AuthenticationPrincipal User user) {
         return ApiResponse.ok(bookingService.listMine(user.getId()));
+    }
+
+    /** Ordered status timeline for a booking (P5.5). */
+    @GetMapping("/{id}/timeline")
+    public ApiResponse<List<StatusEventResponse>> timeline(
+            @AuthenticationPrincipal User user, @PathVariable UUID id) {
+        return ApiResponse.ok(bookingService.timeline(user.getId(), id));
     }
 }

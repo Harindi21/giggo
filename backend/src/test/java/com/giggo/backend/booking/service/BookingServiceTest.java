@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import com.giggo.backend.booking.api.dto.BookingResponse;
 import com.giggo.backend.booking.api.dto.CreateBookingRequest;
@@ -24,6 +25,7 @@ import com.giggo.backend.booking.api.dto.PricingBreakdownResponse;
 import com.giggo.backend.booking.domain.Booking;
 import com.giggo.backend.booking.domain.JobStatus;
 import com.giggo.backend.booking.repository.BookingRepository;
+import com.giggo.backend.booking.repository.BookingStatusEventRepository;
 import com.giggo.backend.common.exception.ForbiddenOperationException;
 import com.giggo.backend.common.exception.ResourceNotFoundException;
 import com.giggo.backend.provider.domain.ProviderProfile;
@@ -37,9 +39,11 @@ import com.giggo.backend.user.domain.User;
 class BookingServiceTest {
 
     @Mock BookingRepository bookingRepository;
+    @Mock BookingStatusEventRepository eventRepository;
     @Mock ProviderProfileRepository providerRepository;
     @Mock SkillRepository skillRepository;
     @Mock PricingService pricingService;
+    @Mock ApplicationEventPublisher events;
 
     private BookingService service;
 
@@ -50,7 +54,8 @@ class BookingServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new BookingService(bookingRepository, providerRepository, skillRepository, pricingService);
+        service = new BookingService(bookingRepository, eventRepository, providerRepository,
+                skillRepository, pricingService, events);
     }
 
     private ProviderProfile providerProfile() {
