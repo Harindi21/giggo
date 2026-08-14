@@ -31,6 +31,12 @@ public record BookingResponse(
         BigDecimal travelDistanceKm,
         BigDecimal travelFee,
         BigDecimal totalPrice,
+        OffsetDateTime acceptedAt,
+        OffsetDateTime startedAt,
+        OffsetDateTime completedAt,
+        OffsetDateTime cancelledAt,
+        UUID cancelledBy,
+        String cancelReason,
         OffsetDateTime createdAt
 ) {
     public static BookingResponse from(Booking b, String skillName) {
@@ -40,6 +46,8 @@ public record BookingResponse(
                 b.getLatitude(), b.getLongitude(), b.getTaskTitle(), b.getDescription(),
                 b.getContactName(), b.getContactPhone(), b.getRequestExpiresAt(),
                 b.getBasePrice(), b.getHourlyRate(), b.getWorkingHours(), b.getWorkingFee(),
-                b.getTravelDistanceKm(), b.getTravelFee(), b.getTotalPrice(), b.getCreatedAt());
+                b.getTravelDistanceKm(), b.getTravelFee(), b.getTotalPrice(),
+                b.getAcceptedAt(), b.getStartedAt(), b.getCompletedAt(),
+                b.getCancelledAt(), b.getCancelledBy(), b.getCancelReason(), b.getCreatedAt());
     }
 }
