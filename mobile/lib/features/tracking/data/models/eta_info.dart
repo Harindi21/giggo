@@ -17,11 +17,13 @@ class EtaInfo {
   });
 
   factory EtaInfo.fromJson(Map<String, dynamic> json) => EtaInfo(
-        etaMinutes: (json['etaMinutes'] as num).toInt(),
-        distanceKm: (json['distanceKm'] as num).toDouble(),
-        speedKmhUsed: (json['speedKmhUsed'] as num?)?.toDouble() ?? 0,
-        providerLatitude: (json['providerLatitude'] as num).toDouble(),
-        providerLongitude: (json['providerLongitude'] as num).toDouble(),
-        basedOn: json['basedOn'] != null ? DateTime.tryParse(json['basedOn'] as String) : null,
-      );
+    etaMinutes: (json['etaMinutes'] as num).toInt(),
+    distanceKm: (json['distanceKm'] as num).toDouble(),
+    speedKmhUsed: (json['speedKmhUsed'] as num?)?.toDouble() ?? 0,
+    providerLatitude: (json['providerLatitude'] as num).toDouble(),
+    providerLongitude: (json['providerLongitude'] as num).toDouble(),
+    basedOn: json['basedOn'] != null
+        ? DateTime.tryParse(json['basedOn'] as String)
+        : null,
+  );
 }

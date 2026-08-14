@@ -40,5 +40,7 @@ final jobLocationProvider = StreamProvider.family<ProviderLocation, String>((
 
 /// ETA to the destination (P5.4). Refetch by invalidating when a new position arrives.
 final etaProvider = FutureProvider.family<EtaInfo, EtaQuery>((ref, q) {
-  return ref.watch(trackingRepositoryProvider).getEta(q.jobId, q.destLat, q.destLng);
+  return ref
+      .watch(trackingRepositoryProvider)
+      .getEta(q.jobId, q.destLat, q.destLng);
 });

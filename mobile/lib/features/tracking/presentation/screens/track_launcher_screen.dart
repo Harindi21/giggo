@@ -28,14 +28,16 @@ class _TrackLauncherScreenState extends State<TrackLauncherScreen> {
   void _track() {
     final jobId = _jobCtrl.text.trim();
     if (jobId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a job id to track')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Enter a job id to track')));
       return;
     }
     final params = <String, String>{};
-    if (_latCtrl.text.trim().isNotEmpty) params['destLat'] = _latCtrl.text.trim();
-    if (_lngCtrl.text.trim().isNotEmpty) params['destLng'] = _lngCtrl.text.trim();
+    if (_latCtrl.text.trim().isNotEmpty)
+      params['destLat'] = _latCtrl.text.trim();
+    if (_lngCtrl.text.trim().isNotEmpty)
+      params['destLng'] = _lngCtrl.text.trim();
     final query = params.entries.map((e) => '${e.key}=${e.value}').join('&');
     context.push('/track/$jobId${query.isEmpty ? '' : '?$query'}');
   }
@@ -62,15 +64,41 @@ class _TrackLauncherScreenState extends State<TrackLauncherScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            const Text('Track a job', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+            const Text(
+              'Track a job',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+              ),
+            ),
             const SizedBox(height: 12),
-            TextField(controller: _jobCtrl, decoration: const InputDecoration(hintText: 'Job id (UUID)')),
+            TextField(
+              controller: _jobCtrl,
+              decoration: const InputDecoration(hintText: 'Job id (UUID)'),
+            ),
             const SizedBox(height: 12),
             Row(
               children: [
-                Expanded(child: TextField(controller: _latCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Destination lat'))),
+                Expanded(
+                  child: TextField(
+                    controller: _latCtrl,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'Destination lat',
+                    ),
+                  ),
+                ),
                 const SizedBox(width: 12),
-                Expanded(child: TextField(controller: _lngCtrl, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Destination lng'))),
+                Expanded(
+                  child: TextField(
+                    controller: _lngCtrl,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'Destination lng',
+                    ),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 20),

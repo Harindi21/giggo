@@ -27,8 +27,12 @@ class TrackingRepository {
   /// Last-known location (for the initial render before the socket delivers one).
   Future<ProviderLocation?> getLastKnown(String jobId) async {
     try {
-      final res = await _dio.get('${ApiConfig.apiPrefix}/tracking/$jobId/location');
-      return ProviderLocation.fromJson(res.data['data'] as Map<String, dynamic>);
+      final res = await _dio.get(
+        '${ApiConfig.apiPrefix}/tracking/$jobId/location',
+      );
+      return ProviderLocation.fromJson(
+        res.data['data'] as Map<String, dynamic>,
+      );
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) return null; // none yet
       throw ApiException(_message(e));
@@ -37,7 +41,8 @@ class TrackingRepository {
 
   String _message(DioException e) {
     final data = e.response?.data;
-    if (data is Map && data['message'] is String) return data['message'] as String;
+    if (data is Map && data['message'] is String)
+      return data['message'] as String;
     return 'Could not reach the tracking service.';
   }
 }

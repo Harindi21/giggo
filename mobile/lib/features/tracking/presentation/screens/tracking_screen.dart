@@ -12,7 +12,12 @@ import '../providers/tracking_providers.dart';
 /// (see google_maps_flutter seam in the comments). Everything else — connection
 /// status, live position, ETA — works today and degrades to text gracefully.
 class TrackingScreen extends ConsumerWidget {
-  const TrackingScreen({super.key, required this.jobId, this.destLat, this.destLng});
+  const TrackingScreen({
+    super.key,
+    required this.jobId,
+    this.destLat,
+    this.destLng,
+  });
 
   final String jobId;
   final double? destLat;
@@ -22,14 +27,17 @@ class TrackingScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final status = ref.watch(socketStatusProvider).value ?? SocketStatus.connecting;
+    final status =
+        ref.watch(socketStatusProvider).value ?? SocketStatus.connecting;
     final locationAsync = ref.watch(jobLocationProvider(jobId));
 
     // Refresh the ETA each time a new position arrives.
     if (_hasDestination) {
       ref.listen(jobLocationProvider(jobId), (_, next) {
         if (next.hasValue) {
-          ref.invalidate(etaProvider((jobId: jobId, destLat: destLat!, destLng: destLng!)));
+          ref.invalidate(
+            etaProvider((jobId: jobId, destLat: destLat!, destLng: destLng!)),
+          );
         }
       });
     }
@@ -80,7 +88,11 @@ class TrackingScreen extends ConsumerWidget {
               const Expanded(
                 child: Text(
                   'Live tracking',
-                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
               _statusChip(status),
@@ -99,13 +111,27 @@ class TrackingScreen extends ConsumerWidget {
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
           const SizedBox(width: 6),
-          Text(label, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -125,14 +151,20 @@ class TrackingScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(location != null ? Icons.location_on : Icons.map_outlined,
-              size: 48, color: AppColors.primary),
+          Icon(
+            location != null ? Icons.location_on : Icons.map_outlined,
+            size: 48,
+            color: AppColors.primary,
+          ),
           const SizedBox(height: 10),
           Text(
             location != null
                 ? '${location.latitude.toStringAsFixed(5)}, ${location.longitude.toStringAsFixed(5)}'
                 : 'Waiting for the provider to share location…',
-            style: const TextStyle(color: AppColors.textBody, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              color: AppColors.textBody,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: 6),
           const Padding(
@@ -156,26 +188,47 @@ class TrackingScreen extends ConsumerWidget {
     if (location == null) {
       return _banner('Waiting for the provider location…', Icons.access_time);
     }
-    final etaAsync = ref.watch(etaProvider((jobId: jobId, destLat: destLat!, destLng: destLng!)));
+    final etaAsync = ref.watch(
+      etaProvider((jobId: jobId, destLat: destLat!, destLng: destLng!)),
+    );
     return etaAsync.when(
       loading: () => _banner('Estimating arrival…', Icons.access_time),
-      error: (_, _) => _banner('ETA unavailable right now.', Icons.error_outline),
+      error: (_, _) =>
+          _banner('ETA unavailable right now.', Icons.error_outline),
       data: (eta) => Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(16)),
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(16),
+        ),
         child: Row(
           children: [
-            const Icon(Icons.directions_car_filled, color: AppColors.accent, size: 28),
+            const Icon(
+              Icons.directions_car_filled,
+              color: AppColors.accent,
+              size: 28,
+            ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('${eta.etaMinutes} min away',
-                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800)),
+                  Text(
+                    '${eta.etaMinutes} min away',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text('${eta.distanceKm.toStringAsFixed(1)} km • arriving to your location',
-                      style: const TextStyle(color: Colors.white70, fontSize: 12.5)),
+                  Text(
+                    '${eta.distanceKm.toStringAsFixed(1)} km • arriving to your location',
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12.5,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -196,7 +249,12 @@ class TrackingScreen extends ConsumerWidget {
         children: [
           Icon(icon, color: AppColors.primary, size: 20),
           const SizedBox(width: 10),
-          Expanded(child: Text(text, style: const TextStyle(color: AppColors.textBody))),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(color: AppColors.textBody),
+            ),
+          ),
         ],
       ),
     );
@@ -214,16 +272,30 @@ class TrackingScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Provider status',
-              style: TextStyle(fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+          const Text(
+            'Provider status',
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+            ),
+          ),
           const SizedBox(height: 10),
-          _detailRow('Position', location == null
-              ? 'Not shared yet'
-              : '${location.latitude.toStringAsFixed(5)}, ${location.longitude.toStringAsFixed(5)}'),
-          _detailRow('Speed', location?.speedKmh == null
-              ? '—'
-              : '${location!.speedKmh!.toStringAsFixed(0)} km/h'),
-          _detailRow('Updated', location?.at == null ? '—' : _fmtTime(location!.at!.toLocal())),
+          _detailRow(
+            'Position',
+            location == null
+                ? 'Not shared yet'
+                : '${location.latitude.toStringAsFixed(5)}, ${location.longitude.toStringAsFixed(5)}',
+          ),
+          _detailRow(
+            'Speed',
+            location?.speedKmh == null
+                ? '—'
+                : '${location!.speedKmh!.toStringAsFixed(0)} km/h',
+          ),
+          _detailRow(
+            'Updated',
+            location?.at == null ? '—' : _fmtTime(location!.at!.toLocal()),
+          ),
         ],
       ),
     );
@@ -242,7 +314,16 @@ class TrackingScreen extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: const TextStyle(color: AppColors.textMuted)),
-          Flexible(child: Text(value, textAlign: TextAlign.right, style: const TextStyle(color: AppColors.textBody, fontWeight: FontWeight.w600))),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                color: AppColors.textBody,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
         ],
       ),
     );
