@@ -23,14 +23,16 @@ class Review {
   });
 
   factory Review.fromJson(Map<String, dynamic> json) => Review(
-        id: json['id'] as String,
-        reviewerName: json['reviewerName'] as String?,
-        stars: (json['stars'] as num).toInt(),
-        body: json['body'] as String?,
-        sentimentLabel: json['sentimentLabel'] as String?,
-        sentimentStar: (json['sentimentStar'] as num?)?.toInt(),
-        sentimentEmotion: json['sentimentEmotion'] as String?,
-        enhancedRating: (json['enhancedRating'] as num?)?.toDouble(),
-        createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'] as String) : null,
-      );
+    id: json['id'] as String,
+    reviewerName: json['reviewerName'] as String?,
+    stars: (json['stars'] as num).toInt(),
+    body: json['body'] as String?,
+    sentimentLabel: json['sentimentLabel'] as String?,
+    sentimentStar: (json['sentimentStar'] as num?)?.toInt(),
+    sentimentEmotion: json['sentimentEmotion'] as String?,
+    enhancedRating: (json['enhancedRating'] as num?)?.toDouble(),
+    createdAt: json['createdAt'] != null
+        ? DateTime.tryParse(json['createdAt'] as String)
+        : null,
+  );
 }

@@ -76,9 +76,13 @@ class DiscoveryRepository {
 
   Future<List<Review>> getProviderReviews(String providerId) async {
     try {
-      final res = await _dio.get('${ApiConfig.apiPrefix}/providers/$providerId/reviews');
+      final res = await _dio.get(
+        '${ApiConfig.apiPrefix}/providers/$providerId/reviews',
+      );
       final list = res.data['data'] as List<dynamic>;
-      return list.map((e) => Review.fromJson(e as Map<String, dynamic>)).toList();
+      return list
+          .map((e) => Review.fromJson(e as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw ApiException(_message(e));
     }

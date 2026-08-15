@@ -23,7 +23,11 @@ class SentimentBadge extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w700),
+        style: TextStyle(
+          color: color,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }

@@ -29,7 +29,10 @@ class ReviewCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              ProviderAvatar(name: review.reviewerName ?? 'Customer', radius: 18),
+              ProviderAvatar(
+                name: review.reviewerName ?? 'Customer',
+                radius: 18,
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -37,7 +40,10 @@ class ReviewCard extends StatelessWidget {
                   children: [
                     Text(
                       review.reviewerName ?? 'Customer',
-                      style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     RatingStars(rating: review.stars.toDouble(), size: 14),
@@ -45,13 +51,21 @@ class ReviewCard extends StatelessWidget {
                 ),
               ),
               if (review.createdAt != null)
-                Text(_date(review.createdAt!),
-                    style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                Text(
+                  _date(review.createdAt!),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textMuted,
+                  ),
+                ),
             ],
           ),
           if (review.body != null && review.body!.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text(review.body!, style: const TextStyle(color: AppColors.textBody, height: 1.35)),
+            Text(
+              review.body!,
+              style: const TextStyle(color: AppColors.textBody, height: 1.35),
+            ),
           ],
           if (review.sentimentLabel != null) ...[
             const SizedBox(height: 8),
