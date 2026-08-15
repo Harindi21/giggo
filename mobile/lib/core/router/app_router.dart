@@ -15,11 +15,12 @@ import '../../features/discovery/presentation/screens/provider_list_screen.dart'
 import '../../features/knowledge/presentation/screens/article_detail_screen.dart';
 import '../../features/knowledge/presentation/screens/articles_screen.dart';
 import '../../features/kyc/presentation/screens/kyc_screen.dart';
+import '../../features/marketplace/presentation/screens/shop_screen.dart';
+import '../../features/marketplace/presentation/screens/tool_detail_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/reviews/presentation/screens/rate_review_screen.dart';
 import '../../features/tracking/presentation/screens/tracking_screen.dart';
-import '../widgets/coming_soon_screen.dart';
 import '../widgets/main_scaffold.dart';
 
 final _rootKey = GlobalKey<NavigatorState>();
@@ -102,6 +103,11 @@ final appRouter = GoRouter(
       name: 'article',
       builder: (c, s) => ArticleDetailScreen(slug: s.pathParameters['slug']!),
     ),
+    GoRoute(
+      path: '/tools/:slug',
+      name: 'tool',
+      builder: (c, s) => ToolDetailScreen(slug: s.pathParameters['slug']!),
+    ),
 
     // ---- Main app (bottom-nav shell) ----
     StatefulShellRoute.indexedStack(
@@ -148,11 +154,7 @@ final appRouter = GoRouter(
             GoRoute(
               path: '/shop',
               name: 'shop',
-              builder: (c, s) => const ComingSoonScreen(
-                title: 'Tool Marketplace',
-                icon: Icons.shopping_bag_outlined,
-                message: 'Curated tools for professionals — coming soon.',
-              ),
+              builder: (c, s) => const ShopScreen(),
             ),
           ],
         ),
