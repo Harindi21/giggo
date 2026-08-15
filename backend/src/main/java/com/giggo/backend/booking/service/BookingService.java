@@ -156,6 +156,15 @@ public class BookingService {
         recordEvent(booking.getId(), JobStatus.RATED, OffsetDateTime.now());
     }
 
+    /** Marks a booking PAID once escrow is released (called by the payment service). */
+    @Transactional
+    public void markPaid(UUID bookingId) {
+        Booking booking = getEntity(bookingId);
+        transition(booking, JobStatus.PAID);
+        bookingRepository.save(booking);
+        recordEvent(booking.getId(), JobStatus.PAID, OffsetDateTime.now());
+    }
+
     /** Either party may cancel, but only before work has started. */
     @Transactional
     public BookingResponse cancel(UUID userId, UUID id, String reason) {
