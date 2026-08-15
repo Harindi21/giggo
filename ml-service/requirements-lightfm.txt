@@ -1,0 +1,10 @@
+# Optional heavy backend for the LightFM hybrid recommender.
+# Enable with RECOMMENDER_BACKEND=lightfm, then:  pip install -r requirements-lightfm.txt
+#
+# These are intentionally NOT in requirements.txt: LightFM is a compiled package
+# (no wheels on some Python versions) and needs a model trained offline on the
+# full interaction history. When the deps or a trained model are absent, the
+# service falls back automatically to the pure-Python hybrid recommender.
+lightfm>=1.17
+numpy>=1.26
+scipy>=1.11

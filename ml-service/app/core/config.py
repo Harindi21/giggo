@@ -11,5 +11,8 @@ class Settings(BaseSettings):
     # Sentiment backend: "lexicon" (VADER, default) or "transformer" (RoBERTa, future).
     sentiment_backend: str = "lexicon"
 
+    # Recommender backend: "hybrid" (pure-Python, default) or "lightfm" (future).
+    recommender_backend: str = "hybrid"
+
 
 settings = Settings()
