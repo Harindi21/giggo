@@ -1,0 +1,92 @@
+import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../core/network/api_config.dart';
+import '../../../core/network/api_exception.dart';
+import '../../../core/network/dio_client.dart';
+import 'models/booking_models.dart';
+
+class BookingRepository {
+  final Dio _dio;
+  BookingRepository(this._dio);
+
+  /// Live price estimate before booking. Location is optional; when omitted the
+  /// travel fee is zero (backend rule).
+  Future<PricingBreakdown> quote({
+    required String providerId,
+    required double estimatedHours,
+    double? latitude,
+    double? longitude,
+  }) async {
+    try {
+      final res = await _dio.post(
+        '${ApiConfig.apiPrefix}/bookings/quote',
+        data: {
+          'providerId': providerId,
+          'estimatedHours': estimatedHours,
+          'latitude': ?latitude,
+          'longitude': ?longitude,
+        },
+      );
+      return PricingBreakdown.fromJson(
+        res.data['data'] as Map<String, dynamic>,
+      );
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
+  /// Create a booking request (customer only). The backend snapshots the price.
+  Future<Booking> createBooking({
+    required String providerId,
+    required String skillId,
+    required DateTime scheduledAt,
+    required double estimatedHours,
+    String? addressLine,
+    double? latitude,
+    double? longitude,
+    String? taskTitle,
+    String? description,
+    String? contactName,
+    String? contactPhone,
+  }) async {
+    try {
+      final res = await _dio.post(
+        '${ApiConfig.apiPrefix}/bookings',
+        data: {
+          'providerId': providerId,
+          'skillId': skillId,
+          'scheduledAt': scheduledAt.toUtc().toIso8601String(),
+          'estimatedHours': estimatedHours,
+          if (_notBlank(addressLine)) 'addressLine': addressLine,
+          'latitude': ?latitude,
+          'longitude': ?longitude,
+          if (_notBlank(taskTitle)) 'taskTitle': taskTitle,
+          if (_notBlank(description)) 'description': description,
+          if (_notBlank(contactName)) 'contactName': contactName,
+          if (_notBlank(contactPhone)) 'contactPhone': contactPhone,
+        },
+      );
+      return Booking.fromJson(res.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
+  bool _notBlank(String? v) => v != null && v.trim().isNotEmpty;
+
+  String _message(DioException e) {
+    final data = e.response?.data;
+    if (data is Map && data['message'] is String) {
+      return data['message'] as String;
+    }
+    if (e.response?.statusCode == 401) {
+      return 'Your session expired. Please log in again.';
+    }
+    return 'Something went wrong. Please try again.';
+  }
+}
+
+final bookingRepositoryProvider = Provider<BookingRepository>((ref) {
+  return BookingRepository(ref.watch(dioProvider));
+});

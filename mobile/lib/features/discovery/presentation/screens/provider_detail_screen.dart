@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/provider_avatar.dart';
@@ -301,16 +302,7 @@ class ProviderDetailScreen extends ConsumerWidget {
             Expanded(
               child: ElevatedButton(
                 onPressed: p.available
-                    ? () {
-                        // Booking flow is wired in Phase B (P4).
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Booking flow arrives in the next update.',
-                            ),
-                          ),
-                        );
-                      }
+                    ? () => context.push('/book/${p.id}')
                     : null,
                 child: const Text('Book Now'),
               ),
