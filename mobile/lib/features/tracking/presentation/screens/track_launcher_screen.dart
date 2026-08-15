@@ -105,6 +105,12 @@ class _TrackLauncherScreenState extends State<TrackLauncherScreen> {
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
+              onPressed: _viewBooking,
+              icon: const Icon(Icons.receipt_long_outlined),
+              label: const Text('View booking'),
+            ),
+            const SizedBox(height: 10),
+            OutlinedButton.icon(
               onPressed: _track,
               icon: const Icon(Icons.my_location),
               label: const Text('Track provider'),
@@ -130,5 +136,16 @@ class _TrackLauncherScreenState extends State<TrackLauncherScreen> {
       return;
     }
     context.push('/review/$bookingId');
+  }
+
+  void _viewBooking() {
+    final bookingId = _jobCtrl.text.trim();
+    if (bookingId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter a booking id to view')),
+      );
+      return;
+    }
+    context.push('/booking/$bookingId');
   }
 }

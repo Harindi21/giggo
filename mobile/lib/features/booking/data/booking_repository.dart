@@ -73,6 +73,44 @@ class BookingRepository {
     }
   }
 
+  /// A single booking the caller is part of.
+  Future<Booking> getBooking(String id) async {
+    try {
+      final res = await _dio.get('${ApiConfig.apiPrefix}/bookings/$id');
+      return Booking.fromJson(res.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
+  /// Ordered status history for a booking (P5.5).
+  Future<List<StatusEvent>> getTimeline(String id) async {
+    try {
+      final res = await _dio.get(
+        '${ApiConfig.apiPrefix}/bookings/$id/timeline',
+      );
+      final list = res.data['data'] as List<dynamic>;
+      return list
+          .map((e) => StatusEvent.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
+  /// Cancel a booking (either party). Returns the updated booking.
+  Future<Booking> cancelBooking(String id, {String? reason}) async {
+    try {
+      final res = await _dio.post(
+        '${ApiConfig.apiPrefix}/bookings/$id/cancel',
+        data: {'reason': ?reason},
+      );
+      return Booking.fromJson(res.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
   bool _notBlank(String? v) => v != null && v.trim().isNotEmpty;
 
   String _message(DioException e) {
