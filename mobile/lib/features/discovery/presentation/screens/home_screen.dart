@@ -6,6 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/giggo_wordmark.dart';
 import '../../../../core/widgets/provider_avatar.dart';
 import '../../../../core/widgets/rating_stars.dart';
+import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../../data/models/catalog_models.dart';
 import '../../data/models/provider_models.dart';
 import '../providers/discovery_providers.dart';
@@ -58,6 +59,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         onRefresh: () async {
           ref.invalidate(categoriesProvider);
           ref.invalidate(recommendedProvidersProvider);
+          ref.invalidate(unreadCountProvider);
         },
         child: CustomScrollView(
           slivers: [
@@ -114,14 +116,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const GiggoWordmark(fontSize: 26, onDark: true),
-                InkWell(
-                  onTap: () => context.go('/profile'),
-                  borderRadius: BorderRadius.circular(24),
-                  child: const CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Colors.white24,
-                    child: Icon(Icons.person, color: Colors.white),
-                  ),
+                Row(
+                  children: [
+                    _bell(),
+                    const SizedBox(width: 4),
+                    InkWell(
+                      onTap: () => context.go('/profile'),
+                      borderRadius: BorderRadius.circular(24),
+                      child: const CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Colors.white24,
+                        child: Icon(Icons.person, color: Colors.white),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -149,6 +157,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _bell() {
+    final count = ref.watch(unreadCountProvider).value ?? 0;
+    return IconButton(
+      onPressed: () => context.push('/notifications'),
+      icon: Badge(
+        isLabelVisible: count > 0,
+        label: Text('$count'),
+        backgroundColor: AppColors.accent,
+        child: const Icon(Icons.notifications_none, color: Colors.white),
       ),
     );
   }
