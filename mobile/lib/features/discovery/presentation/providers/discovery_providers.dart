@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/discovery_repository.dart';
 import '../../data/models/catalog_models.dart';
 import '../../data/models/provider_models.dart';
+import '../../data/models/review.dart';
 
 /// All active service categories.
 final categoriesProvider = FutureProvider<List<Category>>((ref) {
@@ -78,4 +79,12 @@ final providerDetailProvider = FutureProvider.family<ProviderDetail, String>((
   id,
 ) {
   return ref.watch(discoveryRepositoryProvider).getProvider(id);
+});
+
+/// Reviews for a provider (by provider-profile id).
+final providerReviewsProvider = FutureProvider.family<List<Review>, String>((
+  ref,
+  id,
+) {
+  return ref.watch(discoveryRepositoryProvider).getProviderReviews(id);
 });
