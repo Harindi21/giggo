@@ -92,7 +92,10 @@ class DiscoveryRepository {
     try {
       final res = await _dio.post(
         '${ApiConfig.apiPrefix}/bookings/$bookingId/reviews',
-        data: {'stars': stars, if (body != null && body.isNotEmpty) 'body': body},
+        data: {
+          'stars': stars,
+          if (body != null && body.isNotEmpty) 'body': body,
+        },
       );
       return Review.fromJson(res.data['data'] as Map<String, dynamic>);
     } on DioException catch (e) {

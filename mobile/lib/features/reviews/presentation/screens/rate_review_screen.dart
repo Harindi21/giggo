@@ -44,9 +44,11 @@ class _RateReviewScreenState extends ConsumerState<RateReviewScreen> {
       final sentiment = review.sentimentLabel;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(sentiment == null
-              ? 'Thanks for your review!'
-              : 'Thanks! We read your review as "$sentiment".'),
+          content: Text(
+            sentiment == null
+                ? 'Thanks for your review!'
+                : 'Thanks! We read your review as "$sentiment".',
+          ),
         ),
       );
       Navigator.of(context).pop(true);
@@ -70,7 +72,11 @@ class _RateReviewScreenState extends ConsumerState<RateReviewScreen> {
           children: [
             const Text(
               'How was the service?',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+              ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -79,9 +85,13 @@ class _RateReviewScreenState extends ConsumerState<RateReviewScreen> {
                 for (int i = 1; i <= 5; i++)
                   IconButton(
                     iconSize: 40,
-                    onPressed: _submitting ? null : () => setState(() => _stars = i),
+                    onPressed: _submitting
+                        ? null
+                        : () => setState(() => _stars = i),
                     icon: Icon(
-                      i <= _stars ? Icons.star_rounded : Icons.star_outline_rounded,
+                      i <= _stars
+                          ? Icons.star_rounded
+                          : Icons.star_outline_rounded,
                       color: AppColors.accent,
                     ),
                   ),
@@ -107,8 +117,12 @@ class _RateReviewScreenState extends ConsumerState<RateReviewScreen> {
               onPressed: _submitting ? null : _submit,
               child: _submitting
                   ? const SizedBox(
-                      height: 20, width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     )
                   : const Text('Submit review'),
             ),

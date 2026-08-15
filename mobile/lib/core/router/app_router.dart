@@ -56,7 +56,8 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/review/:bookingId',
       name: 'review',
-      builder: (c, s) => RateReviewScreen(bookingId: s.pathParameters['bookingId']!),
+      builder: (c, s) =>
+          RateReviewScreen(bookingId: s.pathParameters['bookingId']!),
     ),
 
     // ---- Main app (bottom-nav shell) ----
