@@ -53,8 +53,12 @@ a one-line change.
 · `Python` · `FastAPI` · `VADER` · `RoBERTa (transformers)` · `Docker`
 
 ## Status
-End-to-end spine complete and demoable: discovery, recommendation, booking +
-job lifecycle, live tracking, reviews/NLP, escrow payments, notifications.
-Remaining for GA: KYC, real gateway/push keys, store listings, Testcontainers
-CI. See [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md) to run it and [`TIDAC_PAPER_OUTLINE.md`](TIDAC_PAPER_OUTLINE.md)
-for the research framing.
+Showcase-complete and demoable end to end, both roles: discovery + recommendation,
+booking + job lifecycle (with expiry/cancel/refund), live tracking, reviews/NLP,
+escrow payments, notifications, provider KYC + admin review, Knowledge Hub and
+Tool Marketplace. All four app tabs are real; ~96 backend tests + a Python ML
+suite, 20 DB migrations, all green. Remaining for GA: real provider keys (maps,
+PayHere, FCM), Testcontainers CI, and deploy/store listings — each a config-level
+swap behind an existing seam. See [`STATUS.md`](STATUS.md) for the full
+built-vs-GA breakdown, [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md) to run it, and
+[`TIDAC_PAPER_OUTLINE.md`](TIDAC_PAPER_OUTLINE.md) for the research framing.

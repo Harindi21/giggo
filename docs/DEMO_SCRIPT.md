@@ -95,7 +95,34 @@ Sign in as the **provider** for that booking.
 
 ---
 
-## 6. Talking points (the "smart" bits)
+## 6. The other tabs & features
+
+- **Shop → Tool Marketplace** — a browsable catalog of tools for professionals,
+  filterable by category (Power Tools, Safety Gear, Plumbing…). Tap a tool for
+  details and price. (In-app purchase is a later phase — the Buy button is a
+  clearly-labelled stub.)
+- **Home → Tips & Guides (Knowledge Hub)** — help/guides filtered by audience
+  (For Customers / For Providers / Safety). Open one to read the full article.
+- **Recommended for you** (Home) — the personalised carousel from the hybrid
+  recommender; it adapts as a customer books more.
+
+## 7. Provider verification loop (KYC + Admin)
+
+This closes a full trust loop across three roles:
+
+1. **Provider** → Profile → **Verification** → submit an ID document (NIC /
+   passport / driving licence). Status shows **Under review**.
+2. **Admin** (sign in as an ADMIN account) → Profile → **Admin console** →
+   **Verification queue** → **Approve**.
+3. Back as the **provider**: a **notification** arrives, and the **verified
+   badge** now appears on their profile across discovery.
+
+> Admins are provisioned directly (not self-registerable); seed one in the DB to
+> demo this end to end.
+
+---
+
+## 8. Talking points (the "smart" bits)
 
 - **NLP sentiment (AI #1)** — VADER lexicon by default, optional RoBERTa
   (`SENTIMENT_BACKEND=transformer`), plus a Sinhala/Singlish path; mixed text is
@@ -110,7 +137,7 @@ Sign in as the **provider** for that booking.
 - **Real-time tracking (P5)** — STOMP over WebSocket, JWT-authenticated,
   consent-gated location sharing, live ETA.
 
-## 7. If something isn't running
+## 9. If something isn't running
 
 - **ML service down?** Reviews still submit (sentiment null, backfilled later);
   recommendations fall back to a quality ranking. Nothing blocks.
