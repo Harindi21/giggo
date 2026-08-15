@@ -9,6 +9,7 @@ import '../../features/discovery/presentation/screens/home_screen.dart';
 import '../../features/discovery/presentation/screens/provider_detail_screen.dart';
 import '../../features/discovery/presentation/screens/provider_list_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/reviews/presentation/screens/rate_review_screen.dart';
 import '../../features/tracking/presentation/screens/track_launcher_screen.dart';
 import '../../features/tracking/presentation/screens/tracking_screen.dart';
 import '../widgets/coming_soon_screen.dart';
@@ -51,6 +52,12 @@ final appRouter = GoRouter(
         destLat: double.tryParse(s.uri.queryParameters['destLat'] ?? ''),
         destLng: double.tryParse(s.uri.queryParameters['destLng'] ?? ''),
       ),
+    ),
+    GoRoute(
+      path: '/review/:bookingId',
+      name: 'review',
+      builder: (c, s) =>
+          RateReviewScreen(bookingId: s.pathParameters['bookingId']!),
     ),
 
     // ---- Main app (bottom-nav shell) ----

@@ -88,6 +88,21 @@ class DiscoveryRepository {
     }
   }
 
+  Future<Review> submitReview(String bookingId, int stars, String? body) async {
+    try {
+      final res = await _dio.post(
+        '${ApiConfig.apiPrefix}/bookings/$bookingId/reviews',
+        data: {
+          'stars': stars,
+          if (body != null && body.isNotEmpty) 'body': body,
+        },
+      );
+      return Review.fromJson(res.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
   String _message(DioException e) {
     final data = e.response?.data;
     if (data is Map && data['message'] is String) {
