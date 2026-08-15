@@ -4,7 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/giggo_wordmark.dart';
+import '../../../../core/widgets/provider_avatar.dart';
+import '../../../../core/widgets/rating_stars.dart';
 import '../../data/models/catalog_models.dart';
+import '../../data/models/provider_models.dart';
 import '../providers/discovery_providers.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -52,11 +55,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: () async => ref.invalidate(categoriesProvider),
+        onRefresh: () async {
+          ref.invalidate(categoriesProvider);
+          ref.invalidate(recommendedProvidersProvider);
+        },
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(child: _header()),
             SliverToBoxAdapter(child: _exploreCard()),
+            SliverToBoxAdapter(child: _recommendedSection()),
             const SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(20, 20, 20, 8),
@@ -261,6 +268,113 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             Icon(Icons.handyman, color: AppColors.accent, size: 40),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// "Recommended for you" carousel (P3.4). Hidden while loading, on error, or
+  /// when empty — so providers (who get a 403 here) simply don't see it.
+  Widget _recommendedSection() {
+    final rec = ref.watch(recommendedProvidersProvider);
+    return rec.maybeWhen(
+      data: (list) {
+        if (list.isEmpty) return const SizedBox.shrink();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 8),
+              child: Text(
+                'Recommended for you',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 202,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: list.length,
+                separatorBuilder: (_, _) => const SizedBox(width: 12),
+                itemBuilder: (context, i) => _recCard(list[i]),
+              ),
+            ),
+          ],
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+
+  Widget _recCard(ProviderCard p) {
+    return SizedBox(
+      width: 158,
+      child: Card(
+        child: InkWell(
+          onTap: () => context.push('/home/provider/${p.id}'),
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              children: [
+                ProviderAvatar(
+                  name: p.fullName,
+                  imageUrl: p.avatarUrl,
+                  radius: 28,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  p.fullName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  [
+                    p.headline,
+                    p.district,
+                  ].where((e) => e != null && e.isNotEmpty).join(' · '),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    color: AppColors.textMuted,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                RatingStars(
+                  rating: p.avgRating,
+                  count: p.ratingCount,
+                  size: 13,
+                ),
+                const Spacer(),
+                Text(
+                  'Rs. ${p.basePrice.toStringAsFixed(0)}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const Text(
+                  'from',
+                  style: TextStyle(fontSize: 10, color: AppColors.textMuted),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
