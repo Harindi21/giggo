@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/booking_repository.dart';
 import '../../data/models/booking_models.dart';
+import '../../data/models/payment_models.dart';
 
 /// All bookings the signed-in user is part of (customer or provider).
 final myBookingsProvider = FutureProvider<List<Booking>>((ref) {
@@ -18,3 +19,11 @@ final bookingTimelineProvider =
     FutureProvider.family<List<StatusEvent>, String>((ref, id) {
       return ref.watch(bookingRepositoryProvider).getTimeline(id);
     });
+
+/// Current payment for a booking (null until one is started).
+final bookingPaymentProvider = FutureProvider.family<Payment?, String>((
+  ref,
+  bookingId,
+) {
+  return ref.watch(bookingRepositoryProvider).getPayment(bookingId);
+});
