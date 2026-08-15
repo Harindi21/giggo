@@ -81,6 +81,11 @@ final providerDetailProvider = FutureProvider.family<ProviderDetail, String>((
   return ref.watch(discoveryRepositoryProvider).getProvider(id);
 });
 
+/// Personalised "recommended for you" providers for the signed-in customer (P3.4).
+final recommendedProvidersProvider = FutureProvider<List<ProviderCard>>((ref) {
+  return ref.watch(discoveryRepositoryProvider).getRecommendations(limit: 10);
+});
+
 /// Reviews for a provider (by provider-profile id).
 final providerReviewsProvider = FutureProvider.family<List<Review>, String>((
   ref,

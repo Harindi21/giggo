@@ -65,6 +65,30 @@ class DiscoveryRepository {
     }
   }
 
+  /// Personalised "recommended for you" providers for the signed-in customer
+  /// (P3.4). Ranked by the ML recommender, with a quality-ranking fallback.
+  Future<List<ProviderCard>> getRecommendations({
+    int limit = 10,
+    double? latitude,
+    double? longitude,
+  }) async {
+    try {
+      final params = <String, dynamic>{'limit': limit};
+      if (latitude != null) params['lat'] = latitude;
+      if (longitude != null) params['lng'] = longitude;
+      final res = await _dio.get(
+        '${ApiConfig.apiPrefix}/recommendations',
+        queryParameters: params,
+      );
+      final list = res.data['data'] as List<dynamic>;
+      return list
+          .map((e) => ProviderCard.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
   Future<ProviderDetail> getProvider(String id) async {
     try {
       final res = await _dio.get('${ApiConfig.apiPrefix}/providers/$id');
