@@ -83,6 +83,20 @@ class BookingRepository {
     }
   }
 
+  /// All bookings the caller is part of (as customer or provider),
+  /// newest first.
+  Future<List<Booking>> listMine() async {
+    try {
+      final res = await _dio.get('${ApiConfig.apiPrefix}/bookings');
+      final list = res.data['data'] as List<dynamic>;
+      return list
+          .map((e) => Booking.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
   /// Ordered status history for a booking (P5.5).
   Future<List<StatusEvent>> getTimeline(String id) async {
     try {
@@ -104,6 +118,24 @@ class BookingRepository {
       final res = await _dio.post(
         '${ApiConfig.apiPrefix}/bookings/$id/cancel',
         data: {'reason': ?reason},
+      );
+      return Booking.fromJson(res.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
+  // ---- Provider lifecycle actions (P4.10) ----
+  Future<Booking> accept(String id) => _transition(id, 'accept');
+  Future<Booking> decline(String id) => _transition(id, 'decline');
+  Future<Booking> enRoute(String id) => _transition(id, 'en-route');
+  Future<Booking> start(String id) => _transition(id, 'start');
+  Future<Booking> complete(String id) => _transition(id, 'complete');
+
+  Future<Booking> _transition(String id, String action) async {
+    try {
+      final res = await _dio.post(
+        '${ApiConfig.apiPrefix}/bookings/$id/$action',
       );
       return Booking.fromJson(res.data['data'] as Map<String, dynamic>);
     } on DioException catch (e) {

@@ -7,12 +7,12 @@ import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/verify_email_screen.dart';
 import '../../features/booking/presentation/screens/booking_detail_screen.dart';
 import '../../features/booking/presentation/screens/booking_form_screen.dart';
+import '../../features/booking/presentation/screens/tasks_tab_screen.dart';
 import '../../features/discovery/presentation/screens/home_screen.dart';
 import '../../features/discovery/presentation/screens/provider_detail_screen.dart';
 import '../../features/discovery/presentation/screens/provider_list_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/reviews/presentation/screens/rate_review_screen.dart';
-import '../../features/tracking/presentation/screens/track_launcher_screen.dart';
 import '../../features/tracking/presentation/screens/tracking_screen.dart';
 import '../widgets/coming_soon_screen.dart';
 import '../widgets/main_scaffold.dart';
@@ -135,7 +135,7 @@ final appRouter = GoRouter(
             GoRoute(
               path: '/tasks',
               name: 'tasks',
-              builder: (c, s) => const TrackLauncherScreen(),
+              builder: (c, s) => const TasksTabScreen(),
             ),
           ],
         ),
