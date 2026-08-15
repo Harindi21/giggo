@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../data/models/provider_location.dart';
 import '../../data/tracking_socket_client.dart';
 import '../providers/tracking_providers.dart';
 
-/// Customer live-tracking screen (P5.7 map stub + P5.8 ETA + P5.9 text-only).
+/// Customer live-tracking screen (P5.7 map + P5.8 ETA + P5.9 text fallback).
 ///
-/// The map area is a placeholder until a Google Maps API key is configured
-/// (see google_maps_flutter seam in the comments). Everything else — connection
-/// status, live position, ETA — works today and degrades to text gracefully.
+/// Shows a real interactive map (OpenStreetMap via flutter_map — no API key)
+/// with the provider's live-moving marker and the destination, plus connection
+/// status and a live ETA. Degrades to text gracefully before any location
+/// arrives or if the map can't load.
 class TrackingScreen extends ConsumerWidget {
   const TrackingScreen({
     super.key,
@@ -137,45 +140,47 @@ class TrackingScreen extends ConsumerWidget {
     );
   }
 
-  // ---- Map placeholder (Google Maps seam) ----
+  // ---- Live map (OpenStreetMap via flutter_map; no API key needed) ----
   Widget _mapArea(ProviderLocation? location) {
+    // Nothing to plot yet: show a friendly placeholder.
+    if (location == null && !_hasDestination) {
+      return Container(
+        height: 240,
+        margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceBlue.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.map_outlined, size: 48, color: AppColors.primary),
+            SizedBox(height: 10),
+            Text(
+              'Waiting for the provider to share location…',
+              style: TextStyle(
+                color: AppColors.textBody,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     return Container(
       height: 240,
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: AppColors.surfaceBlue.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border),
       ),
-      // TODO(maps): replace with GoogleMap once a Maps API key is configured.
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            location != null ? Icons.location_on : Icons.map_outlined,
-            size: 48,
-            color: AppColors.primary,
-          ),
-          const SizedBox(height: 10),
-          Text(
-            location != null
-                ? '${location.latitude.toStringAsFixed(5)}, ${location.longitude.toStringAsFixed(5)}'
-                : 'Waiting for the provider to share location…',
-            style: const TextStyle(
-              color: AppColors.textBody,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 6),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24),
-            child: Text(
-              'Live map preview — add a Google Maps API key to enable the real map.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textMuted, fontSize: 11.5),
-            ),
-          ),
-        ],
+      child: _LiveMap(
+        providerLat: location?.latitude,
+        providerLng: location?.longitude,
+        destLat: destLat,
+        destLng: destLng,
       ),
     );
   }
@@ -342,6 +347,96 @@ class TrackingScreen extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Interactive live map (OpenStreetMap tiles via flutter_map — no API key).
+/// Shows the provider's live-moving marker and the destination, recentring as
+/// new positions arrive. For heavy production traffic, point [TileLayer] at your
+/// own tile provider per the OSM usage policy.
+class _LiveMap extends StatefulWidget {
+  const _LiveMap({
+    this.providerLat,
+    this.providerLng,
+    this.destLat,
+    this.destLng,
+  });
+
+  final double? providerLat;
+  final double? providerLng;
+  final double? destLat;
+  final double? destLng;
+
+  @override
+  State<_LiveMap> createState() => _LiveMapState();
+}
+
+class _LiveMapState extends State<_LiveMap> {
+  final MapController _controller = MapController();
+
+  LatLng? get _provider =>
+      (widget.providerLat != null && widget.providerLng != null)
+      ? LatLng(widget.providerLat!, widget.providerLng!)
+      : null;
+
+  LatLng? get _dest => (widget.destLat != null && widget.destLng != null)
+      ? LatLng(widget.destLat!, widget.destLng!)
+      : null;
+
+  @override
+  void didUpdateWidget(covariant _LiveMap oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final p = _provider;
+    if (p != null &&
+        (oldWidget.providerLat != widget.providerLat ||
+            oldWidget.providerLng != widget.providerLng)) {
+      _controller.move(p, _controller.camera.zoom);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Colombo as a neutral fallback centre until a real point is known.
+    final center = _provider ?? _dest ?? const LatLng(6.9271, 79.8612);
+    return FlutterMap(
+      mapController: _controller,
+      options: MapOptions(initialCenter: center, initialZoom: 14),
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'com.giggo.mobile',
+        ),
+        MarkerLayer(
+          markers: [
+            if (_dest != null)
+              Marker(
+                point: _dest!,
+                width: 40,
+                height: 40,
+                child: const Icon(
+                  Icons.location_on,
+                  color: AppColors.primary,
+                  size: 40,
+                ),
+              ),
+            if (_provider != null)
+              Marker(
+                point: _provider!,
+                width: 44,
+                height: 44,
+                child: const Icon(
+                  Icons.directions_car_filled,
+                  color: AppColors.accent,
+                  size: 34,
+                ),
+              ),
+          ],
+        ),
+        const RichAttributionWidget(
+          attributions: [TextSourceAttribution('OpenStreetMap contributors')],
+        ),
+      ],
     );
   }
 }
