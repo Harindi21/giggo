@@ -109,9 +109,26 @@ class _TrackLauncherScreenState extends State<TrackLauncherScreen> {
               icon: const Icon(Icons.my_location),
               label: const Text('Track provider'),
             ),
+            const SizedBox(height: 10),
+            OutlinedButton.icon(
+              onPressed: _review,
+              icon: const Icon(Icons.rate_review_outlined),
+              label: const Text('Leave a review'),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  void _review() {
+    final bookingId = _jobCtrl.text.trim();
+    if (bookingId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter a completed job id to review')),
+      );
+      return;
+    }
+    context.push('/review/$bookingId');
   }
 }
