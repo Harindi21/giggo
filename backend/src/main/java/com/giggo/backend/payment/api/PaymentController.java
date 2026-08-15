@@ -60,4 +60,12 @@ public class PaymentController {
             @AuthenticationPrincipal User user, @PathVariable UUID id) {
         return ApiResponse.ok(PaymentResponse.from(paymentService.release(user.getId(), id)));
     }
+
+    /** Refund escrowed funds to the customer before release (P4.5). */
+    @PostMapping("/payments/{id}/refund")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ApiResponse<PaymentResponse> refund(
+            @AuthenticationPrincipal User user, @PathVariable UUID id) {
+        return ApiResponse.ok(PaymentResponse.from(paymentService.refund(user.getId(), id)));
+    }
 }
