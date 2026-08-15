@@ -66,6 +66,7 @@ authoring via API.
   engine), payment/review-specific push events, FCM device-token registration in
   the app, and finishing the email-OTP entry screen (P1.2 partial).
 
-See [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md) to run it, [`TIDAC_PAPER_OUTLINE.md`](TIDAC_PAPER_OUTLINE.md)
-for the research framing, and [`PORTFOLIO_ONEPAGER.md`](PORTFOLIO_ONEPAGER.md)
-for the summary.
+See [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md) to run it, [`DEPLOYMENT.md`](DEPLOYMENT.md)
+to ship it, [`STORE_LISTING.md`](STORE_LISTING.md) + [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md)
+for release, [`TIDAC_PAPER_OUTLINE.md`](TIDAC_PAPER_OUTLINE.md) for the research
+framing, and [`PORTFOLIO_ONEPAGER.md`](PORTFOLIO_ONEPAGER.md) for the summary.
