@@ -12,6 +12,8 @@ import '../../features/booking/presentation/screens/tasks_tab_screen.dart';
 import '../../features/discovery/presentation/screens/home_screen.dart';
 import '../../features/discovery/presentation/screens/provider_detail_screen.dart';
 import '../../features/discovery/presentation/screens/provider_list_screen.dart';
+import '../../features/knowledge/presentation/screens/article_detail_screen.dart';
+import '../../features/knowledge/presentation/screens/articles_screen.dart';
 import '../../features/kyc/presentation/screens/kyc_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
@@ -90,6 +92,16 @@ final appRouter = GoRouter(
       builder: (c, s) => const NotificationsScreen(),
     ),
     GoRoute(path: '/kyc', name: 'kyc', builder: (c, s) => const KycScreen()),
+    GoRoute(
+      path: '/articles',
+      name: 'articles',
+      builder: (c, s) => const ArticlesScreen(),
+    ),
+    GoRoute(
+      path: '/articles/:slug',
+      name: 'article',
+      builder: (c, s) => ArticleDetailScreen(slug: s.pathParameters['slug']!),
+    ),
 
     // ---- Main app (bottom-nav shell) ----
     StatefulShellRoute.indexedStack(
