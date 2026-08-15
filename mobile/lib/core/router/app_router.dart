@@ -5,6 +5,7 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/verify_email_screen.dart';
+import '../../features/booking/presentation/screens/booking_form_screen.dart';
 import '../../features/discovery/presentation/screens/home_screen.dart';
 import '../../features/discovery/presentation/screens/provider_detail_screen.dart';
 import '../../features/discovery/presentation/screens/provider_list_screen.dart';
@@ -58,6 +59,14 @@ final appRouter = GoRouter(
       name: 'review',
       builder: (c, s) =>
           RateReviewScreen(bookingId: s.pathParameters['bookingId']!),
+    ),
+    GoRoute(
+      path: '/book/:providerId',
+      name: 'book',
+      builder: (c, s) => BookingFormScreen(
+        providerId: s.pathParameters['providerId']!,
+        skillId: s.uri.queryParameters['skillId'],
+      ),
     ),
 
     // ---- Main app (bottom-nav shell) ----
