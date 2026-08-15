@@ -7,6 +7,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../discovery/presentation/providers/discovery_providers.dart';
 import '../../data/booking_repository.dart';
 import '../../data/models/booking_models.dart';
+import '../../data/models/payment_models.dart';
 import '../providers/booking_providers.dart';
 
 /// Customer job timeline / booking detail (P4.9). Shows the live lifecycle of a
@@ -92,6 +93,12 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                 _sectionTitle('Price'),
                 const SizedBox(height: 10),
                 _priceCard(b),
+                if (_showsPayment(b.status)) ...[
+                  const SizedBox(height: 20),
+                  _sectionTitle('Payment'),
+                  const SizedBox(height: 10),
+                  _paymentCard(b),
+                ],
                 const SizedBox(height: 8),
               ],
             ),
@@ -427,6 +434,68 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
               ),
             ],
           ),
+        ],
+      ),
+    );
+  }
+
+  bool _showsPayment(String status) =>
+      status == 'COMPLETED' || status == 'RATED' || status == 'PAID';
+
+  Widget _paymentCard(Booking b) {
+    final Payment? payment = ref.watch(bookingPaymentProvider(b.id)).value;
+    final released = b.status == 'PAID' || (payment?.isReleased ?? false);
+    final held = payment?.isHeld ?? false;
+    final (String text, Color color) = released
+        ? ('Paid — released to provider', AppColors.success)
+        : held
+        ? ('Held securely in escrow', AppColors.info)
+        : ('Payment due', AppColors.accent);
+    final amount = payment?.amount ?? b.totalPrice;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceBlue.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(AppTheme.radiusCard),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            released ? Icons.verified : Icons.account_balance_wallet_outlined,
+            color: color,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  text,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  _rs(amount),
+                  style: const TextStyle(
+                    fontSize: 12.5,
+                    color: AppColors.textMuted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (!released)
+            ElevatedButton(
+              onPressed: () => context.push('/payment/${b.id}'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+              child: Text(held ? 'Release' : 'Pay now'),
+            ),
         ],
       ),
     );

@@ -5,6 +5,7 @@ import '../../../core/network/api_config.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/network/dio_client.dart';
 import 'models/booking_models.dart';
+import 'models/payment_models.dart';
 
 class BookingRepository {
   final Dio _dio;
@@ -138,6 +139,52 @@ class BookingRepository {
         '${ApiConfig.apiPrefix}/bookings/$id/$action',
       );
       return Booking.fromJson(res.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
+  // ---- Payments + escrow (P7) ----
+
+  /// Current payment for a booking, or null if none has been started yet.
+  Future<Payment?> getPayment(String bookingId) async {
+    try {
+      final res = await _dio.get(
+        '${ApiConfig.apiPrefix}/bookings/$bookingId/payment',
+      );
+      return Payment.fromJson(res.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) return null;
+      throw ApiException(_message(e));
+    }
+  }
+
+  /// Start payment for a completed booking; returns a checkout session.
+  Future<Payment> initiatePayment(String bookingId) async {
+    try {
+      final res = await _dio.post(
+        '${ApiConfig.apiPrefix}/bookings/$bookingId/payment',
+      );
+      return Payment.fromJson(res.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
+  /// Gateway capture callback (stubbed): moves funds into escrow (HELD).
+  Future<Payment> confirmPayment(String paymentId) =>
+      _paymentAction(paymentId, 'confirm');
+
+  /// Release escrow to the provider (RELEASED) and settle the booking as PAID.
+  Future<Payment> releasePayment(String paymentId) =>
+      _paymentAction(paymentId, 'release');
+
+  Future<Payment> _paymentAction(String paymentId, String action) async {
+    try {
+      final res = await _dio.post(
+        '${ApiConfig.apiPrefix}/payments/$paymentId/$action',
+      );
+      return Payment.fromJson(res.data['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw ApiException(_message(e));
     }
