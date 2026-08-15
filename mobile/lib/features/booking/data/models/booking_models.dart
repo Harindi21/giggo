@@ -39,6 +39,19 @@ class PricingBreakdown {
       );
 }
 
+/// One entry in a booking's status history (`GET /bookings/{id}/timeline`).
+class StatusEvent {
+  final String status;
+  final DateTime at;
+
+  const StatusEvent({required this.status, required this.at});
+
+  factory StatusEvent.fromJson(Map<String, dynamic> json) => StatusEvent(
+    status: json['status'] as String,
+    at: DateTime.parse(json['at'] as String),
+  );
+}
+
 /// A booking / job as returned by the booking APIs. The price fields are the
 /// snapshot taken when the booking was created.
 class Booking {
@@ -69,6 +82,7 @@ class Booking {
   final DateTime? startedAt;
   final DateTime? completedAt;
   final DateTime? cancelledAt;
+  final String? cancelReason;
   final DateTime? createdAt;
 
   const Booking({
@@ -99,6 +113,7 @@ class Booking {
     this.startedAt,
     this.completedAt,
     this.cancelledAt,
+    this.cancelReason,
     this.createdAt,
   });
 
@@ -130,6 +145,7 @@ class Booking {
     startedAt: _toDate(json['startedAt']),
     completedAt: _toDate(json['completedAt']),
     cancelledAt: _toDate(json['cancelledAt']),
+    cancelReason: json['cancelReason'] as String?,
     createdAt: _toDate(json['createdAt']),
   );
 }

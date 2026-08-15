@@ -183,14 +183,8 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Booking request sent to the provider.')),
       );
-      // Land on live tracking for the new job (status timeline + location).
-      final q = <String, String>{};
-      if (booking.latitude != null) q['destLat'] = '${booking.latitude}';
-      if (booking.longitude != null) q['destLng'] = '${booking.longitude}';
-      final query = q.entries.map((e) => '${e.key}=${e.value}').join('&');
-      context.pushReplacement(
-        '/track/${booking.id}${query.isEmpty ? '' : '?$query'}',
-      );
+      // Land on the booking detail / status timeline for the new job.
+      context.pushReplacement('/booking/${booking.id}');
     } catch (e) {
       if (mounted) {
         setState(() => _formError = e.toString());

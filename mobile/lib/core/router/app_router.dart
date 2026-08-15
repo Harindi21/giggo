@@ -5,6 +5,7 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/verify_email_screen.dart';
+import '../../features/booking/presentation/screens/booking_detail_screen.dart';
 import '../../features/booking/presentation/screens/booking_form_screen.dart';
 import '../../features/discovery/presentation/screens/home_screen.dart';
 import '../../features/discovery/presentation/screens/provider_detail_screen.dart';
@@ -67,6 +68,12 @@ final appRouter = GoRouter(
         providerId: s.pathParameters['providerId']!,
         skillId: s.uri.queryParameters['skillId'],
       ),
+    ),
+    GoRoute(
+      path: '/booking/:bookingId',
+      name: 'booking',
+      builder: (c, s) =>
+          BookingDetailScreen(bookingId: s.pathParameters['bookingId']!),
     ),
 
     // ---- Main app (bottom-nav shell) ----
