@@ -12,6 +12,7 @@ import '../../features/booking/presentation/screens/tasks_tab_screen.dart';
 import '../../features/discovery/presentation/screens/home_screen.dart';
 import '../../features/discovery/presentation/screens/provider_detail_screen.dart';
 import '../../features/discovery/presentation/screens/provider_list_screen.dart';
+import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/reviews/presentation/screens/rate_review_screen.dart';
 import '../../features/tracking/presentation/screens/tracking_screen.dart';
@@ -81,6 +82,11 @@ final appRouter = GoRouter(
       name: 'payment',
       builder: (c, s) =>
           PaymentScreen(bookingId: s.pathParameters['bookingId']!),
+    ),
+    GoRoute(
+      path: '/notifications',
+      name: 'notifications',
+      builder: (c, s) => const NotificationsScreen(),
     ),
 
     // ---- Main app (bottom-nav shell) ----
