@@ -92,6 +92,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 itemBuilder: (context, i) => _categoryTile(list[i]),
               ),
             ),
+            SliverToBoxAdapter(child: _knowledgeCard()),
             SliverToBoxAdapter(child: _promoCard()),
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ],
@@ -250,6 +251,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           trailing: const Icon(Icons.chevron_right, color: AppColors.textMuted),
           onTap: () => context.push(
             '/home/category/${c.id}?name=${Uri.encodeComponent(c.name)}',
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _knowledgeCard() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+      child: Material(
+        color: AppColors.surfaceBlue.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => context.push('/articles'),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.menu_book_outlined,
+                  color: AppColors.primary,
+                  size: 32,
+                ),
+                const SizedBox(width: 14),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Tips & Guides',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Get the most out of GIGGO — booking, payments and safety.',
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          color: AppColors.textBody,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right, color: AppColors.textMuted),
+              ],
+            ),
           ),
         ),
       ),
