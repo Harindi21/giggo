@@ -44,6 +44,40 @@ class KycRepository {
     }
   }
 
+  // ---- Admin (P11) ----
+
+  Future<List<KycSubmission>> listByStatus(String status) async {
+    try {
+      final res = await _dio.get(
+        '${ApiConfig.apiPrefix}/admin/kyc',
+        queryParameters: {'status': status},
+      );
+      final data = res.data['data'] as List<dynamic>;
+      return data
+          .map((e) => KycSubmission.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
+  Future<KycSubmission> approve(String id) => _review(id, 'approve', null);
+
+  Future<KycSubmission> reject(String id, String? note) =>
+      _review(id, 'reject', note);
+
+  Future<KycSubmission> _review(String id, String action, String? note) async {
+    try {
+      final res = await _dio.post(
+        '${ApiConfig.apiPrefix}/admin/kyc/$id/$action',
+        data: action == 'reject' ? {'note': ?note} : null,
+      );
+      return KycSubmission.fromJson(res.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
   String _message(DioException e) {
     final data = e.response?.data;
     if (data is Map && data['message'] is String) {
