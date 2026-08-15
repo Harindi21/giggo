@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../kyc/presentation/providers/kyc_providers.dart';
 import '../../data/profile_repository.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -46,8 +48,41 @@ class ProfileScreen extends ConsumerWidget {
             _ReadOnlyRow(label: 'Email', value: user.email),
             _ReadOnlyRow(label: 'Phone', value: user.phone),
             _ReadOnlyRow(label: 'Role', value: user.role),
+            if (user.role == 'PROVIDER') ...[
+              const SizedBox(height: 8),
+              _verificationTile(context, ref),
+            ],
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _verificationTile(BuildContext context, WidgetRef ref) {
+    final kyc = ref.watch(myKycProvider).value;
+    final (String hint, Color color, IconData icon) = switch (kyc?.status) {
+      'APPROVED' => ('Verified', AppColors.success, Icons.verified),
+      'PENDING' => ('Under review', AppColors.warning, Icons.hourglass_top),
+      'REJECTED' => ('Action needed', AppColors.error, Icons.error_outline),
+      _ => ('Not verified', AppColors.textMuted, Icons.verified_outlined),
+    };
+    return Card(
+      child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        leading: CircleAvatar(
+          backgroundColor: color.withValues(alpha: 0.12),
+          child: Icon(icon, color: color),
+        ),
+        title: const Text(
+          'Verification',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        subtitle: Text(hint, style: TextStyle(color: color)),
+        trailing: const Icon(Icons.chevron_right, color: AppColors.textMuted),
+        onTap: () => context.push('/kyc'),
       ),
     );
   }

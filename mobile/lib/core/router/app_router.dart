@@ -12,6 +12,7 @@ import '../../features/booking/presentation/screens/tasks_tab_screen.dart';
 import '../../features/discovery/presentation/screens/home_screen.dart';
 import '../../features/discovery/presentation/screens/provider_detail_screen.dart';
 import '../../features/discovery/presentation/screens/provider_list_screen.dart';
+import '../../features/kyc/presentation/screens/kyc_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/reviews/presentation/screens/rate_review_screen.dart';
@@ -88,6 +89,7 @@ final appRouter = GoRouter(
       name: 'notifications',
       builder: (c, s) => const NotificationsScreen(),
     ),
+    GoRoute(path: '/kyc', name: 'kyc', builder: (c, s) => const KycScreen()),
 
     // ---- Main app (bottom-nav shell) ----
     StatefulShellRoute.indexedStack(
