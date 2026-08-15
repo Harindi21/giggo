@@ -165,17 +165,38 @@ public class BookingService {
         recordEvent(booking.getId(), JobStatus.PAID, OffsetDateTime.now());
     }
 
-    /** Either party may cancel, but only before work has started. */
+    /** Either party may cancel, but only before work has started (P4.5). */
     @Transactional
     public BookingResponse cancel(UUID userId, UUID id, String reason) {
         Booking booking = getEntity(id);
         if (!booking.involves(userId)) {
             throw new ForbiddenOperationException("You are not part of this booking");
         }
+        if (!CancellationPolicy.canCancel(booking.getStatus())) {
+            throw new IllegalArgumentException(CancellationPolicy.blockedReason(booking.getStatus()));
+        }
         transition(booking, JobStatus.CANCELLED);
         booking.setCancelledBy(userId);
         booking.setCancelReason(reason);
         return saveAndRecord(booking);
+    }
+
+    /**
+     * Expire booking requests the provider never answered before their deadline
+     * (P4.4). Called on a schedule; each expiry records a status event, which
+     * notifies the customer.
+     */
+    @Transactional
+    public int expireStale() {
+        OffsetDateTime now = OffsetDateTime.now();
+        List<Booking> stale =
+                bookingRepository.findByStatusAndRequestExpiresAtBefore(JobStatus.REQUESTED, now);
+        for (Booking booking : stale) {
+            transition(booking, JobStatus.EXPIRED);
+            bookingRepository.save(booking);
+            recordEvent(booking.getId(), JobStatus.EXPIRED, now);
+        }
+        return stale.size();
     }
 
     private BookingResponse providerAction(UUID providerId, UUID id, JobStatus target) {

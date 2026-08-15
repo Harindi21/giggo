@@ -139,6 +139,26 @@ class PaymentServiceTest {
     }
 
     @Test
+    @DisplayName("refund returns escrowed funds before release")
+    void refundReturnsHeldFunds() {
+        when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment(PaymentStatus.HELD)));
+
+        Payment out = service.refund(customerId, paymentId);
+
+        assertThat(out.getStatus()).isEqualTo(PaymentStatus.REFUNDED);
+        assertThat(out.getRefundedAt()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("refund requires funds to be held (not already released)")
+    void refundRequiresHeld() {
+        when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment(PaymentStatus.RELEASED)));
+
+        assertThatThrownBy(() -> service.refund(customerId, paymentId))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     @DisplayName("only the paying customer can act on a payment")
     void rejectsNonOwner() {
         when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment(PaymentStatus.PENDING)));

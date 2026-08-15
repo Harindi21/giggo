@@ -115,6 +115,23 @@ public class PaymentService {
         return saved;
     }
 
+    /** Refund escrowed funds to the customer before they are released (P4.5). */
+    @Transactional
+    public Payment refund(UUID actingUserId, UUID paymentId) {
+        Payment payment = get(paymentId);
+        requireCustomer(payment, actingUserId);
+        if (payment.getStatus() == PaymentStatus.REFUNDED) {
+            return payment; // idempotent
+        }
+        if (payment.getStatus() != PaymentStatus.HELD) {
+            throw new IllegalArgumentException(
+                    "Only funds held in escrow can be refunded");
+        }
+        payment.setStatus(PaymentStatus.REFUNDED);
+        payment.setRefundedAt(OffsetDateTime.now());
+        return paymentRepository.save(payment);
+    }
+
     @Transactional(readOnly = true)
     public Payment getByBooking(UUID actingUserId, UUID bookingId) {
         bookingService.getById(actingUserId, bookingId); // validates participation
