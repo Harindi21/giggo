@@ -7,3 +7,8 @@ import '../../data/models/kyc_models.dart';
 final myKycProvider = FutureProvider<KycSubmission?>((ref) {
   return ref.watch(kycRepositoryProvider).getMine();
 });
+
+/// Pending KYC submissions awaiting admin review (P11).
+final pendingKycProvider = FutureProvider<List<KycSubmission>>((ref) {
+  return ref.watch(kycRepositoryProvider).listByStatus('PENDING');
+});

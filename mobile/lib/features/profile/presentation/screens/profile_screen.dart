@@ -52,6 +52,10 @@ class ProfileScreen extends ConsumerWidget {
               const SizedBox(height: 8),
               _verificationTile(context, ref),
             ],
+            if (user.role == 'ADMIN') ...[
+              const SizedBox(height: 8),
+              _adminTile(context),
+            ],
           ],
         ),
       ),
@@ -83,6 +87,31 @@ class ProfileScreen extends ConsumerWidget {
         subtitle: Text(hint, style: TextStyle(color: color)),
         trailing: const Icon(Icons.chevron_right, color: AppColors.textMuted),
         onTap: () => context.push('/kyc'),
+      ),
+    );
+  }
+
+  Widget _adminTile(BuildContext context) {
+    return Card(
+      child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        leading: const CircleAvatar(
+          backgroundColor: AppColors.primary,
+          child: Icon(Icons.admin_panel_settings_outlined, color: Colors.white),
+        ),
+        title: const Text(
+          'Admin console',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        subtitle: const Text(
+          'Review provider verifications',
+          style: TextStyle(color: AppColors.textMuted),
+        ),
+        trailing: const Icon(Icons.chevron_right, color: AppColors.textMuted),
+        onTap: () => context.push('/admin'),
       ),
     );
   }
