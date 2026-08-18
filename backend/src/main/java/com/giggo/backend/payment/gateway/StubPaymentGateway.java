@@ -1,11 +1,10 @@
 package com.giggo.backend.payment.gateway;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import com.giggo.backend.payment.domain.Payment;
 
 /**
  * Default, credential-free gateway (P7.1). Produces a deterministic reference
@@ -30,10 +29,10 @@ public class StubPaymentGateway implements PaymentGateway {
     }
 
     @Override
-    public CheckoutSession initiate(Payment payment) {
+    public CheckoutSession initiate(BigDecimal amount, String currency) {
         String ref = "STUB-" + UUID.randomUUID().toString().substring(0, 12).toUpperCase();
         String url = "%s?ref=%s&amount=%s&currency=%s".formatted(
-                checkoutBase, ref, payment.getAmount().toPlainString(), payment.getCurrency());
+                checkoutBase, ref, amount.toPlainString(), currency);
         return new CheckoutSession(name(), ref, url);
     }
 }
