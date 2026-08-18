@@ -1,6 +1,7 @@
 package com.giggo.backend.booking.repository;
 
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,4 +17,7 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
 
     /** Bookings still in {@code status} whose request-expiry has passed (P4.4). */
     List<Booking> findByStatusAndRequestExpiresAtBefore(JobStatus status, OffsetDateTime cutoff);
+
+    /** How many bookings a customer currently has open, for the anti-fraud throttle (P6.4). */
+    long countByCustomerIdAndStatusIn(UUID customerId, Collection<JobStatus> statuses);
 }

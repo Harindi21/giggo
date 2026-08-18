@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import com.giggo.backend.booking.repository.BookingRepository;
 import com.giggo.backend.booking.repository.BookingStatusEventRepository;
 import com.giggo.backend.common.exception.ForbiddenOperationException;
 import com.giggo.backend.common.exception.ResourceNotFoundException;
+import com.giggo.backend.common.exception.TooManyRequestsException;
 import com.giggo.backend.provider.domain.ProviderProfile;
 import com.giggo.backend.provider.domain.Skill;
 import com.giggo.backend.provider.repository.ProviderProfileRepository;
@@ -38,12 +40,20 @@ public class BookingService {
 
     private static final int DEFAULT_EXPIRY_MINUTES = 30;
 
+    /** Bookings that still tie up a customer's "open" slots, for the anti-fraud throttle (P6.4). */
+    private static final Set<JobStatus> OPEN_STATUSES =
+            EnumSet.of(JobStatus.REQUESTED, JobStatus.ACCEPTED, JobStatus.EN_ROUTE, JobStatus.STARTED);
+
     private final BookingRepository bookingRepository;
     private final BookingStatusEventRepository eventRepository;
     private final ProviderProfileRepository providerRepository;
     private final SkillRepository skillRepository;
     private final PricingService pricingService;
     private final ApplicationEventPublisher events;
+
+    /** Cap on concurrent open bookings per customer; blocks request-flooding (P6.4). */
+    @Value("${giggo.fraud.max-open-bookings:20}")
+    private int maxOpenBookings = 20;
 
     @Transactional
     public BookingResponse create(UUID customerId, CreateBookingRequest req) {
@@ -52,6 +62,10 @@ public class BookingService {
         UUID providerUserId = provider.getUser().getId();
         if (providerUserId.equals(customerId)) {
             throw new IllegalArgumentException("You cannot book yourself");
+        }
+        if (bookingRepository.countByCustomerIdAndStatusIn(customerId, OPEN_STATUSES) >= maxOpenBookings) {
+            throw new TooManyRequestsException(
+                    "You have too many open bookings. Please complete or cancel some before booking again.");
         }
         Skill skill = skillRepository.findById(req.skillId())
                 .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
