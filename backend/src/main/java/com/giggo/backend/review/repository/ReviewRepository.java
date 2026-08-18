@@ -9,5 +9,13 @@ import com.giggo.backend.review.domain.Review;
 
 public interface ReviewRepository extends JpaRepository<Review, UUID> {
     boolean existsByBookingId(UUID bookingId);
-    List<Review> findByProviderIdOrderByCreatedAtDesc(UUID providerId);
+
+    /** Public listing: visible reviews only (P6.5). */
+    List<Review> findByProviderIdAndHiddenFalseOrderByCreatedAtDesc(UUID providerId);
+
+    /** Admin moderation queue: reported reviews, most-reported first. */
+    List<Review> findTop100ByReportCountGreaterThanOrderByReportCountDesc(int threshold);
+
+    /** Admin: recent reviews across the platform. */
+    List<Review> findTop100ByOrderByCreatedAtDesc();
 }

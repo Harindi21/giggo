@@ -64,6 +64,20 @@ public class Review {
     @Column(name = "enhanced_rating")
     private BigDecimal enhancedRating;
 
+    // ---- moderation (P6.5) ----
+    /** Hidden by an admin: excluded from listings and the provider aggregate. */
+    @Column(name = "hidden", nullable = false)
+    @Builder.Default
+    private boolean hidden = false;
+
+    @Column(name = "moderation_reason", length = 500)
+    private String moderationReason;
+
+    /** How many users have reported this review. */
+    @Column(name = "report_count", nullable = false)
+    @Builder.Default
+    private int reportCount = 0;
+
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 

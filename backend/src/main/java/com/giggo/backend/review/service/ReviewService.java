@@ -22,6 +22,7 @@ import com.giggo.backend.common.exception.ForbiddenOperationException;
 import com.giggo.backend.common.exception.ResourceNotFoundException;
 import com.giggo.backend.provider.domain.ProviderProfile;
 import com.giggo.backend.provider.repository.ProviderProfileRepository;
+import com.giggo.backend.review.api.dto.AdminReviewResponse;
 import com.giggo.backend.review.api.dto.CreateReviewRequest;
 import com.giggo.backend.review.api.dto.ReviewResponse;
 import com.giggo.backend.review.domain.Review;
@@ -90,9 +91,67 @@ public class ReviewService {
         Review saved = reviewRepository.save(review);
 
         bookingService.markRated(bookingId);
-        updateProviderAggregate(booking.getProviderId(), enhanced);
+        adjustProviderAggregate(booking.getProviderId(), enhanced, 1);
 
         return ReviewResponse.from(saved, reviewerName(customerId));
+    }
+
+    // ---- Moderation (P6.5) ----
+
+    /** A user reports a review; surfaces it in the admin queue. */
+    @Transactional
+    public Review report(UUID reviewId) {
+        Review review = get(reviewId);
+        review.setReportCount(review.getReportCount() + 1);
+        return reviewRepository.save(review);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AdminReviewResponse> adminList(boolean reportedOnly) {
+        List<Review> reviews = reportedOnly
+                ? reviewRepository.findTop100ByReportCountGreaterThanOrderByReportCountDesc(0)
+                : reviewRepository.findTop100ByOrderByCreatedAtDesc();
+        Map<UUID, String> names = reviewerNames(reviews);
+        return reviews.stream()
+                .map(r -> AdminReviewResponse.from(r, names.get(r.getCustomerId())))
+                .toList();
+    }
+
+    /** Hide a review: drop it from listings and remove it from the provider's rating. */
+    @Transactional
+    public Review hide(UUID reviewId, String reason) {
+        Review review = get(reviewId);
+        if (review.isHidden()) {
+            return review;
+        }
+        review.setHidden(true);
+        review.setModerationReason(reason);
+        Review saved = reviewRepository.save(review);
+        adjustProviderAggregate(review.getProviderId(), safe(review.getEnhancedRating()), -1);
+        return saved;
+    }
+
+    /** Restore a hidden review and re-add its contribution to the rating. */
+    @Transactional
+    public Review restore(UUID reviewId) {
+        Review review = get(reviewId);
+        if (!review.isHidden()) {
+            return review;
+        }
+        review.setHidden(false);
+        review.setModerationReason(null);
+        Review saved = reviewRepository.save(review);
+        adjustProviderAggregate(review.getProviderId(), safe(review.getEnhancedRating()), 1);
+        return saved;
+    }
+
+    private Review get(UUID id) {
+        return reviewRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
+    }
+
+    private static BigDecimal safe(BigDecimal v) {
+        return v == null ? BigDecimal.ZERO : v;
     }
 
     /** Reviews for a provider, identified by their provider-profile id (as in discovery). */
@@ -101,7 +160,8 @@ public class ReviewService {
         ProviderProfile profile = providerRepository.findById(providerProfileId)
                 .orElseThrow(() -> new ResourceNotFoundException("Provider not found"));
         UUID providerUserId = profile.getUser().getId();
-        List<Review> reviews = reviewRepository.findByProviderIdOrderByCreatedAtDesc(providerUserId);
+        List<Review> reviews =
+                reviewRepository.findByProviderIdAndHiddenFalseOrderByCreatedAtDesc(providerUserId);
         Map<UUID, String> names = reviewerNames(reviews);
         return reviews.stream()
                 .map(r -> ReviewResponse.from(r, names.get(r.getCustomerId())))
@@ -119,19 +179,31 @@ public class ReviewService {
                 .setScale(2, RoundingMode.HALF_UP);
     }
 
-    private void updateProviderAggregate(UUID providerUserId, BigDecimal enhanced) {
+    /**
+     * Apply a review's contribution to the provider aggregate: {@code countDelta}
+     * of +1 when a review is added/restored, -1 when it is hidden. Keeps the
+     * denormalised {@code rating_sum}/{@code rating_count} and the Bayesian
+     * {@code avg_rating} in step.
+     */
+    private void adjustProviderAggregate(UUID providerUserId, BigDecimal enhanced, int countDelta) {
         ProviderProfile profile = providerRepository.findByUserId(providerUserId).orElse(null);
         if (profile == null) {
             return;
         }
-        int newCount = profile.getRatingCount() + 1;
-        BigDecimal newSum = (profile.getRatingSum() == null ? BigDecimal.ZERO : profile.getRatingSum())
-                .add(enhanced);
-        BigDecimal rawAverage = newSum.divide(BigDecimal.valueOf(newCount), 10, RoundingMode.HALF_UP);
-
+        int newCount = Math.max(0, profile.getRatingCount() + countDelta);
+        BigDecimal current = profile.getRatingSum() == null ? BigDecimal.ZERO : profile.getRatingSum();
+        BigDecimal newSum = countDelta >= 0 ? current.add(enhanced) : current.subtract(enhanced);
+        if (newSum.signum() < 0) {
+            newSum = BigDecimal.ZERO;
+        }
         profile.setRatingCount(newCount);
         profile.setRatingSum(newSum);
-        profile.setAvgRating(bayesianCalculator.compute(newCount, rawAverage)); // Bayesian, not naive avg
+        if (newCount == 0) {
+            profile.setAvgRating(BigDecimal.ZERO);
+        } else {
+            BigDecimal rawAverage = newSum.divide(BigDecimal.valueOf(newCount), 10, RoundingMode.HALF_UP);
+            profile.setAvgRating(bayesianCalculator.compute(newCount, rawAverage)); // Bayesian, not naive avg
+        }
         providerRepository.save(profile);
     }
 
