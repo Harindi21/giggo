@@ -132,6 +132,22 @@ public class PaymentService {
         return paymentRepository.save(payment);
     }
 
+    /**
+     * Refund escrowed funds for a booking without an actor check — for
+     * admin/system flows such as resolving a dispute (P4.6). No-op (empty) if
+     * there is no payment held in escrow for the booking.
+     */
+    @Transactional
+    public Optional<Payment> refundHeldForBooking(UUID bookingId) {
+        return paymentRepository.findByBookingId(bookingId)
+                .filter(p -> p.getStatus() == PaymentStatus.HELD)
+                .map(p -> {
+                    p.setStatus(PaymentStatus.REFUNDED);
+                    p.setRefundedAt(OffsetDateTime.now());
+                    return paymentRepository.save(p);
+                });
+    }
+
     @Transactional(readOnly = true)
     public Payment getByBooking(UUID actingUserId, UUID bookingId) {
         bookingService.getById(actingUserId, bookingId); // validates participation
