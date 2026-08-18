@@ -68,5 +68,6 @@ authoring via API.
 
 See [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md) to run it, [`DEPLOYMENT.md`](DEPLOYMENT.md)
 to ship it, [`STORE_LISTING.md`](STORE_LISTING.md) + [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md)
-for release, [`TIDAC_PAPER_OUTLINE.md`](TIDAC_PAPER_OUTLINE.md) for the research
-framing, and [`PORTFOLIO_ONEPAGER.md`](PORTFOLIO_ONEPAGER.md) for the summary.
+for release, [`adr/`](adr/README.md) for the key architecture decisions,
+[`TIDAC_PAPER_OUTLINE.md`](TIDAC_PAPER_OUTLINE.md) for the research framing, and
+[`PORTFOLIO_ONEPAGER.md`](PORTFOLIO_ONEPAGER.md) for the summary.
