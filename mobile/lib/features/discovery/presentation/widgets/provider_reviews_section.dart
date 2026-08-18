@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../data/discovery_repository.dart';
 import '../providers/discovery_providers.dart';
 import 'review_card.dart';
 
@@ -45,7 +46,10 @@ class ProviderReviewsSection extends ConsumerWidget {
             return Column(
               children: [
                 for (final r in list) ...[
-                  ReviewCard(review: r),
+                  ReviewCard(
+                    review: r,
+                    onReport: () => _report(context, ref, r.id),
+                  ),
                   const SizedBox(height: 10),
                 ],
               ],
@@ -54,5 +58,46 @@ class ProviderReviewsSection extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _report(
+    BuildContext context,
+    WidgetRef ref,
+    String reviewId,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Report this review?'),
+        content: const Text(
+          'Our team will review it for abusive or fake content.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Report'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      await ref.read(discoveryRepositoryProvider).reportReview(reviewId);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Thanks — reported for review.')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    }
   }
 }

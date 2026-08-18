@@ -127,6 +127,15 @@ class DiscoveryRepository {
     }
   }
 
+  /// Report a review for moderation (P6.5).
+  Future<void> reportReview(String reviewId) async {
+    try {
+      await _dio.post('${ApiConfig.apiPrefix}/reviews/$reviewId/report');
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
   String _message(DioException e) {
     final data = e.response?.data;
     if (data is Map && data['message'] is String) {
