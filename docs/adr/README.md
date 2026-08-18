@@ -18,6 +18,7 @@ Decision · Consequences**. Template: [`0000-template.md`](0000-template.md).
 | [0005](0005-event-driven-side-effects.md) | Side effects via after-commit domain events | Accepted |
 | [0006](0006-flyway-migrations-and-testcontainers.md) | Migration-only schema + full-context test on Testcontainers | Accepted |
 | [0007](0007-openstreetmap-over-google-maps.md) | OpenStreetMap (flutter_map) for live tracking, not Google Maps | Accepted |
+| [0008](0008-soft-hide-review-moderation.md) | Soft-hide reviews for moderation (not hard-delete) | Accepted |
 
 ## When to add one
 Add an ADR in the same PR as a decision that a future maintainer would ask "why?"

@@ -46,4 +46,11 @@ public class ReviewController {
     public ApiResponse<List<ReviewResponse>> forProvider(@PathVariable UUID providerId) {
         return ApiResponse.ok(reviewService.listForProviderProfile(providerId));
     }
+
+    /** Report a review for moderation (any authenticated user) — P6.5. */
+    @PostMapping("/reviews/{id}/report")
+    public ApiResponse<Void> report(@PathVariable UUID id) {
+        reviewService.report(id);
+        return ApiResponse.ok(null);
+    }
 }
