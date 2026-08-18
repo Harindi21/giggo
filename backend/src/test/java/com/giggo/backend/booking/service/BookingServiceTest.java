@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -28,6 +29,7 @@ import com.giggo.backend.booking.repository.BookingRepository;
 import com.giggo.backend.booking.repository.BookingStatusEventRepository;
 import com.giggo.backend.common.exception.ForbiddenOperationException;
 import com.giggo.backend.common.exception.ResourceNotFoundException;
+import com.giggo.backend.common.exception.TooManyRequestsException;
 import com.giggo.backend.provider.domain.ProviderProfile;
 import com.giggo.backend.provider.domain.Skill;
 import com.giggo.backend.provider.repository.ProviderProfileRepository;
@@ -101,6 +103,16 @@ class BookingServiceTest {
         when(providerRepository.findById(providerProfileId)).thenReturn(Optional.of(providerProfile()));
         assertThatThrownBy(() -> service.create(providerUserId, request()))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("rejects a customer who already has too many open bookings")
+    void rejectsTooManyOpenBookings() {
+        when(providerRepository.findById(providerProfileId)).thenReturn(Optional.of(providerProfile()));
+        when(bookingRepository.countByCustomerIdAndStatusIn(eq(customerId), any())).thenReturn(20L);
+
+        assertThatThrownBy(() -> service.create(customerId, request()))
+                .isInstanceOf(TooManyRequestsException.class);
     }
 
     @Test

@@ -10,6 +10,9 @@ import com.giggo.backend.review.domain.Review;
 public interface ReviewRepository extends JpaRepository<Review, UUID> {
     boolean existsByBookingId(UUID bookingId);
 
+    /** Same customer, same review text on another job — a copy-paste spam signal (P6.4). */
+    boolean existsByCustomerIdAndBody(UUID customerId, String body);
+
     /** Public listing: visible reviews only (P6.5). */
     List<Review> findByProviderIdAndHiddenFalseOrderByCreatedAtDesc(UUID providerId);
 

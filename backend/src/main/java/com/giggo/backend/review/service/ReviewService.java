@@ -68,6 +68,13 @@ public class ReviewService {
         if (booking.getStatus() != JobStatus.COMPLETED) {
             throw new IllegalArgumentException("You can only review a completed job");
         }
+        // Anti-fraud (P6.4): the same customer posting identical text across jobs is a
+        // copy-paste spam signal — reject it before it skews a provider's rating.
+        if (req.body() != null && !req.body().isBlank()
+                && reviewRepository.existsByCustomerIdAndBody(customerId, req.body())) {
+            throw new DuplicateResourceException(
+                    "This looks like a duplicate review. Please write about this specific job.");
+        }
 
         Optional<SentimentResult> sentiment = sentimentClient.analyze(req.body());
         BigDecimal enhanced = enhancedRating(req.stars(), sentiment);

@@ -136,4 +136,15 @@ class ReviewServiceTest {
         assertThatThrownBy(() -> service.submit(customerId, bookingId, new CreateReviewRequest(5, "x")))
                 .isInstanceOf(DuplicateResourceException.class);
     }
+
+    @Test
+    @DisplayName("rejects the same review text copy-pasted across jobs (P6.4)")
+    void rejectsDuplicateText() {
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(completed()));
+        when(reviewRepository.existsByBookingId(bookingId)).thenReturn(false);
+        when(reviewRepository.existsByCustomerIdAndBody(customerId, "great, fast and tidy")).thenReturn(true);
+        assertThatThrownBy(() -> service.submit(
+                customerId, bookingId, new CreateReviewRequest(5, "great, fast and tidy")))
+                .isInstanceOf(DuplicateResourceException.class);
+    }
 }
