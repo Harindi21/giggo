@@ -34,6 +34,10 @@ class _AdminScreenState extends ConsumerState<AdminScreen> {
         title: const Text('Verification queue'),
         actions: [
           TextButton(
+            onPressed: () => context.push('/admin/reviews'),
+            child: const Text('Reviews', style: TextStyle(color: Colors.white)),
+          ),
+          TextButton(
             onPressed: () => context.push('/admin/disputes'),
             child: const Text(
               'Disputes',

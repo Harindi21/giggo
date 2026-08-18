@@ -9,9 +9,12 @@ import '../../data/models/review.dart';
 /// A single review (mockup image44 "Reviews About You"): reviewer, stars, text,
 /// date and the NLP sentiment badge.
 class ReviewCard extends StatelessWidget {
-  const ReviewCard({super.key, required this.review});
+  const ReviewCard({super.key, required this.review, this.onReport});
 
   final Review review;
+
+  /// When provided, shows a small "report" action for moderation (P6.5).
+  final VoidCallback? onReport;
 
   String _date(DateTime d) =>
       '${d.year}/${d.month.toString().padLeft(2, '0')}/${d.day.toString().padLeft(2, '0')}';
@@ -55,6 +58,19 @@ class ReviewCard extends StatelessWidget {
                   _date(review.createdAt!),
                   style: const TextStyle(
                     fontSize: 11,
+                    color: AppColors.textMuted,
+                  ),
+                ),
+              if (onReport != null)
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  tooltip: 'Report',
+                  onPressed: onReport,
+                  icon: const Icon(
+                    Icons.flag_outlined,
+                    size: 16,
                     color: AppColors.textMuted,
                   ),
                 ),
