@@ -17,6 +17,8 @@ import '../../features/discovery/presentation/screens/provider_list_screen.dart'
 import '../../features/knowledge/presentation/screens/article_detail_screen.dart';
 import '../../features/knowledge/presentation/screens/articles_screen.dart';
 import '../../features/kyc/presentation/screens/kyc_screen.dart';
+import '../../features/marketplace/presentation/screens/checkout_screen.dart';
+import '../../features/marketplace/presentation/screens/orders_screen.dart';
 import '../../features/marketplace/presentation/screens/shop_screen.dart';
 import '../../features/marketplace/presentation/screens/tool_detail_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
@@ -119,6 +121,16 @@ final appRouter = GoRouter(
       path: '/tools/:slug',
       name: 'tool',
       builder: (c, s) => ToolDetailScreen(slug: s.pathParameters['slug']!),
+    ),
+    GoRoute(
+      path: '/checkout/:slug',
+      name: 'checkout',
+      builder: (c, s) => CheckoutScreen(slug: s.pathParameters['slug']!),
+    ),
+    GoRoute(
+      path: '/orders',
+      name: 'orders',
+      builder: (c, s) => const OrdersScreen(),
     ),
 
     // ---- Main app (bottom-nav shell) ----

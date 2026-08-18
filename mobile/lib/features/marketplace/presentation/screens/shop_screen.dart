@@ -23,7 +23,16 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   Widget build(BuildContext context) {
     final async = ref.watch(toolsProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Tool Marketplace')),
+      appBar: AppBar(
+        title: const Text('Tool Marketplace'),
+        actions: [
+          IconButton(
+            tooltip: 'My orders',
+            onPressed: () => context.push('/orders'),
+            icon: const Icon(Icons.receipt_long_outlined),
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(toolsProvider);

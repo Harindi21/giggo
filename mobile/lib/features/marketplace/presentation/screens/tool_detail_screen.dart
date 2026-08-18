@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../data/models/tool_models.dart';
 import '../providers/tool_providers.dart';
 import 'tool_category_icon.dart';
 
-/// Tool detail (P10.2). In-app purchase is a later phase, so "Buy" is a stub.
+/// Tool detail (P10.2). "Buy" opens checkout (P10.4).
 class ToolDetailScreen extends ConsumerWidget {
   const ToolDetailScreen({super.key, required this.slug});
 
@@ -126,11 +127,9 @@ class ToolDetailScreen extends ConsumerWidget {
         child: SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
-            onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('In-app tool purchases are coming soon.'),
-              ),
-            ),
+            onPressed: t.available
+                ? () => context.push('/checkout/${t.slug}')
+                : null,
             icon: const Icon(Icons.shopping_cart_outlined, size: 18),
             label: Text('Buy · Rs. ${t.price.toStringAsFixed(0)}'),
           ),
