@@ -72,7 +72,7 @@ public class PaymentService {
         }
 
         // New, PENDING or previously FAILED: (re)create a checkout session.
-        CheckoutSession session = gateway.initiate(payment);
+        CheckoutSession session = gateway.initiate(payment.getAmount(), payment.getCurrency());
         payment.setGateway(session.gateway());
         payment.setGatewayRef(session.gatewayRef());
         payment.setStatus(PaymentStatus.PENDING);
