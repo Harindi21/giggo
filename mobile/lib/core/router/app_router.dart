@@ -5,6 +5,7 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/admin/presentation/screens/admin_screen.dart';
+import '../../features/admin/presentation/screens/disputes_queue_screen.dart';
 import '../../features/auth/presentation/screens/verify_email_screen.dart';
 import '../../features/booking/presentation/screens/booking_detail_screen.dart';
 import '../../features/booking/presentation/screens/booking_form_screen.dart';
@@ -98,6 +99,11 @@ final appRouter = GoRouter(
       path: '/admin',
       name: 'admin',
       builder: (c, s) => const AdminScreen(),
+    ),
+    GoRoute(
+      path: '/admin/disputes',
+      name: 'admin-disputes',
+      builder: (c, s) => const DisputesQueueScreen(),
     ),
     GoRoute(
       path: '/articles',

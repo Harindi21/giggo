@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../discovery/presentation/providers/discovery_providers.dart';
+import '../../../dispute/data/dispute_repository.dart';
+import '../../../dispute/data/models/dispute_models.dart';
+import '../../../dispute/presentation/providers/dispute_providers.dart';
 import '../../data/booking_repository.dart';
 import '../../data/models/booking_models.dart';
 import '../../data/models/payment_models.dart';
@@ -98,6 +101,12 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                   _sectionTitle('Payment'),
                   const SizedBox(height: 10),
                   _paymentCard(b),
+                ],
+                if (_showsDispute(b.status)) ...[
+                  const SizedBox(height: 20),
+                  _sectionTitle('Problem with this job?'),
+                  const SizedBox(height: 10),
+                  _disputeSection(b),
                 ],
                 const SizedBox(height: 8),
               ],
@@ -499,6 +508,131 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         ],
       ),
     );
+  }
+
+  bool _showsDispute(String status) =>
+      status == 'STARTED' ||
+      status == 'COMPLETED' ||
+      status == 'RATED' ||
+      status == 'PAID';
+
+  Widget _disputeSection(Booking b) {
+    final Dispute? dispute = ref.watch(bookingDisputeProvider(b.id)).value;
+    if (dispute == null) {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: OutlinedButton.icon(
+          onPressed: () => _raiseDispute(b),
+          icon: const Icon(Icons.report_gmailerrorred_outlined, size: 18),
+          label: const Text('Report a problem'),
+        ),
+      );
+    }
+    final (String label, Color color) = dispute.isRefunded
+        ? ('Resolved — refunded', AppColors.success)
+        : dispute.isDismissed
+        ? ('Reviewed — dismissed', AppColors.textMuted)
+        : ('Under review', AppColors.warning);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceBlue.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(AppTheme.radiusCard),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.gavel_outlined, color: color),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Dispute · $label',
+                  style: TextStyle(fontWeight: FontWeight.w800, color: color),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  dispute.reason,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textBody,
+                  ),
+                ),
+                if (dispute.resolutionNote?.isNotEmpty == true) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'Admin: ${dispute.resolutionNote}',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textMuted,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _raiseDispute(Booking b) async {
+    final reasonCtrl = TextEditingController();
+    try {
+      final ok = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Report a problem'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Tell us what went wrong. Our team will review it.'),
+              const SizedBox(height: 12),
+              TextField(
+                controller: reasonCtrl,
+                maxLines: 3,
+                maxLength: 1000,
+                decoration: const InputDecoration(
+                  hintText: 'What happened?',
+                  counterText: '',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: const Text('Submit'),
+            ),
+          ],
+        ),
+      );
+      if (ok != true || reasonCtrl.text.trim().isEmpty) return;
+      await ref
+          .read(disputeRepositoryProvider)
+          .raise(b.id, reasonCtrl.text.trim());
+      ref.invalidate(bookingDisputeProvider(b.id));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Dispute submitted for review.')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    } finally {
+      reasonCtrl.dispose();
+    }
   }
 
   // ---- Actions ----

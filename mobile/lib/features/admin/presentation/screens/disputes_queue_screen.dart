@@ -1,51 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../kyc/data/kyc_repository.dart';
-import '../../../kyc/data/models/kyc_models.dart';
-import '../../../kyc/presentation/providers/kyc_providers.dart';
+import '../../../dispute/data/dispute_repository.dart';
+import '../../../dispute/data/models/dispute_models.dart';
+import '../../../dispute/presentation/providers/dispute_providers.dart';
 
-/// Admin console (P11): KYC review queue. Approving flips the provider's
-/// verified badge (backend) and notifies them.
-class AdminScreen extends ConsumerStatefulWidget {
-  const AdminScreen({super.key});
+/// Admin dispute queue (P4.7): review open disputes and resolve them by
+/// refunding the escrow or dismissing.
+class DisputesQueueScreen extends ConsumerStatefulWidget {
+  const DisputesQueueScreen({super.key});
 
   @override
-  ConsumerState<AdminScreen> createState() => _AdminScreenState();
+  ConsumerState<DisputesQueueScreen> createState() =>
+      _DisputesQueueScreenState();
 }
 
-class _AdminScreenState extends ConsumerState<AdminScreen> {
+class _DisputesQueueScreenState extends ConsumerState<DisputesQueueScreen> {
   String? _busyId;
-
-  static const _docTypes = {
-    'NIC': 'NIC',
-    'PASSPORT': 'Passport',
-    'DRIVING_LICENSE': 'Driving license',
-  };
 
   @override
   Widget build(BuildContext context) {
-    final async = ref.watch(pendingKycProvider);
+    final async = ref.watch(openDisputesProvider);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Verification queue'),
-        actions: [
-          TextButton(
-            onPressed: () => context.push('/admin/disputes'),
-            child: const Text(
-              'Disputes',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Disputes')),
       body: RefreshIndicator(
         onRefresh: () async {
-          ref.invalidate(pendingKycProvider);
-          await ref.read(pendingKycProvider.future);
+          ref.invalidate(openDisputesProvider);
+          await ref.read(openDisputesProvider.future);
         },
         child: async.when(
           loading: () => _spinner(),
@@ -56,20 +39,16 @@ class _AdminScreenState extends ConsumerState<AdminScreen> {
     );
   }
 
-  Widget _list(List<KycSubmission> items) {
+  Widget _list(List<Dispute> items) {
     if (items.isEmpty) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: const [
           SizedBox(height: 120),
-          Icon(
-            Icons.verified_user_outlined,
-            size: 56,
-            color: AppColors.textMuted,
-          ),
+          Icon(Icons.gavel_outlined, size: 56, color: AppColors.textMuted),
           SizedBox(height: 12),
           Text(
-            'No pending verifications',
+            'No open disputes',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
@@ -77,24 +56,18 @@ class _AdminScreenState extends ConsumerState<AdminScreen> {
               color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: 6),
-          Text(
-            'Provider KYC submissions will appear here for review.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.textMuted),
-          ),
         ],
       );
     }
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-      children: [for (final k in items) _card(k)],
+      children: [for (final d in items) _card(d)],
     );
   }
 
-  Widget _card(KycSubmission k) {
-    final busy = _busyId == k.id;
+  Widget _card(Dispute d) {
+    final busy = _busyId == d.id;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -107,33 +80,31 @@ class _AdminScreenState extends ConsumerState<AdminScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            k.fullName,
+            d.reason,
             style: const TextStyle(
-              fontWeight: FontWeight.w800,
-              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              fontSize: 14.5,
               color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 6),
-          _row(
-            Icons.badge_outlined,
-            '${_docTypes[k.documentType] ?? k.documentType} · ${k.documentNumber}',
+          Text(
+            'Booking ${d.bookingId.substring(0, 8)}…',
+            style: const TextStyle(fontSize: 12.5, color: AppColors.textMuted),
           ),
-          if (k.submittedAt != null)
-            _row(Icons.schedule, _fmtDate(k.submittedAt!.toLocal())),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: busy ? null : () => _reject(k),
-                  child: const Text('Reject'),
+                  onPressed: busy ? null : () => _resolve(d, refund: false),
+                  child: const Text('Dismiss'),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: busy ? null : () => _approve(k),
+                  onPressed: busy ? null : () => _resolve(d, refund: true),
                   child: busy
                       ? const SizedBox(
                           height: 18,
@@ -143,7 +114,7 @@ class _AdminScreenState extends ConsumerState<AdminScreen> {
                             color: Colors.white,
                           ),
                         )
-                      : const Text('Approve'),
+                      : const Text('Refund'),
                 ),
               ),
             ],
@@ -153,31 +124,29 @@ class _AdminScreenState extends ConsumerState<AdminScreen> {
     );
   }
 
-  Future<void> _approve(KycSubmission k) async {
-    await _run(
-      k.id,
-      () => ref.read(kycRepositoryProvider).approve(k.id),
-      '${k.fullName} verified',
-    );
-  }
-
-  Future<void> _reject(KycSubmission k) async {
+  Future<void> _resolve(Dispute d, {required bool refund}) async {
     final noteCtrl = TextEditingController();
     try {
       final ok = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('Reject submission?'),
+          title: Text(
+            refund ? 'Refund the customer?' : 'Dismiss this dispute?',
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('The provider will be asked to re-submit.'),
+              Text(
+                refund
+                    ? 'Any funds held in escrow will be refunded to the customer.'
+                    : 'The dispute will be closed with no refund.',
+              ),
               const SizedBox(height: 12),
               TextField(
                 controller: noteCtrl,
                 maxLength: 500,
                 decoration: const InputDecoration(
-                  hintText: 'Reason (optional)',
+                  hintText: 'Note (optional)',
                   counterText: '',
                 ),
               ),
@@ -190,36 +159,22 @@ class _AdminScreenState extends ConsumerState<AdminScreen> {
             ),
             ElevatedButton(
               onPressed: () => Navigator.of(ctx).pop(true),
-              child: const Text('Reject'),
+              child: Text(refund ? 'Refund' : 'Dismiss'),
             ),
           ],
         ),
       );
       if (ok != true) return;
-      await _run(
-        k.id,
-        () =>
-            ref.read(kycRepositoryProvider).reject(k.id, noteCtrl.text.trim()),
-        'Submission rejected',
-      );
-    } finally {
-      noteCtrl.dispose();
-    }
-  }
-
-  Future<void> _run(
-    String id,
-    Future<KycSubmission> Function() op,
-    String okMsg,
-  ) async {
-    setState(() => _busyId = id);
-    try {
-      await op();
-      ref.invalidate(pendingKycProvider);
-      _snack(okMsg);
+      setState(() => _busyId = d.id);
+      await ref
+          .read(disputeRepositoryProvider)
+          .resolve(d.id, refund: refund, note: noteCtrl.text.trim());
+      ref.invalidate(openDisputesProvider);
+      _snack(refund ? 'Refunded and resolved.' : 'Dispute dismissed.');
     } catch (e) {
       _snack(e.toString());
     } finally {
+      noteCtrl.dispose();
       if (mounted) setState(() => _busyId = null);
     }
   }
@@ -227,24 +182,6 @@ class _AdminScreenState extends ConsumerState<AdminScreen> {
   void _snack(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-  }
-
-  Widget _row(IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: AppColors.textMuted),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(color: AppColors.textBody, fontSize: 13.5),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _spinner() => ListView(
@@ -269,16 +206,4 @@ class _AdminScreenState extends ConsumerState<AdminScreen> {
       ),
     ],
   );
-
-  static const _months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', //
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-  ];
-
-  String _fmtDate(DateTime dt) {
-    final h12 = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
-    final ampm = dt.hour < 12 ? 'AM' : 'PM';
-    final mm = dt.minute.toString().padLeft(2, '0');
-    return 'Submitted ${_months[dt.month - 1]} ${dt.day} · $h12:$mm $ampm';
-  }
 }
