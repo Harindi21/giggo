@@ -40,6 +40,30 @@ class AuthRepository {
     }
   }
 
+  /// Confirm an email with the 6-digit code sent at registration (P1.2).
+  Future<void> verifyEmail(String email, String code) async {
+    try {
+      await _dio.post(
+        '${ApiConfig.apiPrefix}/auth/verify-email',
+        data: {'email': email, 'code': code},
+      );
+    } on DioException catch (e) {
+      throw ApiException(_messageFrom(e));
+    }
+  }
+
+  /// Re-send the verification code to an email (P1.2).
+  Future<void> resendCode(String email) async {
+    try {
+      await _dio.post(
+        '${ApiConfig.apiPrefix}/auth/resend-verification',
+        data: {'email': email},
+      );
+    } on DioException catch (e) {
+      throw ApiException(_messageFrom(e));
+    }
+  }
+
   String _messageFrom(DioException e) {
     final data = e.response?.data;
     if (data is Map && data['message'] is String) {
