@@ -275,10 +275,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
       );
     }
     return Center(
-      child: TextButton(
-        onPressed: _resend,
-        child: const Text('Resend code'),
-      ),
+      child: TextButton(onPressed: _resend, child: const Text('Resend code')),
     );
   }
 }
