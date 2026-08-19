@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import com.giggo.backend.common.exception.ForbiddenOperationException;
 import com.giggo.backend.common.exception.ResourceNotFoundException;
 import com.giggo.backend.payment.domain.Payment;
 import com.giggo.backend.payment.domain.PaymentStatus;
+import com.giggo.backend.payment.event.PaymentCapturedEvent;
 import com.giggo.backend.payment.gateway.CheckoutSession;
 import com.giggo.backend.payment.gateway.PaymentGateway;
 import com.giggo.backend.payment.repository.PaymentRepository;
@@ -32,17 +34,20 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final BookingService bookingService;
+    private final ApplicationEventPublisher events;
     private final PaymentGateway gateway;
     private final BigDecimal commissionRate;
 
     public PaymentService(
             PaymentRepository paymentRepository,
             BookingService bookingService,
+            ApplicationEventPublisher events,
             List<PaymentGateway> gateways,
             @Value("${giggo.payments.gateway:stub}") String gatewayName,
             @Value("${giggo.payments.commission-rate:0.10}") BigDecimal commissionRate) {
         this.paymentRepository = paymentRepository;
         this.bookingService = bookingService;
+        this.events = events;
         this.gateway = gateways.stream()
                 .filter(g -> g.name().equalsIgnoreCase(gatewayName))
                 .findFirst()
@@ -94,7 +99,11 @@ public class PaymentService {
         }
         payment.setStatus(PaymentStatus.HELD);
         payment.setPaidAt(OffsetDateTime.now());
-        return paymentRepository.save(payment);
+        Payment saved = paymentRepository.save(payment);
+        // Tell the provider their money is now secured in escrow (P8).
+        events.publishEvent(new PaymentCapturedEvent(
+                saved.getBookingId(), saved.getProviderId(), saved.getCustomerId(), saved.getAmount()));
+        return saved;
     }
 
     /** Release escrow to the provider (minus commission) and settle the booking. */

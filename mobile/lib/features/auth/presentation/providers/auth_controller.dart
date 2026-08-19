@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/auth_repository.dart';
 import '../../data/models/login_request.dart';
 import '../../data/models/user_model.dart';
 import '../../../../core/storage/token_storage.dart';
+import '../../../notifications/data/push_registration.dart';
 
 class AuthState {
   final bool loading;
@@ -38,6 +41,9 @@ class AuthController extends Notifier<AuthState> {
         LoginRequest(email: email.trim(), password: password),
       );
       await _tokens.saveTokens(result.accessToken, result.refreshToken);
+      // Register this device for push once authenticated (fail-soft, off the
+      // critical path so it never blocks or fails sign-in).
+      unawaited(ref.read(pushRegistrationProvider).registerCurrentDevice());
       state = AuthState(user: result.user);
       return true;
     } catch (e) {

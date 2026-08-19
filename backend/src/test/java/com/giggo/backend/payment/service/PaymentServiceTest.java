@@ -16,8 +16,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import com.giggo.backend.booking.api.dto.BookingResponse;
 import com.giggo.backend.booking.domain.Booking;
@@ -26,6 +28,7 @@ import com.giggo.backend.booking.service.BookingService;
 import com.giggo.backend.common.exception.ForbiddenOperationException;
 import com.giggo.backend.payment.domain.Payment;
 import com.giggo.backend.payment.domain.PaymentStatus;
+import com.giggo.backend.payment.event.PaymentCapturedEvent;
 import com.giggo.backend.payment.gateway.StubPaymentGateway;
 import com.giggo.backend.payment.repository.PaymentRepository;
 
@@ -35,6 +38,7 @@ class PaymentServiceTest {
 
     @Mock PaymentRepository paymentRepository;
     @Mock BookingService bookingService;
+    @Mock ApplicationEventPublisher events;
 
     private PaymentService service;
 
@@ -48,6 +52,7 @@ class PaymentServiceTest {
         service = new PaymentService(
                 paymentRepository,
                 bookingService,
+                events,
                 List.of(new StubPaymentGateway("https://sandbox.local/checkout")),
                 "stub",
                 new BigDecimal("0.10"));
@@ -115,6 +120,20 @@ class PaymentServiceTest {
 
         assertThat(out.getStatus()).isEqualTo(PaymentStatus.HELD);
         assertThat(out.getPaidAt()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("confirm publishes a PaymentCapturedEvent naming the provider (P8)")
+    void confirmPublishesCapturedEvent() {
+        when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment(PaymentStatus.PENDING)));
+
+        service.confirm(customerId, paymentId);
+
+        ArgumentCaptor<PaymentCapturedEvent> captor = ArgumentCaptor.forClass(PaymentCapturedEvent.class);
+        verify(events).publishEvent(captor.capture());
+        assertThat(captor.getValue().providerId()).isEqualTo(providerUserId);
+        assertThat(captor.getValue().bookingId()).isEqualTo(bookingId);
+        assertThat(captor.getValue().amount()).isEqualByComparingTo("1000.00");
     }
 
     @Test
