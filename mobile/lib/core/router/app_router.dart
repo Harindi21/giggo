@@ -11,6 +11,7 @@ import '../../features/auth/presentation/screens/verify_email_screen.dart';
 import '../../features/booking/presentation/screens/booking_detail_screen.dart';
 import '../../features/booking/presentation/screens/booking_form_screen.dart';
 import '../../features/booking/presentation/screens/payment_screen.dart';
+import '../../features/booking/presentation/screens/receipt_screen.dart';
 import '../../features/booking/presentation/screens/tasks_tab_screen.dart';
 import '../../features/discovery/presentation/screens/home_screen.dart';
 import '../../features/discovery/presentation/screens/provider_detail_screen.dart';
@@ -91,6 +92,12 @@ final appRouter = GoRouter(
       name: 'payment',
       builder: (c, s) =>
           PaymentScreen(bookingId: s.pathParameters['bookingId']!),
+    ),
+    GoRoute(
+      path: '/receipt/:bookingId',
+      name: 'receipt',
+      builder: (c, s) =>
+          ReceiptScreen(bookingId: s.pathParameters['bookingId']!),
     ),
     GoRoute(
       path: '/notifications',

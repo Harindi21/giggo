@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -39,6 +40,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         payment = await repo.confirmPayment(payment.id);
       }
       ref.invalidate(bookingPaymentProvider(_id));
+      ref.invalidate(bookingReceiptProvider(_id));
       _snack('Payment secured — held safely in escrow.');
     } catch (e) {
       setState(() => _error = e.toString());
@@ -55,6 +57,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     try {
       await ref.read(bookingRepositoryProvider).releasePayment(payment.id);
       ref.invalidate(bookingPaymentProvider(_id));
+      ref.invalidate(bookingReceiptProvider(_id));
       ref.invalidate(bookingDetailProvider(_id));
       ref.invalidate(bookingTimelineProvider(_id));
       _snack('Released to the provider. Thank you!');
@@ -112,6 +115,11 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                 _summaryCard(payment, total),
                 const SizedBox(height: 16),
                 _escrowNote(stage),
+                if (payment != null &&
+                    (payment.isHeld || payment.isReleased)) ...[
+                  const SizedBox(height: 16),
+                  _receiptLink(),
+                ],
                 if (_error != null) ...[
                   const SizedBox(height: 12),
                   Text(_error!, style: const TextStyle(color: AppColors.error)),
@@ -234,6 +242,48 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _receiptLink() {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppTheme.radiusCard),
+        onTap: () => context.push('/receipt/$_id'),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(AppTheme.radiusCard),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.receipt_long_outlined,
+                size: 20,
+                color: AppColors.primary,
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'View receipt',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+              const Icon(
+                Icons.chevron_right,
+                color: AppColors.textMuted,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

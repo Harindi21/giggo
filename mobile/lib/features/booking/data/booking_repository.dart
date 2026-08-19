@@ -6,6 +6,7 @@ import '../../../core/network/api_exception.dart';
 import '../../../core/network/dio_client.dart';
 import 'models/booking_models.dart';
 import 'models/payment_models.dart';
+import 'models/receipt_models.dart';
 
 class BookingRepository {
   final Dio _dio;
@@ -186,6 +187,21 @@ class BookingRepository {
       );
       return Payment.fromJson(res.data['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
+  /// Receipt / invoice for a paid booking (P4.12-4.14). Available once funds are
+  /// captured; returns null while the booking is unpaid (backend 400/404).
+  Future<Receipt?> getReceipt(String bookingId) async {
+    try {
+      final res = await _dio.get(
+        '${ApiConfig.apiPrefix}/bookings/$bookingId/receipt',
+      );
+      return Receipt.fromJson(res.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      final code = e.response?.statusCode;
+      if (code == 400 || code == 404) return null;
       throw ApiException(_message(e));
     }
   }
