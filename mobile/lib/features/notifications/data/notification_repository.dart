@@ -49,6 +49,19 @@ class NotificationRepository {
     }
   }
 
+  /// Register (or refresh) this device's push token so the backend can deliver
+  /// pushes to it (P8.1). [platform] is one of ANDROID | IOS | WEB.
+  Future<void> registerDeviceToken(String token, String platform) async {
+    try {
+      await _dio.post(
+        '${ApiConfig.apiPrefix}/notifications/device-tokens',
+        data: {'token': token, 'platform': platform},
+      );
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
   String _message(DioException e) {
     final data = e.response?.data;
     if (data is Map && data['message'] is String) {
