@@ -20,12 +20,12 @@ Monorepo, three services:
 - **Flutter** app (Riverpod, GoRouter, Dio) — customer + provider, one role-aware UI.
 - **Spring Boot** API (Java 21, JWT, JPA, Flyway) — domain-driven modules.
 - **FastAPI** ML service (Python) — sentiment + recommender.
-- **PostgreSQL** (17 Flyway migrations) + **Redis**; real-time via **STOMP/WebSocket**.
+- **PostgreSQL** (23 Flyway migrations) + **Redis**; real-time via **STOMP/WebSocket**.
 
-Every external dependency (Google Maps, PayHere, FCM, RoBERTa, LightFM) sits
-behind an **adapter with a working stub default**, selected by config — the
-system runs fully with **zero paid API keys**, and swapping in a real provider is
-a one-line change.
+Every paid external dependency (PayHere, FCM, RoBERTa, LightFM) sits behind an
+**adapter with a working stub default**, selected by config — the system runs
+fully with **zero paid API keys** (maps use keyless **OpenStreetMap**), and
+swapping in a real provider is a one-line change.
 
 ## AI / ML (4 of 5 built; #4 is Phase-2 by design)
 1. **Multilingual review sentiment** — VADER + optional RoBERTa, with a
@@ -38,14 +38,20 @@ a one-line change.
 5. **Fair ranking** — regional-diversity post-processor for equitable exposure.
 
 ## Selected engineering
-- **Booking lifecycle** state machine with an auditable status timeline.
-- **Escrow payments** (capture → hold → release, platform-commission split).
+- **Booking lifecycle** state machine with an auditable status timeline, plus
+  disputes, rule-based **anti-fraud guards**, and a **receipt/invoice**.
+- **Escrow payments** (capture → hold → release, platform-commission split),
+  reused for the Tool Marketplace's direct-sale orders.
 - **Real-time tracking** — JWT-authenticated WebSocket, consent-gated location,
-  Haversine ETA.
-- **Event-driven notifications** — after-commit, per-recipient, push seam.
-- **Process** — one task per branch → PR → merge; conventional commits; ~74
-  backend tests + a Python ML test suite; DB migrations only (no drift);
-  fail-soft cross-service calls.
+  Haversine ETA, on a live **OpenStreetMap**.
+- **Event-driven notifications** — after-commit, per-recipient, push seam, with
+  in-app device-token registration.
+- **Two-sided by design** — provider self-service profile (rates, service area,
+  skills, availability), KYC verification, and an admin console (KYC, disputes,
+  review moderation).
+- **Process** — one task per branch → PR → merge; conventional commits; ~120
+  backend + 42 Flutter + 21 ML tests (incl. a full-context Testcontainers run);
+  DB migrations only (no drift); fail-soft cross-service calls; **9 ADRs**.
 
 ## Tech stack
 `Flutter` · `Riverpod` · `Dart` · `Java 21` · `Spring Boot` · `Spring Security
@@ -53,12 +59,14 @@ a one-line change.
 · `Python` · `FastAPI` · `VADER` · `RoBERTa (transformers)` · `Docker`
 
 ## Status
-Showcase-complete and demoable end to end, both roles: discovery + recommendation,
-booking + job lifecycle (with expiry/cancel/refund), live tracking, reviews/NLP,
-escrow payments, notifications, provider KYC + admin review, Knowledge Hub and
-Tool Marketplace. All four app tabs are real; ~96 backend tests + a Python ML
-suite, 20 DB migrations, all green. Remaining for GA: real provider keys (maps,
-PayHere, FCM), Testcontainers CI, and deploy/store listings — each a config-level
-swap behind an existing seam. See [`STATUS.md`](STATUS.md) for the full
-built-vs-GA breakdown, [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md) to run it, and
-[`TIDAC_PAPER_OUTLINE.md`](TIDAC_PAPER_OUTLINE.md) for the research framing.
+Showcase-complete: the full **P0–P13** roadmap is delivered end-to-end on both
+roles — discovery + recommendation, booking + job lifecycle (expiry/cancel/refund,
+disputes, receipts), live tracking, reviews/NLP + moderation, escrow payments,
+notifications, provider self-service profile + KYC, admin console, Knowledge Hub,
+and Tool Marketplace (with escrow-backed orders). All four app tabs are real;
+~120 backend + 42 Flutter + 21 ML tests, 23 DB migrations, a full-context
+Testcontainers run, all green. Remaining is post-showcase: **AI #4 demand
+forecasting** (Phase 2, seam in place), real provider keys, and deeper `en`/`si`
+localization — each a config-level or additive change behind an existing seam.
+See [`STATUS.md`](STATUS.md) for the full breakdown, [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md)
+to run it, and [`TIDAC_PAPER_OUTLINE.md`](TIDAC_PAPER_OUTLINE.md) for the research framing.
