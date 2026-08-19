@@ -407,8 +407,9 @@ class _Invoice extends StatelessWidget {
       ..writeln('GIGGO — Payment receipt')
       ..writeln('Receipt no. ${receipt.receiptNumber}')
       ..writeln(receipt.isReleased ? 'Status: PAID' : 'Status: IN ESCROW');
-    if (receipt.issuedAt != null)
+    if (receipt.issuedAt != null) {
       b.writeln('Issued: ${_dateTime(receipt.issuedAt!)}');
+    }
     b
       ..writeln('Billed to: ${receipt.customerName ?? '—'}')
       ..writeln('Service by: ${receipt.providerName ?? '—'}')
