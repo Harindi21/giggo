@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.giggo.backend.common.dto.ApiResponse;
 import com.giggo.backend.payment.api.dto.PaymentResponse;
+import com.giggo.backend.payment.api.dto.ReceiptResponse;
 import com.giggo.backend.payment.service.PaymentService;
 import com.giggo.backend.payment.service.PaymentService.PaymentResult;
+import com.giggo.backend.payment.service.ReceiptService;
 import com.giggo.backend.user.domain.User;
 
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final ReceiptService receiptService;
 
     /** Start payment for a completed booking; returns a checkout session. */
     @PostMapping("/bookings/{bookingId}/payment")
@@ -43,6 +46,13 @@ public class PaymentController {
     public ApiResponse<PaymentResponse> get(
             @AuthenticationPrincipal User user, @PathVariable UUID bookingId) {
         return ApiResponse.ok(PaymentResponse.from(paymentService.getByBooking(user.getId(), bookingId)));
+    }
+
+    /** Receipt / invoice for a paid booking, once funds are captured (participants only). */
+    @GetMapping("/bookings/{bookingId}/receipt")
+    public ApiResponse<ReceiptResponse> receipt(
+            @AuthenticationPrincipal User user, @PathVariable UUID bookingId) {
+        return ApiResponse.ok(receiptService.forBooking(user.getId(), bookingId));
     }
 
     /** Gateway capture callback (stubbed): move funds into escrow. */

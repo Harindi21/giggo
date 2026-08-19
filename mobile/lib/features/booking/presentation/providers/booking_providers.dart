@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/booking_repository.dart';
 import '../../data/models/booking_models.dart';
 import '../../data/models/payment_models.dart';
+import '../../data/models/receipt_models.dart';
 
 /// All bookings the signed-in user is part of (customer or provider).
 final myBookingsProvider = FutureProvider<List<Booking>>((ref) {
@@ -26,4 +27,12 @@ final bookingPaymentProvider = FutureProvider.family<Payment?, String>((
   bookingId,
 ) {
   return ref.watch(bookingRepositoryProvider).getPayment(bookingId);
+});
+
+/// Receipt for a booking (null until the payment is captured).
+final bookingReceiptProvider = FutureProvider.family<Receipt?, String>((
+  ref,
+  bookingId,
+) {
+  return ref.watch(bookingRepositoryProvider).getReceipt(bookingId);
 });
