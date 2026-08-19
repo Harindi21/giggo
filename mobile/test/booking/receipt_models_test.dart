@@ -40,17 +40,20 @@ void main() {
     expect(r.issuedAt, isNotNull);
   });
 
-  test('isReleased reflects a settled payment and defaults hold gracefully', () {
-    final released = Receipt.fromJson({
-      'receiptNumber': 'GIG-202608-DEADBEEF',
-      'bookingId': 'b1',
-      'paymentId': 'p1',
-      'total': 1000,
-      'paymentStatus': 'RELEASED',
-    });
-    expect(released.isReleased, isTrue);
-    expect(released.currency, 'LKR'); // default
-    expect(released.gateway, 'stub'); // default
-    expect(released.basePrice, 0); // absent numbers default to 0
-  });
+  test(
+    'isReleased reflects a settled payment and defaults hold gracefully',
+    () {
+      final released = Receipt.fromJson({
+        'receiptNumber': 'GIG-202608-DEADBEEF',
+        'bookingId': 'b1',
+        'paymentId': 'p1',
+        'total': 1000,
+        'paymentStatus': 'RELEASED',
+      });
+      expect(released.isReleased, isTrue);
+      expect(released.currency, 'LKR'); // default
+      expect(released.gateway, 'stub'); // default
+      expect(released.basePrice, 0); // absent numbers default to 0
+    },
+  );
 }

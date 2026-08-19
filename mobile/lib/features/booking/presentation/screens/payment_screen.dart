@@ -277,10 +277,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                   ),
                 ),
               ),
-              const Icon(
-                Icons.chevron_right,
-                color: AppColors.textMuted,
-              ),
+              const Icon(Icons.chevron_right, color: AppColors.textMuted),
             ],
           ),
         ),

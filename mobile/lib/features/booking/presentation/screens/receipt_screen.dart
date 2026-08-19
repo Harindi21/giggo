@@ -289,7 +289,10 @@ class _Invoice extends StatelessWidget {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(k, style: const TextStyle(fontSize: 12.5, color: AppColors.textMuted)),
+        Text(
+          k,
+          style: const TextStyle(fontSize: 12.5, color: AppColors.textMuted),
+        ),
         Text(
           v,
           style: const TextStyle(
@@ -374,7 +377,10 @@ class _Invoice extends StatelessWidget {
   Widget _split0(String label, String value) => Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      Text(label, style: const TextStyle(fontSize: 13, color: AppColors.textBody)),
+      Text(
+        label,
+        style: const TextStyle(fontSize: 13, color: AppColors.textBody),
+      ),
       Text(
         value,
         style: const TextStyle(
@@ -401,7 +407,8 @@ class _Invoice extends StatelessWidget {
       ..writeln('GIGGO — Payment receipt')
       ..writeln('Receipt no. ${receipt.receiptNumber}')
       ..writeln(receipt.isReleased ? 'Status: PAID' : 'Status: IN ESCROW');
-    if (receipt.issuedAt != null) b.writeln('Issued: ${_dateTime(receipt.issuedAt!)}');
+    if (receipt.issuedAt != null)
+      b.writeln('Issued: ${_dateTime(receipt.issuedAt!)}');
     b
       ..writeln('Billed to: ${receipt.customerName ?? '—'}')
       ..writeln('Service by: ${receipt.providerName ?? '—'}')
