@@ -50,6 +50,8 @@ class ProfileScreen extends ConsumerWidget {
             _ReadOnlyRow(label: 'Role', value: user.role),
             if (user.role == 'PROVIDER') ...[
               const SizedBox(height: 8),
+              _providerProfileTile(context),
+              const SizedBox(height: 8),
               _verificationTile(context, ref),
             ],
             if (user.role == 'ADMIN') ...[
@@ -58,6 +60,31 @@ class ProfileScreen extends ConsumerWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _providerProfileTile(BuildContext context) {
+    return Card(
+      child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        leading: const CircleAvatar(
+          backgroundColor: AppColors.primary,
+          child: Icon(Icons.badge_outlined, color: Colors.white),
+        ),
+        title: const Text(
+          'My provider profile',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        subtitle: const Text(
+          'Bio, rates, service area, skills & availability',
+          style: TextStyle(color: AppColors.textMuted),
+        ),
+        trailing: const Icon(Icons.chevron_right, color: AppColors.textMuted),
+        onTap: () => context.push('/provider-profile'),
       ),
     );
   }
