@@ -61,29 +61,30 @@ class ProviderProfile {
 
   List<String> get skillIds => skills.map((s) => s.id).toList();
 
-  factory ProviderProfile.fromJson(Map<String, dynamic> json) => ProviderProfile(
-    id: json['id'] as String,
-    userId: json['userId'] as String,
-    fullName: json['fullName'] as String? ?? '',
-    bio: json['bio'] as String?,
-    yearsExperience: (json['yearsExperience'] as num?)?.toInt() ?? 0,
-    available: json['available'] as bool? ?? true,
-    headline: json['headline'] as String?,
-    district: json['district'] as String?,
-    addressLine: json['addressLine'] as String?,
-    latitude: _toDoubleN(json['latitude']),
-    longitude: _toDoubleN(json['longitude']),
-    basePrice: _toDouble(json['basePrice']),
-    hourlyRate: _toDouble(json['hourlyRate']),
-    avgRating: _toDouble(json['avgRating']),
-    ratingCount: (json['ratingCount'] as num?)?.toInt() ?? 0,
-    jobsCompleted: (json['jobsCompleted'] as num?)?.toInt() ?? 0,
-    verified: json['verified'] as bool? ?? false,
-    avatarUrl: json['avatarUrl'] as String?,
-    skills: (json['skills'] as List<dynamic>? ?? [])
-        .map((e) => ProfileSkill.fromJson(e as Map<String, dynamic>))
-        .toList(),
-  );
+  factory ProviderProfile.fromJson(Map<String, dynamic> json) =>
+      ProviderProfile(
+        id: json['id'] as String,
+        userId: json['userId'] as String,
+        fullName: json['fullName'] as String? ?? '',
+        bio: json['bio'] as String?,
+        yearsExperience: (json['yearsExperience'] as num?)?.toInt() ?? 0,
+        available: json['available'] as bool? ?? true,
+        headline: json['headline'] as String?,
+        district: json['district'] as String?,
+        addressLine: json['addressLine'] as String?,
+        latitude: _toDoubleN(json['latitude']),
+        longitude: _toDoubleN(json['longitude']),
+        basePrice: _toDouble(json['basePrice']),
+        hourlyRate: _toDouble(json['hourlyRate']),
+        avgRating: _toDouble(json['avgRating']),
+        ratingCount: (json['ratingCount'] as num?)?.toInt() ?? 0,
+        jobsCompleted: (json['jobsCompleted'] as num?)?.toInt() ?? 0,
+        verified: json['verified'] as bool? ?? false,
+        avatarUrl: json['avatarUrl'] as String?,
+        skills: (json['skills'] as List<dynamic>? ?? [])
+            .map((e) => ProfileSkill.fromJson(e as Map<String, dynamic>))
+            .toList(),
+      );
 }
 
 /// The editable fields sent to PUT /provider/profile.

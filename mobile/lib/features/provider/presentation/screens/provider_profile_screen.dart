@@ -18,8 +18,7 @@ class ProviderProfileScreen extends ConsumerStatefulWidget {
       _ProviderProfileScreenState();
 }
 
-class _ProviderProfileScreenState
-    extends ConsumerState<ProviderProfileScreen> {
+class _ProviderProfileScreenState extends ConsumerState<ProviderProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _headlineCtrl = TextEditingController();
   final _bioCtrl = TextEditingController();
@@ -78,7 +77,9 @@ class _ProviderProfileScreenState
     setState(() => _error = null);
     if (!_formKey.currentState!.validate()) return;
     if (_selectedSkillIds.isEmpty) {
-      setState(() => _error = 'Pick at least one skill so customers can find you.');
+      setState(
+        () => _error = 'Pick at least one skill so customers can find you.',
+      );
       return;
     }
     setState(() => _saving = true);
@@ -96,12 +97,14 @@ class _ProviderProfileScreenState
         available: _available,
         skillIds: _selectedSkillIds.toList(),
       );
-      await ref.read(myProviderProfileRepositoryProvider).updateMyProfile(update);
+      await ref
+          .read(myProviderProfileRepositoryProvider)
+          .updateMyProfile(update);
       ref.invalidate(myProviderProfileProvider);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile saved.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Profile saved.')));
       Navigator.of(context).maybePop();
     } catch (e) {
       setState(() => _error = e.toString());
@@ -174,7 +177,8 @@ class _ProviderProfileScreenState
             maxLength: 1000,
             maxLines: 4,
             decoration: const InputDecoration(
-              hintText: 'Tell customers about your experience and what you offer.',
+              hintText:
+                  'Tell customers about your experience and what you offer.',
             ),
           ),
           const SizedBox(height: 8),
@@ -193,9 +197,8 @@ class _ProviderProfileScreenState
             controller: _districtCtrl,
             textCapitalization: TextCapitalization.words,
             decoration: const InputDecoration(hintText: 'e.g. Colombo'),
-            validator: (v) => (v == null || v.trim().isEmpty)
-                ? 'Enter your district'
-                : null,
+            validator: (v) =>
+                (v == null || v.trim().isEmpty) ? 'Enter your district' : null,
           ),
           const SizedBox(height: 16),
           _label('Base address (optional)'),
@@ -283,14 +286,20 @@ class _ProviderProfileScreenState
                     const SizedBox(width: 4),
                     Text(
                       p.verified ? 'KYC verified' : 'Not yet verified',
-                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
           ),
-          _stat('${p.avgRating.toStringAsFixed(1)}★', '${p.ratingCount} reviews'),
+          _stat(
+            '${p.avgRating.toStringAsFixed(1)}★',
+            '${p.ratingCount} reviews',
+          ),
           const SizedBox(width: 16),
           _stat('${p.jobsCompleted}', 'jobs done'),
         ],
@@ -308,7 +317,10 @@ class _ProviderProfileScreenState
           fontSize: 16,
         ),
       ),
-      Text(label, style: const TextStyle(color: Colors.white70, fontSize: 10.5)),
+      Text(
+        label,
+        style: const TextStyle(color: Colors.white70, fontSize: 10.5),
+      ),
     ],
   );
 
@@ -401,22 +413,19 @@ class _ProviderProfileScreenState
     },
   );
 
-  Widget _priceField(
-    TextEditingController c,
-    String label,
-    String required,
-  ) => TextFormField(
-    controller: c,
-    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-    decoration: InputDecoration(labelText: label, prefixText: 'Rs. '),
-    validator: (v) {
-      final t = (v ?? '').trim();
-      if (t.isEmpty) return '$required required';
-      final d = double.tryParse(t);
-      if (d == null || d < 0) return 'Invalid';
-      return null;
-    },
-  );
+  Widget _priceField(TextEditingController c, String label, String required) =>
+      TextFormField(
+        controller: c,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        decoration: InputDecoration(labelText: label, prefixText: 'Rs. '),
+        validator: (v) {
+          final t = (v ?? '').trim();
+          if (t.isEmpty) return '$required required';
+          final d = double.tryParse(t);
+          if (d == null || d < 0) return 'Invalid';
+          return null;
+        },
+      );
 
   Widget _label(String text) => Padding(
     padding: const EdgeInsets.only(bottom: 6),
