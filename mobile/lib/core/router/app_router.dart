@@ -25,6 +25,7 @@ import '../../features/marketplace/presentation/screens/shop_screen.dart';
 import '../../features/marketplace/presentation/screens/tool_detail_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/provider/presentation/screens/provider_profile_screen.dart';
 import '../../features/reviews/presentation/screens/rate_review_screen.dart';
 import '../../features/tracking/presentation/screens/tracking_screen.dart';
 import '../widgets/main_scaffold.dart';
@@ -105,6 +106,11 @@ final appRouter = GoRouter(
       builder: (c, s) => const NotificationsScreen(),
     ),
     GoRoute(path: '/kyc', name: 'kyc', builder: (c, s) => const KycScreen()),
+    GoRoute(
+      path: '/provider-profile',
+      name: 'provider-profile',
+      builder: (c, s) => const ProviderProfileScreen(),
+    ),
     GoRoute(
       path: '/admin',
       name: 'admin',
