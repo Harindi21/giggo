@@ -20,4 +20,7 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
 
     /** How many bookings a customer currently has open, for the anti-fraud throttle (P6.4). */
     long countByCustomerIdAndStatusIn(UUID customerId, Collection<JobStatus> statuses);
+
+    /** A provider's bookings in the given states, for double-booking checks (P3.3). */
+    List<Booking> findByProviderIdAndStatusIn(UUID providerId, Collection<JobStatus> statuses);
 }

@@ -5,10 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,6 +29,7 @@ import com.giggo.backend.booking.domain.Booking;
 import com.giggo.backend.booking.domain.JobStatus;
 import com.giggo.backend.booking.repository.BookingRepository;
 import com.giggo.backend.booking.repository.BookingStatusEventRepository;
+import com.giggo.backend.common.exception.DuplicateResourceException;
 import com.giggo.backend.common.exception.ForbiddenOperationException;
 import com.giggo.backend.common.exception.ResourceNotFoundException;
 import com.giggo.backend.common.exception.TooManyRequestsException;
@@ -34,6 +37,7 @@ import com.giggo.backend.provider.domain.ProviderProfile;
 import com.giggo.backend.provider.domain.Skill;
 import com.giggo.backend.provider.repository.ProviderProfileRepository;
 import com.giggo.backend.provider.repository.SkillRepository;
+import com.giggo.backend.provider.service.AvailabilityService;
 import com.giggo.backend.user.domain.User;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +49,7 @@ class BookingServiceTest {
     @Mock ProviderProfileRepository providerRepository;
     @Mock SkillRepository skillRepository;
     @Mock PricingService pricingService;
+    @Mock AvailabilityService availabilityService;
     @Mock ApplicationEventPublisher events;
 
     private BookingService service;
@@ -57,7 +62,7 @@ class BookingServiceTest {
     @BeforeEach
     void setUp() {
         service = new BookingService(bookingRepository, eventRepository, providerRepository,
-                skillRepository, pricingService, events);
+                skillRepository, pricingService, availabilityService, events);
     }
 
     private ProviderProfile providerProfile() {
@@ -113,6 +118,37 @@ class BookingServiceTest {
 
         assertThatThrownBy(() -> service.create(customerId, request()))
                 .isInstanceOf(TooManyRequestsException.class);
+    }
+
+    @Test
+    @DisplayName("rejects a slot that overlaps a booking the provider is committed to")
+    void rejectsDoubleBooking() {
+        when(providerRepository.findById(providerProfileId)).thenReturn(Optional.of(providerProfile()));
+        when(skillRepository.findById(skillId)).thenReturn(Optional.of(
+                Skill.builder().id(skillId).name("Plumbing").build()));
+        Booking clash = Booking.builder()
+                .id(UUID.randomUUID()).customerId(UUID.randomUUID()).providerId(providerUserId)
+                .skillId(skillId).status(JobStatus.ACCEPTED)
+                .scheduledAt(OffsetDateTime.now().plusDays(1)).estimatedHours(new BigDecimal("2"))
+                .build();
+        when(bookingRepository.findByProviderIdAndStatusIn(eq(providerUserId), any()))
+                .thenReturn(List.of(clash));
+
+        assertThatThrownBy(() -> service.create(customerId, request()))
+                .isInstanceOf(DuplicateResourceException.class);
+    }
+
+    @Test
+    @DisplayName("rejects a slot outside the provider's working hours")
+    void rejectsOutsideWorkingHours() {
+        when(providerRepository.findById(providerProfileId)).thenReturn(Optional.of(providerProfile()));
+        when(skillRepository.findById(skillId)).thenReturn(Optional.of(
+                Skill.builder().id(skillId).name("Plumbing").build()));
+        doThrow(new IllegalArgumentException("The provider isn't available at that time."))
+                .when(availabilityService).assertWithinWorkingHours(any(), any(), any());
+
+        assertThatThrownBy(() -> service.create(customerId, request()))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

@@ -19,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
+import com.giggo.backend.provider.service.AvailabilityService;
+
 import com.giggo.backend.booking.domain.Booking;
 import com.giggo.backend.booking.domain.BookingStatusEvent;
 import com.giggo.backend.booking.domain.JobStatus;
@@ -37,6 +39,7 @@ class BookingLifecycleTest {
     @Mock ProviderProfileRepository providerRepository;
     @Mock SkillRepository skillRepository;
     @Mock PricingService pricingService;
+    @Mock AvailabilityService availabilityService;
     @Mock ApplicationEventPublisher events;
 
     private BookingService service;
@@ -48,7 +51,7 @@ class BookingLifecycleTest {
     @BeforeEach
     void setUp() {
         service = new BookingService(bookingRepository, eventRepository, providerRepository,
-                skillRepository, pricingService, events);
+                skillRepository, pricingService, availabilityService, events);
         lenient().when(bookingRepository.save(any(Booking.class))).thenAnswer(inv -> inv.getArgument(0));
     }
 
