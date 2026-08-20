@@ -1,5 +1,6 @@
 package com.giggo.backend.booking.service;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.EnumSet;
 import java.util.List;
@@ -23,6 +24,7 @@ import com.giggo.backend.booking.domain.JobStatus;
 import com.giggo.backend.booking.event.BookingStatusChangedEvent;
 import com.giggo.backend.booking.repository.BookingRepository;
 import com.giggo.backend.booking.repository.BookingStatusEventRepository;
+import com.giggo.backend.common.exception.DuplicateResourceException;
 import com.giggo.backend.common.exception.ForbiddenOperationException;
 import com.giggo.backend.common.exception.ResourceNotFoundException;
 import com.giggo.backend.common.exception.TooManyRequestsException;
@@ -30,6 +32,7 @@ import com.giggo.backend.provider.domain.ProviderProfile;
 import com.giggo.backend.provider.domain.Skill;
 import com.giggo.backend.provider.repository.ProviderProfileRepository;
 import com.giggo.backend.provider.repository.SkillRepository;
+import com.giggo.backend.provider.service.AvailabilityService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,11 +47,16 @@ public class BookingService {
     private static final Set<JobStatus> OPEN_STATUSES =
             EnumSet.of(JobStatus.REQUESTED, JobStatus.ACCEPTED, JobStatus.EN_ROUTE, JobStatus.STARTED);
 
+    /** Bookings a provider is committed to; a new booking may not overlap these (P3.3). */
+    private static final Set<JobStatus> COMMITTED_STATUSES =
+            EnumSet.of(JobStatus.ACCEPTED, JobStatus.EN_ROUTE, JobStatus.STARTED);
+
     private final BookingRepository bookingRepository;
     private final BookingStatusEventRepository eventRepository;
     private final ProviderProfileRepository providerRepository;
     private final SkillRepository skillRepository;
     private final PricingService pricingService;
+    private final AvailabilityService availabilityService;
     private final ApplicationEventPublisher events;
 
     /** Cap on concurrent open bookings per customer; blocks request-flooding (P6.4). */
@@ -69,6 +77,9 @@ public class BookingService {
         }
         Skill skill = skillRepository.findById(req.skillId())
                 .orElseThrow(() -> new ResourceNotFoundException("Service not found"));
+
+        availabilityService.assertWithinWorkingHours(providerUserId, req.scheduledAt(), req.estimatedHours());
+        assertNoDoubleBooking(providerUserId, req.scheduledAt(), req.estimatedHours());
 
         PricingBreakdownResponse price = pricingService.calculate(
                 provider, req.estimatedHours(), req.latitude(), req.longitude());
@@ -251,6 +262,23 @@ public class BookingService {
         Booking saved = bookingRepository.save(booking);
         recordEvent(saved.getId(), saved.getStatus(), OffsetDateTime.now());
         return respond(saved);
+    }
+
+    /** Reject a booking whose time window overlaps one the provider is already committed to (P3.3). */
+    private void assertNoDoubleBooking(UUID providerUserId, OffsetDateTime scheduledAt, BigDecimal hours) {
+        OffsetDateTime newStart = scheduledAt;
+        OffsetDateTime newEnd = scheduledAt.plusMinutes(durationMinutes(hours));
+        for (Booking existing : bookingRepository.findByProviderIdAndStatusIn(providerUserId, COMMITTED_STATUSES)) {
+            OffsetDateTime start = existing.getScheduledAt();
+            OffsetDateTime end = start.plusMinutes(durationMinutes(existing.getEstimatedHours()));
+            if (newStart.isBefore(end) && start.isBefore(newEnd)) {
+                throw new DuplicateResourceException("The provider is already booked for that time slot.");
+            }
+        }
+    }
+
+    private static long durationMinutes(BigDecimal hours) {
+        return hours.multiply(BigDecimal.valueOf(60)).longValue();
     }
 
     private void recordEvent(UUID bookingId, JobStatus status, OffsetDateTime at) {

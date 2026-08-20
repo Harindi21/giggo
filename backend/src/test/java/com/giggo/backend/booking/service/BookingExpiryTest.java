@@ -16,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
+import com.giggo.backend.provider.service.AvailabilityService;
+
 import com.giggo.backend.booking.domain.Booking;
 import com.giggo.backend.booking.domain.JobStatus;
 import com.giggo.backend.booking.event.BookingStatusChangedEvent;
@@ -33,6 +35,7 @@ class BookingExpiryTest {
     @Mock ProviderProfileRepository providerRepository;
     @Mock SkillRepository skillRepository;
     @Mock PricingService pricingService;
+    @Mock AvailabilityService availabilityService;
     @Mock ApplicationEventPublisher events;
 
     private BookingService service;
@@ -40,7 +43,7 @@ class BookingExpiryTest {
     @BeforeEach
     void setUp() {
         service = new BookingService(bookingRepository, eventRepository, providerRepository,
-                skillRepository, pricingService, events);
+                skillRepository, pricingService, availabilityService, events);
     }
 
     @Test
