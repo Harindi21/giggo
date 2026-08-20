@@ -73,7 +73,9 @@ class _AvailabilityScreenState extends ConsumerState<AvailabilityScreen> {
       final d = _days[i];
       if (!d.open) continue;
       if (_minutes(d.start) >= _minutes(d.end)) {
-        setState(() => _error = '${_labels[i]}: start time must be before end time.');
+        setState(
+          () => _error = '${_labels[i]}: start time must be before end time.',
+        );
         return;
       }
       payload.add(WorkingHour(dayOfWeek: i + 1, start: d.start, end: d.end));
@@ -83,9 +85,9 @@ class _AvailabilityScreenState extends ConsumerState<AvailabilityScreen> {
       await ref.read(availabilityRepositoryProvider).setMyAvailability(payload);
       ref.invalidate(myAvailabilityProvider);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Working hours saved.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Working hours saved.')));
       Navigator.of(context).maybePop();
     } catch (e) {
       setState(() => _error = e.toString());
@@ -192,7 +194,10 @@ class _AvailabilityScreenState extends ConsumerState<AvailabilityScreen> {
                 _timeChip(d.start.format(context), () => _pick(i, true)),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 6),
-                  child: Text('–', style: TextStyle(color: AppColors.textMuted)),
+                  child: Text(
+                    '–',
+                    style: TextStyle(color: AppColors.textMuted),
+                  ),
                 ),
                 _timeChip(d.end.format(context), () => _pick(i, false)),
               ],
