@@ -22,14 +22,15 @@ class EarningsSummary {
 
   bool get canWithdraw => available > 0;
 
-  factory EarningsSummary.fromJson(Map<String, dynamic> json) => EarningsSummary(
-    available: _toDouble(json['available']),
-    inEscrow: _toDouble(json['inEscrow']),
-    pendingWithdrawal: _toDouble(json['pendingWithdrawal']),
-    withdrawn: _toDouble(json['withdrawn']),
-    lifetimeEarned: _toDouble(json['lifetimeEarned']),
-    currency: json['currency'] as String? ?? 'LKR',
-  );
+  factory EarningsSummary.fromJson(Map<String, dynamic> json) =>
+      EarningsSummary(
+        available: _toDouble(json['available']),
+        inEscrow: _toDouble(json['inEscrow']),
+        pendingWithdrawal: _toDouble(json['pendingWithdrawal']),
+        withdrawn: _toDouble(json['withdrawn']),
+        lifetimeEarned: _toDouble(json['lifetimeEarned']),
+        currency: json['currency'] as String? ?? 'LKR',
+      );
 }
 
 /// A provider withdrawal (mirrors the backend PayoutResponse).

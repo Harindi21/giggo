@@ -50,10 +50,7 @@ class EarningsRepository {
   /// Request a withdrawal; a null amount withdraws the full available balance.
   Future<Payout> requestPayout({double? amount}) async {
     try {
-      final res = await _dio.post(
-        '$_base/payouts',
-        data: {'amount': ?amount},
-      );
+      final res = await _dio.post('$_base/payouts', data: {'amount': ?amount});
       return Payout.fromJson(res.data['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw ApiException(_message(e));

@@ -72,7 +72,10 @@ class ProfileScreen extends ConsumerWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         leading: const CircleAvatar(
           backgroundColor: AppColors.primary,
-          child: Icon(Icons.account_balance_wallet_outlined, color: Colors.white),
+          child: Icon(
+            Icons.account_balance_wallet_outlined,
+            color: Colors.white,
+          ),
         ),
         title: const Text(
           'Earnings',

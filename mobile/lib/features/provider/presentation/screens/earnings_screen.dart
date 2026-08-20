@@ -53,7 +53,9 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen> {
             TextField(
               controller: ctrl,
               autofocus: true,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
               ],
@@ -97,9 +99,9 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen> {
           .requestPayout(amount: full ? null : amount);
       await _refresh();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Withdrawal requested.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Withdrawal requested.')));
       }
     } catch (e) {
       if (mounted) {
@@ -246,9 +248,7 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen> {
         if (payouts.isEmpty) {
           return _muted('No withdrawals yet.');
         }
-        return Column(
-          children: [for (final p in payouts) _payoutTile(p)],
-        );
+        return Column(children: [for (final p in payouts) _payoutTile(p)]);
       },
     );
   }
@@ -285,7 +285,10 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen> {
                   p.status == 'REJECTED' && p.note != null
                       ? p.note!
                       : 'Requested ${_date(p.requestedAt)}',
-                  style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted),
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    color: AppColors.textMuted,
+                  ),
                 ),
               ],
             ),
@@ -344,7 +347,10 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen> {
                 const SizedBox(height: 2),
                 Text(
                   'Fee ${_money(p.commission)} · ${_date(p.releasedAt ?? p.paidAt ?? p.createdAt)}',
-                  style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted),
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    color: AppColors.textMuted,
+                  ),
                 ),
               ],
             ),
