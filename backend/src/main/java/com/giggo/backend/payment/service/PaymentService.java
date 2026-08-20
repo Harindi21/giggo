@@ -35,24 +35,24 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final BookingService bookingService;
     private final ApplicationEventPublisher events;
+    private final CommissionService commissionService;
     private final PaymentGateway gateway;
-    private final BigDecimal commissionRate;
 
     public PaymentService(
             PaymentRepository paymentRepository,
             BookingService bookingService,
             ApplicationEventPublisher events,
+            CommissionService commissionService,
             List<PaymentGateway> gateways,
-            @Value("${giggo.payments.gateway:stub}") String gatewayName,
-            @Value("${giggo.payments.commission-rate:0.10}") BigDecimal commissionRate) {
+            @Value("${giggo.payments.gateway:stub}") String gatewayName) {
         this.paymentRepository = paymentRepository;
         this.bookingService = bookingService;
         this.events = events;
+        this.commissionService = commissionService;
         this.gateway = gateways.stream()
                 .filter(g -> g.name().equalsIgnoreCase(gatewayName))
                 .findFirst()
                 .orElse(gateways.get(0));
-        this.commissionRate = commissionRate;
     }
 
     /** Start (or resume) payment for a completed booking; returns a checkout session. */
@@ -166,7 +166,8 @@ public class PaymentService {
 
     private Payment newPayment(BookingResponse booking) {
         BigDecimal amount = booking.totalPrice();
-        BigDecimal commission = amount.multiply(commissionRate).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal rate = commissionService.rateForSkill(booking.skillId());
+        BigDecimal commission = amount.multiply(rate).setScale(2, RoundingMode.HALF_UP);
         BigDecimal payout = amount.subtract(commission);
         return Payment.builder()
                 .bookingId(booking.id())

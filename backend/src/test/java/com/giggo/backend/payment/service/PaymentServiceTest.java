@@ -39,6 +39,7 @@ class PaymentServiceTest {
     @Mock PaymentRepository paymentRepository;
     @Mock BookingService bookingService;
     @Mock ApplicationEventPublisher events;
+    @Mock CommissionService commissionService;
 
     private PaymentService service;
 
@@ -53,10 +54,11 @@ class PaymentServiceTest {
                 paymentRepository,
                 bookingService,
                 events,
+                commissionService,
                 List.of(new StubPaymentGateway("https://sandbox.local/checkout")),
-                "stub",
-                new BigDecimal("0.10"));
+                "stub");
         lenient().when(paymentRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        lenient().when(commissionService.rateForSkill(any())).thenReturn(new BigDecimal("0.10"));
     }
 
     private BookingResponse booking(JobStatus status, String total) {

@@ -1,5 +1,6 @@
 package com.giggo.backend.provider.domain;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -32,6 +33,10 @@ public class Category {
 
     @Column(name = "active", nullable = false)
     private boolean active;
+
+    /** Per-category commission override (P7.7); null = use the platform default rate. */
+    @Column(name = "commission_rate")
+    private BigDecimal commissionRate;
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
