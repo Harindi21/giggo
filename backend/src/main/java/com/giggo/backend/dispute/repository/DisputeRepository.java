@@ -13,4 +13,7 @@ public interface DisputeRepository extends JpaRepository<Dispute, UUID> {
     Optional<Dispute> findByBookingId(UUID bookingId);
     boolean existsByBookingId(UUID bookingId);
     List<Dispute> findByStatusOrderByCreatedAtAsc(DisputeStatus status);
+
+    /** Dispute count by state, for admin analytics (P11.1). */
+    long countByStatus(DisputeStatus status);
 }

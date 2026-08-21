@@ -11,4 +11,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
     boolean existsByPhone(String phone);
+
+    // ---- Admin analytics (P11.1) ----
+    long countByRole(com.giggo.backend.user.domain.UserRole role);
+    long countByCreatedAtAfter(java.time.OffsetDateTime cutoff);
 }
