@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.giggo.backend.admin.service.AuditService;
 import com.giggo.backend.common.dto.ApiResponse;
 import com.giggo.backend.dispute.api.dto.DisputeResponse;
 import com.giggo.backend.dispute.api.dto.ResolveDisputeRequest;
@@ -30,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminDisputeController {
 
     private final DisputeService disputeService;
+    private final AuditService auditService;
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -46,7 +48,11 @@ public class AdminDisputeController {
             @AuthenticationPrincipal User admin,
             @PathVariable UUID id,
             @Valid @RequestBody ResolveDisputeRequest req) {
-        return ApiResponse.ok(DisputeResponse.from(
-                disputeService.resolve(admin.getId(), id, req.refund(), req.note())));
+        DisputeResponse result = DisputeResponse.from(
+                disputeService.resolve(admin.getId(), id, req.refund(), req.note()));
+        auditService.record(admin.getId(), "DISPUTE_RESOLVED", "DISPUTE", id,
+                (req.refund() ? "refunded" : "dismissed")
+                        + (req.note() == null ? "" : " — " + req.note()));
+        return ApiResponse.ok(result);
     }
 }

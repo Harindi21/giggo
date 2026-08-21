@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -16,7 +17,16 @@ class AdminDashboardScreen extends ConsumerWidget {
     final async = ref.watch(adminMetricsProvider);
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Analytics')),
+      appBar: AppBar(
+        title: const Text('Analytics'),
+        actions: [
+          IconButton(
+            tooltip: 'Audit log',
+            onPressed: () => context.push('/admin/audit-log'),
+            icon: const Icon(Icons.history),
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(adminMetricsProvider);

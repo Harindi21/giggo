@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.giggo.backend.admin.service.AuditService;
 import com.giggo.backend.common.dto.ApiResponse;
 import com.giggo.backend.kyc.api.dto.KycSubmissionResponse;
 import com.giggo.backend.kyc.api.dto.ReviewKycRequest;
@@ -29,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminKycController {
 
     private final KycService kycService;
+    private final AuditService auditService;
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -43,8 +45,10 @@ public class AdminKycController {
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<KycSubmissionResponse> approve(
             @AuthenticationPrincipal User admin, @PathVariable UUID id) {
-        return ApiResponse.ok(KycSubmissionResponse.from(
-                kycService.review(admin.getId(), id, true, null)));
+        KycSubmissionResponse result = KycSubmissionResponse.from(
+                kycService.review(admin.getId(), id, true, null));
+        auditService.record(admin.getId(), "KYC_APPROVED", "KYC", id, null);
+        return ApiResponse.ok(result);
     }
 
     @PostMapping("/{id}/reject")
@@ -54,7 +58,9 @@ public class AdminKycController {
             @PathVariable UUID id,
             @RequestBody(required = false) ReviewKycRequest body) {
         String note = body == null ? null : body.note();
-        return ApiResponse.ok(KycSubmissionResponse.from(
-                kycService.review(admin.getId(), id, false, note)));
+        KycSubmissionResponse result = KycSubmissionResponse.from(
+                kycService.review(admin.getId(), id, false, note));
+        auditService.record(admin.getId(), "KYC_REJECTED", "KYC", id, note);
+        return ApiResponse.ok(result);
     }
 }
