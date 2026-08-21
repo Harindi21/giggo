@@ -15,6 +15,7 @@ import com.giggo.backend.common.exception.ResourceNotFoundException;
 import com.giggo.backend.notification.domain.DevicePlatform;
 import com.giggo.backend.notification.domain.DeviceToken;
 import com.giggo.backend.notification.domain.Notification;
+import com.giggo.backend.notification.domain.NotificationCategory;
 import com.giggo.backend.notification.push.PushSender;
 import com.giggo.backend.notification.repository.DeviceTokenRepository;
 import com.giggo.backend.notification.repository.NotificationRepository;
@@ -28,15 +29,18 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final DeviceTokenRepository deviceTokenRepository;
+    private final NotificationPreferenceService preferenceService;
     private final PushSender pushSender;
 
     public NotificationService(
             NotificationRepository notificationRepository,
             DeviceTokenRepository deviceTokenRepository,
+            NotificationPreferenceService preferenceService,
             List<PushSender> pushSenders,
             @Value("${giggo.notifications.push-provider:stub}") String provider) {
         this.notificationRepository = notificationRepository;
         this.deviceTokenRepository = deviceTokenRepository;
+        this.preferenceService = preferenceService;
         this.pushSender = pushSenders.stream()
                 .filter(p -> provider.equalsIgnoreCase(p.name()))
                 .findFirst()
@@ -57,13 +61,16 @@ public class NotificationService {
                 .bookingId(bookingId)
                 .build());
 
-        List<String> tokens = deviceTokenRepository.findByUserId(userId).stream()
-                .map(DeviceToken::getToken)
-                .toList();
-        Map<String, String> data = bookingId == null
-                ? Map.of("type", type)
-                : Map.of("type", type, "bookingId", bookingId.toString());
-        pushSender.send(tokens, title, body, data);
+        // In-app inbox always records; push delivery honours the user's preference (P8.5).
+        if (preferenceService.isPushEnabled(userId, NotificationCategory.of(type))) {
+            List<String> tokens = deviceTokenRepository.findByUserId(userId).stream()
+                    .map(DeviceToken::getToken)
+                    .toList();
+            Map<String, String> data = bookingId == null
+                    ? Map.of("type", type)
+                    : Map.of("type", type, "bookingId", bookingId.toString());
+            pushSender.send(tokens, title, body, data);
+        }
         return saved;
     }
 

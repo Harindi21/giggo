@@ -25,6 +25,7 @@ import '../../features/marketplace/presentation/screens/checkout_screen.dart';
 import '../../features/marketplace/presentation/screens/orders_screen.dart';
 import '../../features/marketplace/presentation/screens/shop_screen.dart';
 import '../../features/marketplace/presentation/screens/tool_detail_screen.dart';
+import '../../features/notifications/presentation/screens/notification_preferences_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/provider/presentation/screens/availability_screen.dart';
@@ -108,6 +109,11 @@ final appRouter = GoRouter(
       path: '/notifications',
       name: 'notifications',
       builder: (c, s) => const NotificationsScreen(),
+    ),
+    GoRoute(
+      path: '/notifications/preferences',
+      name: 'notification-preferences',
+      builder: (c, s) => const NotificationPreferencesScreen(),
     ),
     GoRoute(path: '/kyc', name: 'kyc', builder: (c, s) => const KycScreen()),
     GoRoute(

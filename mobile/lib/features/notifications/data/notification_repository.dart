@@ -5,6 +5,7 @@ import '../../../core/network/api_config.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/network/dio_client.dart';
 import 'models/notification_models.dart';
+import 'models/notification_preference.dart';
 
 class NotificationRepository {
   final Dio _dio;
@@ -56,6 +57,40 @@ class NotificationRepository {
       await _dio.post(
         '${ApiConfig.apiPrefix}/notifications/device-tokens',
         data: {'token': token, 'platform': platform},
+      );
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
+  /// Push preferences per category (P8.5).
+  Future<List<NotificationPreference>> getPreferences() async {
+    try {
+      final res = await _dio.get(
+        '${ApiConfig.apiPrefix}/notifications/preferences',
+      );
+      final list = res.data['data'] as List<dynamic>;
+      return list
+          .map(
+            (e) => NotificationPreference.fromJson(e as Map<String, dynamic>),
+          )
+          .toList();
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
+  Future<NotificationPreference> setPreference(
+    String category,
+    bool pushEnabled,
+  ) async {
+    try {
+      final res = await _dio.put(
+        '${ApiConfig.apiPrefix}/notifications/preferences',
+        data: {'category': category, 'pushEnabled': pushEnabled},
+      );
+      return NotificationPreference.fromJson(
+        res.data['data'] as Map<String, dynamic>,
       );
     } on DioException catch (e) {
       throw ApiException(_message(e));
