@@ -14,6 +14,9 @@ public interface ProviderProfileRepository extends JpaRepository<ProviderProfile
     Optional<ProviderProfile> findByUserId(UUID userId);
     boolean existsByUserId(UUID userId);
 
+    /** Verified providers, for admin analytics (P11.1). */
+    long countByVerifiedTrue();
+
     /**
      * Provider search with optional filters. Any filter left null is ignored.
      * Results are pre-sorted by rating quality; a fairness pass (Phase C) may

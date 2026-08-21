@@ -33,6 +33,11 @@ class _AdminScreenState extends ConsumerState<AdminScreen> {
       appBar: AppBar(
         title: const Text('Verification queue'),
         actions: [
+          IconButton(
+            tooltip: 'Analytics',
+            onPressed: () => context.push('/admin/dashboard'),
+            icon: const Icon(Icons.bar_chart, color: Colors.white),
+          ),
           TextButton(
             onPressed: () => context.push('/admin/reviews'),
             child: const Text('Reviews', style: TextStyle(color: Colors.white)),
