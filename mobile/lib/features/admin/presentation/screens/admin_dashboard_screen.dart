@@ -27,8 +27,11 @@ class AdminDashboardScreen extends ConsumerWidget {
           error: (e, _) => ListView(
             children: [
               const SizedBox(height: 100),
-              const Icon(Icons.bar_chart_outlined,
-                  size: 48, color: AppColors.textMuted),
+              const Icon(
+                Icons.bar_chart_outlined,
+                size: 48,
+                color: AppColors.textMuted,
+              ),
               const SizedBox(height: 8),
               Text(
                 e.toString(),
@@ -58,17 +61,31 @@ class AdminDashboardScreen extends ConsumerWidget {
           childAspectRatio: 1.5,
           children: [
             _stat('Active jobs', '${m.activeJobs}', Icons.work_outline),
-            _stat('Completed', '${m.completedJobs}', Icons.check_circle_outline),
+            _stat(
+              'Completed',
+              '${m.completedJobs}',
+              Icons.check_circle_outline,
+            ),
             _stat('Conversion', '${m.conversionRate}%', Icons.percent),
             _stat('Repeat rate', '${m.repeatCustomerRate}%', Icons.repeat),
             _stat('Users', '${m.totalUsers}', Icons.people_outline),
             _stat('New (30d)', '${m.newUsers30d}', Icons.person_add_alt),
-            _stat('Providers',
-                '${m.verifiedProviders}/${m.providers}', Icons.verified_outlined),
-            _stat('Open disputes', '${m.openDisputes}',
-                Icons.gavel_outlined,
-                alert: m.openDisputes > 0),
-            _stat('Tool orders', '${m.toolOrders}', Icons.shopping_bag_outlined),
+            _stat(
+              'Providers',
+              '${m.verifiedProviders}/${m.providers}',
+              Icons.verified_outlined,
+            ),
+            _stat(
+              'Open disputes',
+              '${m.openDisputes}',
+              Icons.gavel_outlined,
+              alert: m.openDisputes > 0,
+            ),
+            _stat(
+              'Tool orders',
+              '${m.toolOrders}',
+              Icons.shopping_bag_outlined,
+            ),
             _stat('Tool sales', _money(m.toolSales), Icons.storefront_outlined),
           ],
         ),
@@ -100,8 +117,10 @@ class AdminDashboardScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Gross merchandise value',
-                    style: TextStyle(color: Colors.white70, fontSize: 12)),
+                const Text(
+                  'Gross merchandise value',
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                ),
                 const SizedBox(height: 4),
                 Text(
                   _money(m.gmv),
@@ -117,8 +136,10 @@ class AdminDashboardScreen extends ConsumerWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Text('Platform revenue',
-                  style: TextStyle(color: Colors.white70, fontSize: 12)),
+              const Text(
+                'Platform revenue',
+                style: TextStyle(color: Colors.white70, fontSize: 12),
+              ),
               const SizedBox(height: 4),
               Text(
                 _money(m.platformRevenue),
@@ -135,7 +156,12 @@ class AdminDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _stat(String label, String value, IconData icon, {bool alert = false}) {
+  Widget _stat(
+    String label,
+    String value,
+    IconData icon, {
+    bool alert = false,
+  }) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -147,7 +173,11 @@ class AdminDashboardScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(icon, size: 18, color: alert ? AppColors.error : AppColors.primary),
+          Icon(
+            icon,
+            size: 18,
+            color: alert ? AppColors.error : AppColors.primary,
+          ),
           Text(
             value,
             style: TextStyle(
@@ -167,8 +197,10 @@ class AdminDashboardScreen extends ConsumerWidget {
 
   Widget _topCategories(List<CategoryStat> categories) {
     if (categories.isEmpty) {
-      return const Text('No bookings yet.',
-          style: TextStyle(color: AppColors.textMuted));
+      return const Text(
+        'No bookings yet.',
+        style: TextStyle(color: AppColors.textMuted),
+      );
     }
     final max = categories.first.bookings.clamp(1, 1 << 30);
     return Column(
@@ -195,15 +227,23 @@ class AdminDashboardScreen extends ConsumerWidget {
                     child: LinearProgressIndicator(
                       value: c.bookings / max,
                       minHeight: 10,
-                      backgroundColor: AppColors.surfaceBlue.withValues(alpha: 0.4),
-                      valueColor: const AlwaysStoppedAnimation(AppColors.accent),
+                      backgroundColor: AppColors.surfaceBlue.withValues(
+                        alpha: 0.4,
+                      ),
+                      valueColor: const AlwaysStoppedAnimation(
+                        AppColors.accent,
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text('${c.bookings}',
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+                Text(
+                  '${c.bookings}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
               ],
             ),
           ),
