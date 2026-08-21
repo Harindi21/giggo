@@ -99,7 +99,10 @@ class _NotificationPreferencesScreenState
                 height: 20,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
-            : const Icon(Icons.notifications_outlined, color: AppColors.primary),
+            : const Icon(
+                Icons.notifications_outlined,
+                color: AppColors.primary,
+              ),
       ),
     );
   }

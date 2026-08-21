@@ -25,10 +25,11 @@ class NotificationPreference {
     _ => '',
   };
 
-  NotificationPreference copyWith({bool? pushEnabled}) => NotificationPreference(
-    category: category,
-    pushEnabled: pushEnabled ?? this.pushEnabled,
-  );
+  NotificationPreference copyWith({bool? pushEnabled}) =>
+      NotificationPreference(
+        category: category,
+        pushEnabled: pushEnabled ?? this.pushEnabled,
+      );
 
   factory NotificationPreference.fromJson(Map<String, dynamic> json) =>
       NotificationPreference(

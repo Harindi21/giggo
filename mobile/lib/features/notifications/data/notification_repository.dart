@@ -71,7 +71,9 @@ class NotificationRepository {
       );
       final list = res.data['data'] as List<dynamic>;
       return list
-          .map((e) => NotificationPreference.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) => NotificationPreference.fromJson(e as Map<String, dynamic>),
+          )
           .toList();
     } on DioException catch (e) {
       throw ApiException(_message(e));
