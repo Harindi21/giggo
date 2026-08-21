@@ -39,9 +39,11 @@ class AuditLogScreen extends ConsumerWidget {
                   SizedBox(height: 120),
                   Icon(Icons.history, size: 56, color: AppColors.textMuted),
                   SizedBox(height: 12),
-                  Text('No admin actions recorded yet.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: AppColors.textMuted)),
+                  Text(
+                    'No admin actions recorded yet.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: AppColors.textMuted),
+                  ),
                 ],
               );
             }
@@ -90,13 +92,19 @@ class AuditLogScreen extends ConsumerWidget {
                 Text(
                   '${e.actorName ?? 'Admin'}'
                   '${e.detail != null && e.detail!.isNotEmpty ? ' · ${e.detail}' : ''}',
-                  style: const TextStyle(fontSize: 12.5, color: AppColors.textBody),
+                  style: const TextStyle(
+                    fontSize: 12.5,
+                    color: AppColors.textBody,
+                  ),
                 ),
                 if (e.createdAt != null) ...[
                   const SizedBox(height: 2),
                   Text(
                     _dateTime(e.createdAt!),
-                    style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textMuted,
+                    ),
                   ),
                 ],
               ],
@@ -116,9 +124,17 @@ class AuditLogScreen extends ConsumerWidget {
       case 'DISPUTE_RESOLVED':
         return ('Dispute resolved', AppColors.info, Icons.gavel_outlined);
       case 'REVIEW_HIDDEN':
-        return ('Review hidden', AppColors.warning, Icons.visibility_off_outlined);
+        return (
+          'Review hidden',
+          AppColors.warning,
+          Icons.visibility_off_outlined,
+        );
       case 'REVIEW_RESTORED':
-        return ('Review restored', AppColors.success, Icons.visibility_outlined);
+        return (
+          'Review restored',
+          AppColors.success,
+          Icons.visibility_outlined,
+        );
       case 'PAYOUT_PAID':
         return ('Payout paid', AppColors.success, Icons.payments_outlined);
       case 'PAYOUT_REJECTED':
