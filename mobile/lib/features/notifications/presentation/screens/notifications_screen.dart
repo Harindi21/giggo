@@ -26,6 +26,11 @@ class NotificationsScreen extends ConsumerWidget {
               style: TextStyle(color: Colors.white),
             ),
           ),
+          IconButton(
+            tooltip: 'Notification settings',
+            onPressed: () => context.push('/notifications/preferences'),
+            icon: const Icon(Icons.settings_outlined, color: Colors.white),
+          ),
         ],
       ),
       body: RefreshIndicator(

@@ -8,26 +8,31 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.giggo.backend.common.dto.ApiResponse;
+import com.giggo.backend.notification.api.dto.NotificationPreferenceResponse;
 import com.giggo.backend.notification.api.dto.NotificationResponse;
 import com.giggo.backend.notification.api.dto.RegisterDeviceTokenRequest;
+import com.giggo.backend.notification.api.dto.SetNotificationPreferenceRequest;
+import com.giggo.backend.notification.service.NotificationPreferenceService;
 import com.giggo.backend.notification.service.NotificationService;
 import com.giggo.backend.user.domain.User;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-/** In-app notification inbox + device-token registration (P8.1). */
+/** In-app notification inbox + device-token registration + preferences (P8.1, P8.5). */
 @RestController
 @RequestMapping("/api/v1/notifications")
 @RequiredArgsConstructor
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final NotificationPreferenceService preferenceService;
 
     @GetMapping
     public ApiResponse<List<NotificationResponse>> list(@AuthenticationPrincipal User user) {
@@ -59,5 +64,20 @@ public class NotificationController {
             @Valid @RequestBody RegisterDeviceTokenRequest req) {
         notificationService.registerDeviceToken(user.getId(), req.token(), req.platform());
         return ApiResponse.ok(null);
+    }
+
+    // ---- Push preferences (P8.5) ----
+
+    @GetMapping("/preferences")
+    public ApiResponse<List<NotificationPreferenceResponse>> preferences(
+            @AuthenticationPrincipal User user) {
+        return ApiResponse.ok(preferenceService.list(user.getId()));
+    }
+
+    @PutMapping("/preferences")
+    public ApiResponse<NotificationPreferenceResponse> setPreference(
+            @AuthenticationPrincipal User user,
+            @Valid @RequestBody SetNotificationPreferenceRequest req) {
+        return ApiResponse.ok(preferenceService.set(user.getId(), req.category(), req.pushEnabled()));
     }
 }

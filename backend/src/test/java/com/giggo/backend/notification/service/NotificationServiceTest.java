@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,6 +36,7 @@ class NotificationServiceTest {
 
     @Mock NotificationRepository notificationRepository;
     @Mock DeviceTokenRepository deviceTokenRepository;
+    @Mock NotificationPreferenceService preferenceService;
     @Mock PushSender pushSender;
 
     private NotificationService service;
@@ -44,13 +46,15 @@ class NotificationServiceTest {
     @BeforeEach
     void setUp() {
         service = new NotificationService(
-                notificationRepository, deviceTokenRepository, List.of(pushSender), "stub");
+                notificationRepository, deviceTokenRepository, preferenceService,
+                List.of(pushSender), "stub");
     }
 
     @Test
     @DisplayName("notify persists and pushes to the user's devices")
     void notifyPersistsAndPushes() {
         when(notificationRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(preferenceService.isPushEnabled(eq(userId), any())).thenReturn(true);
         when(deviceTokenRepository.findByUserId(userId)).thenReturn(List.of(
                 DeviceToken.builder().token("tok-1").platform(DevicePlatform.ANDROID).build()));
 
@@ -59,6 +63,19 @@ class NotificationServiceTest {
         assertThat(out.getUserId()).isEqualTo(userId);
         assertThat(out.getType()).isEqualTo("BOOKING_ACCEPTED");
         verify(pushSender).send(eq(List.of("tok-1")), anyString(), anyString(), anyMap());
+    }
+
+    @Test
+    @DisplayName("notify still records in-app but skips push when the category is muted (P8.5)")
+    void notifyRespectsDisabledPreference() {
+        when(notificationRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(preferenceService.isPushEnabled(eq(userId), any())).thenReturn(false);
+
+        Notification out = service.notify(userId, "PAYMENT_HELD", "Paid", "Funds secured", null);
+
+        assertThat(out).isNotNull(); // in-app inbox entry still created
+        verify(pushSender, never()).send(any(), any(), any(), any());
+        verify(deviceTokenRepository, never()).findByUserId(any());
     }
 
     @Test
