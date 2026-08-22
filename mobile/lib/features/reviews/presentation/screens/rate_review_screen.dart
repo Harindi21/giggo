@@ -139,7 +139,11 @@ class _RateReviewScreenState extends ConsumerState<RateReviewScreen> {
               ),
             ),
             const SizedBox(height: 4),
-            _dimensionRow('Service', _service, (v) => setState(() => _service = v)),
+            _dimensionRow(
+              'Service',
+              _service,
+              (v) => setState(() => _service = v),
+            ),
             _dimensionRow(
               'Punctuality',
               _punctuality,

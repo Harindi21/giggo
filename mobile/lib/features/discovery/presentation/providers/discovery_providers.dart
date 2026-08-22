@@ -96,7 +96,9 @@ final providerReviewsProvider = FutureProvider.family<List<Review>, String>((
 });
 
 /// Per-dimension rating averages for a provider (P6.6).
-final ratingBreakdownProvider =
-    FutureProvider.family<RatingBreakdown, String>((ref, id) {
-      return ref.watch(discoveryRepositoryProvider).getRatingBreakdown(id);
-    });
+final ratingBreakdownProvider = FutureProvider.family<RatingBreakdown, String>((
+  ref,
+  id,
+) {
+  return ref.watch(discoveryRepositoryProvider).getRatingBreakdown(id);
+});
