@@ -17,6 +17,9 @@ class RateReviewScreen extends ConsumerStatefulWidget {
 
 class _RateReviewScreenState extends ConsumerState<RateReviewScreen> {
   int _stars = 0;
+  int _service = 0;
+  int _punctuality = 0;
+  int _value = 0;
   final _bodyCtrl = TextEditingController();
   bool _submitting = false;
   String? _error;
@@ -39,7 +42,14 @@ class _RateReviewScreenState extends ConsumerState<RateReviewScreen> {
     try {
       final review = await ref
           .read(discoveryRepositoryProvider)
-          .submitReview(widget.bookingId, _stars, _bodyCtrl.text.trim());
+          .submitReview(
+            widget.bookingId,
+            _stars,
+            _bodyCtrl.text.trim(),
+            serviceRating: _service == 0 ? null : _service,
+            punctualityRating: _punctuality == 0 ? null : _punctuality,
+            valueRating: _value == 0 ? null : _value,
+          );
       if (!mounted) return;
       final sentiment = review.sentimentLabel;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -59,6 +69,27 @@ class _RateReviewScreenState extends ConsumerState<RateReviewScreen> {
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
+  }
+
+  Widget _dimensionRow(String label, int value, ValueChanged<int> onChanged) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 96,
+          child: Text(label, style: const TextStyle(color: AppColors.textBody)),
+        ),
+        for (int i = 1; i <= 5; i++)
+          IconButton(
+            visualDensity: VisualDensity.compact,
+            iconSize: 26,
+            onPressed: _submitting ? null : () => onChanged(i),
+            icon: Icon(
+              i <= value ? Icons.star_rounded : Icons.star_outline_rounded,
+              color: AppColors.accent,
+            ),
+          ),
+      ],
+    );
   }
 
   @override
@@ -97,6 +128,28 @@ class _RateReviewScreenState extends ConsumerState<RateReviewScreen> {
                   ),
               ],
             ),
+            const SizedBox(height: 8),
+            const Divider(),
+            const SizedBox(height: 4),
+            const Text(
+              'Rate the details (optional)',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 4),
+            _dimensionRow(
+              'Service',
+              _service,
+              (v) => setState(() => _service = v),
+            ),
+            _dimensionRow(
+              'Punctuality',
+              _punctuality,
+              (v) => setState(() => _punctuality = v),
+            ),
+            _dimensionRow('Value', _value, (v) => setState(() => _value = v)),
             const SizedBox(height: 12),
             TextField(
               controller: _bodyCtrl,

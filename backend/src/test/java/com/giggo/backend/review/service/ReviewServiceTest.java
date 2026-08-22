@@ -138,6 +138,32 @@ class ReviewServiceTest {
     }
 
     @Test
+    @DisplayName("rating breakdown rounds dimension averages, 0 when unrated (P6.6)")
+    void ratingBreakdown() {
+        UUID profileId = UUID.randomUUID();
+        com.giggo.backend.provider.domain.ProviderProfile profile =
+                com.giggo.backend.provider.domain.ProviderProfile.builder()
+                        .id(profileId)
+                        .user(com.giggo.backend.user.domain.User.builder().id(providerUserId).build())
+                        .build();
+        when(providerRepository.findById(profileId)).thenReturn(java.util.Optional.of(profile));
+        com.giggo.backend.review.repository.RatingBreakdownProjection proj =
+                org.mockito.Mockito.mock(com.giggo.backend.review.repository.RatingBreakdownProjection.class);
+        when(proj.getService()).thenReturn(4.25);
+        when(proj.getPunctuality()).thenReturn(null); // nobody rated punctuality
+        when(proj.getValueScore()).thenReturn(3.94);
+        when(proj.getTotal()).thenReturn(8L);
+        when(reviewRepository.ratingBreakdown(providerUserId)).thenReturn(proj);
+
+        var b = service.ratingBreakdown(profileId);
+
+        assertThat(b.service()).isEqualTo(4.3);
+        assertThat(b.punctuality()).isEqualTo(0.0);
+        assertThat(b.value()).isEqualTo(3.9);
+        assertThat(b.count()).isEqualTo(8);
+    }
+
+    @Test
     @DisplayName("rejects the same review text copy-pasted across jobs (P6.4)")
     void rejectsDuplicateText() {
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(completed()));

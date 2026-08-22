@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.giggo.backend.common.dto.ApiResponse;
 import com.giggo.backend.review.api.dto.CreateReviewRequest;
+import com.giggo.backend.review.api.dto.RatingBreakdownResponse;
 import com.giggo.backend.review.api.dto.ReviewResponse;
 import com.giggo.backend.review.service.ReviewService;
 import com.giggo.backend.user.domain.User;
@@ -45,6 +46,12 @@ public class ReviewController {
     @GetMapping("/providers/{providerId}/reviews")
     public ApiResponse<List<ReviewResponse>> forProvider(@PathVariable UUID providerId) {
         return ApiResponse.ok(reviewService.listForProviderProfile(providerId));
+    }
+
+    /** Per-dimension rating averages for a provider (P6.6). */
+    @GetMapping("/providers/{providerId}/rating-breakdown")
+    public ApiResponse<RatingBreakdownResponse> ratingBreakdown(@PathVariable UUID providerId) {
+        return ApiResponse.ok(reviewService.ratingBreakdown(providerId));
     }
 
     /** Report a review for moderation (any authenticated user) — P6.5. */

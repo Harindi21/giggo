@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/discovery_repository.dart';
 import '../../data/models/catalog_models.dart';
 import '../../data/models/provider_models.dart';
+import '../../data/models/rating_breakdown.dart';
 import '../../data/models/review.dart';
 
 /// All active service categories.
@@ -92,4 +93,12 @@ final providerReviewsProvider = FutureProvider.family<List<Review>, String>((
   id,
 ) {
   return ref.watch(discoveryRepositoryProvider).getProviderReviews(id);
+});
+
+/// Per-dimension rating averages for a provider (P6.6).
+final ratingBreakdownProvider = FutureProvider.family<RatingBreakdown, String>((
+  ref,
+  id,
+) {
+  return ref.watch(discoveryRepositoryProvider).getRatingBreakdown(id);
 });
