@@ -33,6 +33,20 @@ void main() {
     expect(c.ratingCount, 0);
     expect(c.available, isTrue);
     expect(c.verified, isFalse);
+    expect(c.hasLocation, isFalse); // no coordinates
+  });
+
+  test('provider card parses coordinates for the map view (P3.9)', () {
+    final c = ProviderCard.fromJson({
+      'id': 'pp3',
+      'userId': 'u3',
+      'fullName': 'Located Pro',
+      'latitude': 6.9271,
+      'longitude': 79.8612,
+    });
+    expect(c.hasLocation, isTrue);
+    expect(c.latitude, 6.9271);
+    expect(c.longitude, 79.8612);
   });
 
   test('parses provider detail with skills', () {

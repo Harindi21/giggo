@@ -19,7 +19,9 @@ public record ProviderCardResponse(
         BigDecimal basePrice,
         BigDecimal hourlyRate,
         boolean available,
-        boolean verified
+        boolean verified,
+        Double latitude,
+        Double longitude
 ) {
     public static ProviderCardResponse from(ProviderProfile p) {
         return new ProviderCardResponse(
@@ -35,7 +37,9 @@ public record ProviderCardResponse(
                 p.getBasePrice(),
                 p.getHourlyRate(),
                 p.isAvailable(),
-                p.isVerified()
+                p.isVerified(),
+                p.getLatitude(),
+                p.getLongitude()
         );
     }
 }
