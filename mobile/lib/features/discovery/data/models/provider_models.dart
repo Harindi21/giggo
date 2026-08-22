@@ -18,6 +18,8 @@ class ProviderCard {
   final double hourlyRate;
   final bool available;
   final bool verified;
+  final double? latitude;
+  final double? longitude;
 
   const ProviderCard({
     required this.id,
@@ -33,7 +35,11 @@ class ProviderCard {
     required this.hourlyRate,
     required this.available,
     required this.verified,
+    this.latitude,
+    this.longitude,
   });
+
+  bool get hasLocation => latitude != null && longitude != null;
 
   factory ProviderCard.fromJson(Map<String, dynamic> json) => ProviderCard(
     id: json['id'] as String,
@@ -49,6 +55,8 @@ class ProviderCard {
     hourlyRate: _toDouble(json['hourlyRate']),
     available: json['available'] as bool? ?? true,
     verified: json['verified'] as bool? ?? false,
+    latitude: (json['latitude'] as num?)?.toDouble(),
+    longitude: (json['longitude'] as num?)?.toDouble(),
   );
 }
 

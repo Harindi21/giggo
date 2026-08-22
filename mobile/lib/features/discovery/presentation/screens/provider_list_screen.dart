@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../data/models/provider_models.dart';
 import '../providers/discovery_providers.dart';
 import '../widgets/provider_card_tile.dart';
 
@@ -25,6 +28,7 @@ class ProviderListScreen extends ConsumerStatefulWidget {
 
 class _ProviderListScreenState extends ConsumerState<ProviderListScreen> {
   String? _skillId;
+  bool _mapView = false;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +46,16 @@ class _ProviderListScreenState extends ConsumerState<ProviderListScreen> {
     final results = ref.watch(providerSearchProvider(query));
 
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(
+        title: Text(title),
+        actions: [
+          IconButton(
+            tooltip: _mapView ? 'List view' : 'Map view',
+            onPressed: () => setState(() => _mapView = !_mapView),
+            icon: Icon(_mapView ? Icons.view_list_outlined : Icons.map_outlined),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           if (widget.categoryId != null) _skillChips(widget.categoryId!),
@@ -56,6 +69,12 @@ class _ProviderListScreenState extends ConsumerState<ProviderListScreen> {
               data: (list) {
                 if (list.isEmpty) {
                   return _empty();
+                }
+                if (_mapView) {
+                  return _ProvidersMap(
+                    providers: list,
+                    onTap: (p) => context.push('/home/provider/${p.id}'),
+                  );
                 }
                 return RefreshIndicator(
                   onRefresh: () async =>
@@ -164,4 +183,70 @@ class _ProviderListScreenState extends ConsumerState<ProviderListScreen> {
       ),
     ),
   );
+}
+
+/// Nearby-providers map (P3.9): OpenStreetMap markers for providers that have a
+/// location; tap a marker to open the provider. No API key needed.
+class _ProvidersMap extends StatelessWidget {
+  const _ProvidersMap({required this.providers, required this.onTap});
+
+  final List<ProviderCard> providers;
+  final void Function(ProviderCard) onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final located = providers.where((p) => p.hasLocation).toList();
+    if (located.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Text(
+            'None of these providers have shared a location yet.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: AppColors.textMuted),
+          ),
+        ),
+      );
+    }
+
+    // Centre on the average of the located providers (Colombo as a fallback).
+    final avgLat =
+        located.map((p) => p.latitude!).reduce((a, b) => a + b) / located.length;
+    final avgLng =
+        located.map((p) => p.longitude!).reduce((a, b) => a + b) / located.length;
+
+    return FlutterMap(
+      options: MapOptions(
+        initialCenter: LatLng(avgLat, avgLng),
+        initialZoom: 11,
+      ),
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'com.giggo.mobile',
+        ),
+        MarkerLayer(
+          markers: [
+            for (final p in located)
+              Marker(
+                point: LatLng(p.latitude!, p.longitude!),
+                width: 44,
+                height: 44,
+                child: GestureDetector(
+                  onTap: () => onTap(p),
+                  child: Icon(
+                    Icons.location_on,
+                    color: p.available ? AppColors.accent : AppColors.textMuted,
+                    size: 40,
+                  ),
+                ),
+              ),
+          ],
+        ),
+        const RichAttributionWidget(
+          attributions: [TextSourceAttribution('OpenStreetMap contributors')],
+        ),
+      ],
+    );
+  }
 }
