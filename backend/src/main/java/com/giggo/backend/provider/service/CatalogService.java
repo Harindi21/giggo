@@ -12,6 +12,7 @@ import com.giggo.backend.provider.api.dto.CategoryResponse;
 import com.giggo.backend.provider.api.dto.CreateCategoryRequest;
 import com.giggo.backend.provider.api.dto.CreateSkillRequest;
 import com.giggo.backend.provider.api.dto.SkillResponse;
+import com.giggo.backend.provider.api.dto.UpdateCategoryRequest;
 import com.giggo.backend.provider.domain.Category;
 import com.giggo.backend.provider.domain.Skill;
 import com.giggo.backend.provider.repository.CategoryRepository;
@@ -43,6 +44,30 @@ public class CatalogService {
     public List<CategoryResponse> listCategories() {
         return categoryRepository.findByActiveTrue().stream()
                 .map(CategoryResponse::from).toList();
+    }
+
+    /** Admin: every category, including deactivated ones (P11.5). */
+    @Transactional(readOnly = true)
+    public List<CategoryResponse> listAllCategories() {
+        return categoryRepository.findAll().stream()
+                .map(CategoryResponse::from).toList();
+    }
+
+    /** Admin: edit a category's name/description or (de)activate it (P11.5). */
+    @Transactional
+    public CategoryResponse updateCategory(UUID id, UpdateCategoryRequest req) {
+        Category c = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+        if (req.name() != null && !req.name().isBlank()) {
+            c.setName(req.name().trim());
+        }
+        if (req.description() != null) {
+            c.setDescription(req.description());
+        }
+        if (req.active() != null) {
+            c.setActive(req.active());
+        }
+        return CategoryResponse.from(categoryRepository.save(c));
     }
 
     @Transactional
