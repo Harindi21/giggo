@@ -22,5 +22,8 @@ final wishlistProvider = FutureProvider<List<Tool>>((ref) {
 final wishlistIdsProvider = Provider<Set<String>>((ref) {
   return ref
       .watch(wishlistProvider)
-      .maybeWhen(data: (l) => l.map((t) => t.id).toSet(), orElse: () => <String>{});
+      .maybeWhen(
+        data: (l) => l.map((t) => t.id).toSet(),
+        orElse: () => <String>{},
+      );
 });

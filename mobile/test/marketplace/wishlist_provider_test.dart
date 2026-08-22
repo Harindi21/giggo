@@ -18,7 +18,9 @@ void main() {
   test('wishlistIdsProvider derives the set of saved tool ids', () async {
     final container = ProviderContainer(
       overrides: [
-        wishlistProvider.overrideWith((ref) async => [tool('t1', 'Drill'), tool('t2', 'Ladder')]),
+        wishlistProvider.overrideWith(
+          (ref) async => [tool('t1', 'Drill'), tool('t2', 'Ladder')],
+        ),
       ],
     );
     addTearDown(container.dispose);
@@ -33,7 +35,9 @@ void main() {
   test('wishlistIdsProvider is empty before data resolves', () {
     final container = ProviderContainer(
       overrides: [
-        wishlistProvider.overrideWith((ref) => Future.value([tool('t1', 'Drill')])),
+        wishlistProvider.overrideWith(
+          (ref) => Future.value([tool('t1', 'Drill')]),
+        ),
       ],
     );
     addTearDown(container.dispose);

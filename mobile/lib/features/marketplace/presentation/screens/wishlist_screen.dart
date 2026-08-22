@@ -40,7 +40,11 @@ class WishlistScreen extends ConsumerWidget {
               return ListView(
                 children: const [
                   SizedBox(height: 120),
-                  Icon(Icons.favorite_border, size: 56, color: AppColors.textMuted),
+                  Icon(
+                    Icons.favorite_border,
+                    size: 56,
+                    color: AppColors.textMuted,
+                  ),
                   SizedBox(height: 12),
                   Text(
                     'No saved tools yet.\nTap the heart on a tool to save it.',
@@ -84,7 +88,10 @@ class WishlistScreen extends ConsumerWidget {
         ),
         subtitle: Text(
           'Rs. ${t.price.toStringAsFixed(0)}',
-          style: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.w700),
+          style: const TextStyle(
+            color: AppColors.accent,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         trailing: IconButton(
           tooltip: 'Remove',
