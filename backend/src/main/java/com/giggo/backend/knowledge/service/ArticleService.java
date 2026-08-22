@@ -24,7 +24,14 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
 
     @Transactional(readOnly = true)
-    public List<Article> listPublished(String category) {
+    public List<Article> listPublished(String category, String query) {
+        if (query != null && !query.isBlank()) {
+            List<Article> hits = articleRepository.searchPublished(query.trim());
+            if (category == null || category.isBlank()) {
+                return hits;
+            }
+            return hits.stream().filter(a -> category.trim().equalsIgnoreCase(a.getCategory())).toList();
+        }
         if (category == null || category.isBlank()) {
             return articleRepository.findByPublishedTrueOrderByPublishedAtDesc();
         }
@@ -40,6 +47,26 @@ public class ArticleService {
             throw new ResourceNotFoundException("Article not found");
         }
         return article;
+    }
+
+    /** Increment the view count for a published article (P9.4). */
+    @Transactional
+    public Article recordView(String slug) {
+        Article article = getPublishedBySlug(slug);
+        article.setViewCount(article.getViewCount() + 1);
+        return articleRepository.save(article);
+    }
+
+    /** Add a 1–5 helpfulness rating to a published article (P9.4). */
+    @Transactional
+    public Article rate(String slug, int rating) {
+        if (rating < 1 || rating > 5) {
+            throw new IllegalArgumentException("Rating must be between 1 and 5.");
+        }
+        Article article = getPublishedBySlug(slug);
+        article.setRatingSum(article.getRatingSum() + rating);
+        article.setRatingCount(article.getRatingCount() + 1);
+        return articleRepository.save(article);
     }
 
     @Transactional

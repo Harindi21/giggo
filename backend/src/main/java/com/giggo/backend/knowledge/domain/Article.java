@@ -47,6 +47,19 @@ public class Article {
     @Column(name = "author_name", nullable = false, length = 120)
     private String authorName;
 
+    // ---- metrics (P9.4) ----
+    @Column(name = "view_count", nullable = false)
+    @Builder.Default
+    private int viewCount = 0;
+
+    @Column(name = "rating_sum", nullable = false)
+    @Builder.Default
+    private int ratingSum = 0;
+
+    @Column(name = "rating_count", nullable = false)
+    @Builder.Default
+    private int ratingCount = 0;
+
     @Column(name = "published", nullable = false)
     @Builder.Default
     private boolean published = false;

@@ -17,21 +17,61 @@ class ArticlesScreen extends ConsumerStatefulWidget {
 
 class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
   String? _category; // null = All
+  String _query = '';
+  final _searchCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final async = ref.watch(articlesProvider);
+    final async = ref.watch(articlesProvider(_query));
     return Scaffold(
       appBar: AppBar(title: const Text('Knowledge Hub')),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(articlesProvider);
-          await ref.read(articlesProvider.future);
-        },
-        child: async.when(
-          loading: () => _spinner(),
-          error: (e, _) => _message(e.toString()),
-          data: (items) => _list(items),
+      body: Column(
+        children: [
+          _searchBar(),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async {
+                ref.invalidate(articlesProvider(_query));
+                await ref.read(articlesProvider(_query).future);
+              },
+              child: async.when(
+                loading: () => _spinner(),
+                error: (e, _) => _message(e.toString()),
+                data: (items) => _list(items),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _searchBar() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: TextField(
+        controller: _searchCtrl,
+        textInputAction: TextInputAction.search,
+        onSubmitted: (v) => setState(() => _query = v.trim()),
+        decoration: InputDecoration(
+          hintText: 'Search guides…',
+          prefixIcon: const Icon(Icons.search),
+          isDense: true,
+          suffixIcon: _query.isEmpty
+              ? null
+              : IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    _searchCtrl.clear();
+                    setState(() => _query = '');
+                  },
+                ),
         ),
       ),
     );
@@ -39,7 +79,11 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
 
   Widget _list(List<Article> items) {
     if (items.isEmpty) {
-      return _message('No guides yet — check back soon.');
+      return _message(
+        _query.isEmpty
+            ? 'No guides yet — check back soon.'
+            : 'No guides match "$_query".',
+      );
     }
     final categories = <String>{for (final a in items) a.category}.toList()
       ..sort();
@@ -154,6 +198,36 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
                         color: AppColors.textMuted,
                       ),
                     ),
+                    const SizedBox(width: 10),
+                    const Icon(
+                      Icons.visibility_outlined,
+                      size: 13,
+                      color: AppColors.textMuted,
+                    ),
+                    const SizedBox(width: 3),
+                    Text(
+                      '${a.viewCount}',
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+                    if (a.ratingCount > 0) ...[
+                      const SizedBox(width: 10),
+                      const Icon(
+                        Icons.star_rounded,
+                        size: 14,
+                        color: AppColors.accent,
+                      ),
+                      const SizedBox(width: 2),
+                      Text(
+                        a.avgRating.toStringAsFixed(1),
+                        style: const TextStyle(
+                          fontSize: 11.5,
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                    ],
                     const Spacer(),
                     const Icon(
                       Icons.arrow_forward,

@@ -3,9 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/article_repository.dart';
 import '../../data/models/article_models.dart';
 
-/// All published articles (category filtering happens client-side).
-final articlesProvider = FutureProvider<List<Article>>((ref) {
-  return ref.watch(articleRepositoryProvider).list();
+/// Published articles, optionally filtered by a search query (P9.8). An empty
+/// query returns everything; category filtering happens client-side.
+final articlesProvider = FutureProvider.family<List<Article>, String>((ref, q) {
+  return ref.watch(articleRepositoryProvider).list(q: q.isEmpty ? null : q);
 });
 
 /// A single article by slug (with content).

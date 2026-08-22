@@ -10,6 +10,9 @@ class Article {
   final String? coverImageUrl;
   final String authorName;
   final DateTime? publishedAt;
+  final int viewCount;
+  final double avgRating;
+  final int ratingCount;
 
   const Article({
     required this.id,
@@ -21,6 +24,9 @@ class Article {
     this.coverImageUrl,
     required this.authorName,
     this.publishedAt,
+    this.viewCount = 0,
+    this.avgRating = 0,
+    this.ratingCount = 0,
   });
 
   factory Article.fromJson(Map<String, dynamic> json) => Article(
@@ -35,5 +41,8 @@ class Article {
     publishedAt: json['publishedAt'] != null
         ? DateTime.tryParse(json['publishedAt'] as String)
         : null,
+    viewCount: (json['viewCount'] as num?)?.toInt() ?? 0,
+    avgRating: (json['avgRating'] as num?)?.toDouble() ?? 0,
+    ratingCount: (json['ratingCount'] as num?)?.toInt() ?? 0,
   );
 }

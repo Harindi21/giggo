@@ -2,18 +2,59 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../data/article_repository.dart';
 import '../../data/models/article_models.dart';
 import '../providers/article_providers.dart';
 
-/// Knowledge Hub article detail (P9.2).
-class ArticleDetailScreen extends ConsumerWidget {
+/// Knowledge Hub article detail (P9.2) with view tracking + helpfulness rating (P9.4).
+class ArticleDetailScreen extends ConsumerStatefulWidget {
   const ArticleDetailScreen({super.key, required this.slug});
 
   final String slug;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final async = ref.watch(articleProvider(slug));
+  ConsumerState<ArticleDetailScreen> createState() =>
+      _ArticleDetailScreenState();
+}
+
+class _ArticleDetailScreenState extends ConsumerState<ArticleDetailScreen> {
+  bool _rated = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Count the view once (fire-and-forget; never blocks the read).
+    Future.microtask(() async {
+      try {
+        await ref.read(articleRepositoryProvider).recordView(widget.slug);
+      } catch (_) {
+        // ignore — a view-count hiccup must not affect reading
+      }
+    });
+  }
+
+  Future<void> _rate(int rating) async {
+    setState(() => _rated = true);
+    try {
+      await ref.read(articleRepositoryProvider).rate(widget.slug, rating);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Thanks for the feedback!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _rated = false);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final async = ref.watch(articleProvider(widget.slug));
     return Scaffold(
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -29,7 +70,7 @@ class ArticleDetailScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _header(context, a),
+          _header(context),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
             child: Column(
@@ -52,6 +93,8 @@ class ArticleDetailScreen extends ConsumerWidget {
                     fontSize: 12.5,
                   ),
                 ),
+                const SizedBox(height: 8),
+                _metrics(a),
                 const SizedBox(height: 20),
                 for (final para in _paragraphs(a.content ?? a.excerpt)) ...[
                   Text(
@@ -64,6 +107,8 @@ class ArticleDetailScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 14),
                 ],
+                const SizedBox(height: 8),
+                _helpful(),
               ],
             ),
           ),
@@ -72,7 +117,75 @@ class ArticleDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _header(BuildContext context, Article a) {
+  Widget _metrics(Article a) {
+    return Row(
+      children: [
+        const Icon(
+          Icons.visibility_outlined,
+          size: 14,
+          color: AppColors.textMuted,
+        ),
+        const SizedBox(width: 4),
+        Text(
+          '${a.viewCount + 1} views',
+          style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+        ),
+        if (a.ratingCount > 0) ...[
+          const SizedBox(width: 12),
+          const Icon(Icons.star_rounded, size: 15, color: AppColors.accent),
+          const SizedBox(width: 3),
+          Text(
+            '${a.avgRating.toStringAsFixed(1)} (${a.ratingCount})',
+            style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _helpful() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceBlue.withValues(alpha: 0.4),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        children: [
+          Text(
+            _rated
+                ? 'Thanks for rating this guide!'
+                : 'Was this guide helpful?',
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          if (!_rated) ...[
+            const SizedBox(height: 6),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                for (int i = 1; i <= 5; i++)
+                  IconButton(
+                    iconSize: 30,
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () => _rate(i),
+                    icon: const Icon(
+                      Icons.star_outline_rounded,
+                      color: AppColors.accent,
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _header(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.primary,
