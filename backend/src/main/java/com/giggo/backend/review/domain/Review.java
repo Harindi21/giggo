@@ -38,6 +38,16 @@ public class Review {
     @Column(name = "stars", nullable = false)
     private int stars;
 
+    // ---- optional dimension ratings (P6.6) ----
+    @Column(name = "service_rating")
+    private Integer serviceRating;
+
+    @Column(name = "punctuality_rating")
+    private Integer punctualityRating;
+
+    @Column(name = "value_rating")
+    private Integer valueRating;
+
     @Column(name = "body", length = 2000)
     private String body;
 

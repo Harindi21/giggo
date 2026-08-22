@@ -8,6 +8,7 @@ import '../../../../core/widgets/rating_stars.dart';
 import '../../data/models/provider_models.dart';
 import '../providers/discovery_providers.dart';
 import '../widgets/provider_reviews_section.dart';
+import '../widgets/rating_breakdown_section.dart';
 
 class ProviderDetailScreen extends ConsumerWidget {
   const ProviderDetailScreen({super.key, required this.providerId});
@@ -71,6 +72,7 @@ class ProviderDetailScreen extends ConsumerWidget {
                 const SizedBox(height: 10),
                 _pricingCard(p),
                 const SizedBox(height: 20),
+                RatingBreakdownSection(providerId: p.id),
                 ProviderReviewsSection(providerId: p.id),
                 const SizedBox(height: 16),
               ],

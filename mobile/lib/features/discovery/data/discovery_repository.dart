@@ -6,6 +6,7 @@ import '../../../core/network/api_exception.dart';
 import '../../../core/network/dio_client.dart';
 import 'models/catalog_models.dart';
 import 'models/provider_models.dart';
+import 'models/rating_breakdown.dart';
 import 'models/review.dart';
 
 class DiscoveryRepository {
@@ -112,16 +113,38 @@ class DiscoveryRepository {
     }
   }
 
-  Future<Review> submitReview(String bookingId, int stars, String? body) async {
+  Future<Review> submitReview(
+    String bookingId,
+    int stars,
+    String? body, {
+    int? serviceRating,
+    int? punctualityRating,
+    int? valueRating,
+  }) async {
     try {
       final res = await _dio.post(
         '${ApiConfig.apiPrefix}/bookings/$bookingId/reviews',
         data: {
           'stars': stars,
           if (body != null && body.isNotEmpty) 'body': body,
+          'serviceRating': ?serviceRating,
+          'punctualityRating': ?punctualityRating,
+          'valueRating': ?valueRating,
         },
       );
       return Review.fromJson(res.data['data'] as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
+  /// Per-dimension rating averages for a provider (P6.6).
+  Future<RatingBreakdown> getRatingBreakdown(String providerId) async {
+    try {
+      final res = await _dio.get(
+        '${ApiConfig.apiPrefix}/providers/$providerId/rating-breakdown',
+      );
+      return RatingBreakdown.fromJson(res.data['data'] as Map<String, dynamic>);
     } on DioException catch (e) {
       throw ApiException(_message(e));
     }

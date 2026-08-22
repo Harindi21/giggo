@@ -24,8 +24,10 @@ import com.giggo.backend.provider.domain.ProviderProfile;
 import com.giggo.backend.provider.repository.ProviderProfileRepository;
 import com.giggo.backend.review.api.dto.AdminReviewResponse;
 import com.giggo.backend.review.api.dto.CreateReviewRequest;
+import com.giggo.backend.review.api.dto.RatingBreakdownResponse;
 import com.giggo.backend.review.api.dto.ReviewResponse;
 import com.giggo.backend.review.domain.Review;
+import com.giggo.backend.review.repository.RatingBreakdownProjection;
 import com.giggo.backend.review.repository.ReviewRepository;
 import com.giggo.backend.review.service.SentimentClient.SentimentResult;
 import com.giggo.backend.user.domain.User;
@@ -84,6 +86,9 @@ public class ReviewService {
                 .customerId(customerId)
                 .providerId(booking.getProviderId())
                 .stars(req.stars())
+                .serviceRating(req.serviceRating())
+                .punctualityRating(req.punctualityRating())
+                .valueRating(req.valueRating())
                 .body(req.body())
                 .enhancedRating(enhanced)
                 .build();
@@ -173,6 +178,20 @@ public class ReviewService {
         return reviews.stream()
                 .map(r -> ReviewResponse.from(r, names.get(r.getCustomerId())))
                 .toList();
+    }
+
+    /** Per-dimension rating averages for a provider (P6.6). */
+    @Transactional(readOnly = true)
+    public RatingBreakdownResponse ratingBreakdown(UUID providerProfileId) {
+        ProviderProfile profile = providerRepository.findById(providerProfileId)
+                .orElseThrow(() -> new ResourceNotFoundException("Provider not found"));
+        RatingBreakdownProjection b = reviewRepository.ratingBreakdown(profile.getUser().getId());
+        return new RatingBreakdownResponse(
+                round(b.getService()), round(b.getPunctuality()), round(b.getValueScore()), b.getTotal());
+    }
+
+    private static double round(Double v) {
+        return v == null ? 0.0 : Math.round(v * 10.0) / 10.0;
     }
 
     private BigDecimal enhancedRating(int stars, Optional<SentimentResult> sentiment) {

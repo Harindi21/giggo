@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.giggo.backend.review.domain.Review;
 
@@ -21,4 +23,15 @@ public interface ReviewRepository extends JpaRepository<Review, UUID> {
 
     /** Admin: recent reviews across the platform. */
     List<Review> findTop100ByOrderByCreatedAtDesc();
+
+    /** Per-dimension rating averages for a provider's visible reviews (P6.6). */
+    @Query("""
+            SELECT AVG(r.serviceRating) AS service,
+                   AVG(r.punctualityRating) AS punctuality,
+                   AVG(r.valueRating) AS valueScore,
+                   COUNT(r) AS total
+            FROM Review r
+            WHERE r.providerId = :providerId AND r.hidden = false
+            """)
+    RatingBreakdownProjection ratingBreakdown(@Param("providerId") UUID providerId);
 }
