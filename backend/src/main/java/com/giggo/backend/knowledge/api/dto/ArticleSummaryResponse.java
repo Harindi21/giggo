@@ -14,11 +14,15 @@ public record ArticleSummaryResponse(
         String excerpt,
         String coverImageUrl,
         String authorName,
-        OffsetDateTime publishedAt
+        OffsetDateTime publishedAt,
+        int viewCount,
+        double avgRating,
+        int ratingCount
 ) {
     public static ArticleSummaryResponse from(Article a) {
         return new ArticleSummaryResponse(
                 a.getId(), a.getSlug(), a.getTitle(), a.getCategory(), a.getExcerpt(),
-                a.getCoverImageUrl(), a.getAuthorName(), a.getPublishedAt());
+                a.getCoverImageUrl(), a.getAuthorName(), a.getPublishedAt(),
+                a.getViewCount(), ArticleResponse.avg(a), a.getRatingCount());
     }
 }

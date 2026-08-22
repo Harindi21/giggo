@@ -94,7 +94,43 @@ class ArticleServiceTest {
         when(articleRepository.findByPublishedTrueAndCategoryOrderByPublishedAtDesc("Safety"))
                 .thenReturn(List.of(article(true)));
 
-        assertThat(service.listPublished("Safety")).hasSize(1);
+        assertThat(service.listPublished("Safety", null)).hasSize(1);
         verify(articleRepository).findByPublishedTrueAndCategoryOrderByPublishedAtDesc("Safety");
+    }
+
+    @Test
+    @DisplayName("listPublished searches when a query is given (P9.8)")
+    void listBySearch() {
+        when(articleRepository.searchPublished("pipe")).thenReturn(List.of(article(true)));
+
+        assertThat(service.listPublished(null, "pipe")).hasSize(1);
+        verify(articleRepository).searchPublished("pipe");
+    }
+
+    @Test
+    @DisplayName("recordView increments the view count (P9.4)")
+    void recordView() {
+        when(articleRepository.findBySlug("guide")).thenReturn(Optional.of(article(true)));
+        Article out = service.recordView("guide");
+        assertThat(out.getViewCount()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("rate accumulates the rating tally (P9.4)")
+    void rate() {
+        Article a = article(true);
+        when(articleRepository.findBySlug("guide")).thenReturn(Optional.of(a));
+        service.rate("guide", 4);
+        service.rate("guide", 2);
+        assertThat(a.getRatingSum()).isEqualTo(6);
+        assertThat(a.getRatingCount()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("rate rejects an out-of-range value")
+    void rateRejectsBadValue() {
+        // No stubbing needed: validation happens before any repository call.
+        assertThatThrownBy(() -> service.rate("guide", 6))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

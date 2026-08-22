@@ -29,5 +29,24 @@ void main() {
     });
     expect(a.content, isNull);
     expect(a.authorName, 'GIGGO Team');
+    expect(a.viewCount, 0); // metric defaults
+    expect(a.avgRating, 0);
+    expect(a.ratingCount, 0);
+  });
+
+  test('parses view count and rating metrics (P9.4)', () {
+    final a = Article.fromJson({
+      'id': 'a3',
+      'slug': 'guide',
+      'title': 'Guide',
+      'category': 'Safety',
+      'excerpt': 'x',
+      'viewCount': 42,
+      'avgRating': 4.5,
+      'ratingCount': 8,
+    });
+    expect(a.viewCount, 42);
+    expect(a.avgRating, 4.5);
+    expect(a.ratingCount, 8);
   });
 }

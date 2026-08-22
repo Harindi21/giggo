@@ -16,12 +16,24 @@ public record ArticleResponse(
         String coverImageUrl,
         String authorName,
         boolean published,
-        OffsetDateTime publishedAt
+        OffsetDateTime publishedAt,
+        int viewCount,
+        double avgRating,
+        int ratingCount
 ) {
     public static ArticleResponse from(Article a) {
         return new ArticleResponse(
                 a.getId(), a.getSlug(), a.getTitle(), a.getCategory(), a.getExcerpt(),
                 a.getContent(), a.getCoverImageUrl(), a.getAuthorName(),
-                a.isPublished(), a.getPublishedAt());
+                a.isPublished(), a.getPublishedAt(),
+                a.getViewCount(), avg(a), a.getRatingCount());
+    }
+
+    /** Average helpfulness rating (0 when unrated), one decimal. */
+    static double avg(Article a) {
+        if (a.getRatingCount() == 0) {
+            return 0.0;
+        }
+        return Math.round((double) a.getRatingSum() / a.getRatingCount() * 10.0) / 10.0;
     }
 }
