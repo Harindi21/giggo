@@ -52,7 +52,9 @@ class _ProviderListScreenState extends ConsumerState<ProviderListScreen> {
           IconButton(
             tooltip: _mapView ? 'List view' : 'Map view',
             onPressed: () => setState(() => _mapView = !_mapView),
-            icon: Icon(_mapView ? Icons.view_list_outlined : Icons.map_outlined),
+            icon: Icon(
+              _mapView ? Icons.view_list_outlined : Icons.map_outlined,
+            ),
           ),
         ],
       ),
@@ -211,9 +213,11 @@ class _ProvidersMap extends StatelessWidget {
 
     // Centre on the average of the located providers (Colombo as a fallback).
     final avgLat =
-        located.map((p) => p.latitude!).reduce((a, b) => a + b) / located.length;
+        located.map((p) => p.latitude!).reduce((a, b) => a + b) /
+        located.length;
     final avgLng =
-        located.map((p) => p.longitude!).reduce((a, b) => a + b) / located.length;
+        located.map((p) => p.longitude!).reduce((a, b) => a + b) /
+        located.length;
 
     return FlutterMap(
       options: MapOptions(
