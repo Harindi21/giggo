@@ -27,6 +27,11 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
         title: const Text('Tool Marketplace'),
         actions: [
           IconButton(
+            tooltip: 'Saved tools',
+            onPressed: () => context.push('/wishlist'),
+            icon: const Icon(Icons.favorite_border),
+          ),
+          IconButton(
             tooltip: 'My orders',
             onPressed: () => context.push('/orders'),
             icon: const Icon(Icons.receipt_long_outlined),

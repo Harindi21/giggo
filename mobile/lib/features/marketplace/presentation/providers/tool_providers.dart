@@ -12,3 +12,18 @@ final toolsProvider = FutureProvider<List<Tool>>((ref) {
 final toolProvider = FutureProvider.family<Tool, String>((ref, slug) {
   return ref.watch(toolRepositoryProvider).getBySlug(slug);
 });
+
+/// The signed-in user's saved tools (P10.3).
+final wishlistProvider = FutureProvider<List<Tool>>((ref) {
+  return ref.watch(toolRepositoryProvider).getWishlist();
+});
+
+/// Set of wishlisted tool ids, for heart state on cards/detail.
+final wishlistIdsProvider = Provider<Set<String>>((ref) {
+  return ref
+      .watch(wishlistProvider)
+      .maybeWhen(
+        data: (l) => l.map((t) => t.id).toSet(),
+        orElse: () => <String>{},
+      );
+});

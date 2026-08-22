@@ -29,6 +29,34 @@ class ToolRepository {
     }
   }
 
+  // ---- Wishlist / save-for-later (P10.3) ----
+
+  Future<List<Tool>> getWishlist() async {
+    try {
+      final res = await _dio.get('${ApiConfig.apiPrefix}/wishlist');
+      final data = res.data['data'] as List<dynamic>;
+      return data.map((e) => Tool.fromJson(e as Map<String, dynamic>)).toList();
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
+  Future<void> addToWishlist(String toolId) async {
+    try {
+      await _dio.post('${ApiConfig.apiPrefix}/tools/$toolId/wishlist');
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
+  Future<void> removeFromWishlist(String toolId) async {
+    try {
+      await _dio.delete('${ApiConfig.apiPrefix}/tools/$toolId/wishlist');
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
   String _message(DioException e) {
     final data = e.response?.data;
     if (data is Map && data['message'] is String) {

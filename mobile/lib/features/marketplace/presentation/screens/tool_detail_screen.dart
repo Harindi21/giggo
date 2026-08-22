@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../data/models/tool_models.dart';
+import '../../data/tool_repository.dart';
 import '../providers/tool_providers.dart';
 import 'tool_category_icon.dart';
 
@@ -41,13 +42,21 @@ class ToolDetailScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  t.name,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
-                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        t.name,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                    _WishlistHeart(toolId: t.id),
+                  ],
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -160,4 +169,40 @@ class ToolDetailScreen extends ConsumerWidget {
       ),
     ),
   );
+}
+
+/// Heart toggle that saves/removes a tool from the wishlist (P10.3).
+class _WishlistHeart extends ConsumerWidget {
+  const _WishlistHeart({required this.toolId});
+
+  final String toolId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final saved = ref.watch(wishlistIdsProvider).contains(toolId);
+    return IconButton(
+      tooltip: saved ? 'Saved' : 'Save for later',
+      icon: Icon(
+        saved ? Icons.favorite : Icons.favorite_border,
+        color: AppColors.accent,
+      ),
+      onPressed: () async {
+        final repo = ref.read(toolRepositoryProvider);
+        try {
+          if (saved) {
+            await repo.removeFromWishlist(toolId);
+          } else {
+            await repo.addToWishlist(toolId);
+          }
+          ref.invalidate(wishlistProvider);
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(e.toString())));
+          }
+        }
+      },
+    );
+  }
 }
