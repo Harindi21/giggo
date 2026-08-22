@@ -25,6 +25,7 @@ import '../../features/marketplace/presentation/screens/checkout_screen.dart';
 import '../../features/marketplace/presentation/screens/orders_screen.dart';
 import '../../features/marketplace/presentation/screens/shop_screen.dart';
 import '../../features/marketplace/presentation/screens/tool_detail_screen.dart';
+import '../../features/marketplace/presentation/screens/wishlist_screen.dart';
 import '../../features/notifications/presentation/screens/notification_preferences_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
@@ -180,6 +181,11 @@ final appRouter = GoRouter(
       path: '/orders',
       name: 'orders',
       builder: (c, s) => const OrdersScreen(),
+    ),
+    GoRoute(
+      path: '/wishlist',
+      name: 'wishlist',
+      builder: (c, s) => const WishlistScreen(),
     ),
 
     // ---- Main app (bottom-nav shell) ----
