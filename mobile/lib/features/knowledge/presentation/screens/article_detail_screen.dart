@@ -120,7 +120,11 @@ class _ArticleDetailScreenState extends ConsumerState<ArticleDetailScreen> {
   Widget _metrics(Article a) {
     return Row(
       children: [
-        const Icon(Icons.visibility_outlined, size: 14, color: AppColors.textMuted),
+        const Icon(
+          Icons.visibility_outlined,
+          size: 14,
+          color: AppColors.textMuted,
+        ),
         const SizedBox(width: 4),
         Text(
           '${a.viewCount + 1} views',
@@ -150,7 +154,9 @@ class _ArticleDetailScreenState extends ConsumerState<ArticleDetailScreen> {
       child: Column(
         children: [
           Text(
-            _rated ? 'Thanks for rating this guide!' : 'Was this guide helpful?',
+            _rated
+                ? 'Thanks for rating this guide!'
+                : 'Was this guide helpful?',
             style: const TextStyle(
               fontWeight: FontWeight.w700,
               color: AppColors.textPrimary,

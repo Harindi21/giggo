@@ -79,9 +79,11 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
 
   Widget _list(List<Article> items) {
     if (items.isEmpty) {
-      return _message(_query.isEmpty
-          ? 'No guides yet — check back soon.'
-          : 'No guides match "$_query".');
+      return _message(
+        _query.isEmpty
+            ? 'No guides yet — check back soon.'
+            : 'No guides match "$_query".',
+      );
     }
     final categories = <String>{for (final a in items) a.category}.toList()
       ..sort();
@@ -212,7 +214,11 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
                     ),
                     if (a.ratingCount > 0) ...[
                       const SizedBox(width: 10),
-                      const Icon(Icons.star_rounded, size: 14, color: AppColors.accent),
+                      const Icon(
+                        Icons.star_rounded,
+                        size: 14,
+                        color: AppColors.accent,
+                      ),
                       const SizedBox(width: 2),
                       Text(
                         a.avgRating.toStringAsFixed(1),

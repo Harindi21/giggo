@@ -20,9 +20,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          articlesProvider.overrideWith((ref, q) async => articles),
-        ],
+        overrides: [articlesProvider.overrideWith((ref, q) async => articles)],
         child: const MaterialApp(home: ArticlesScreen()),
       ),
     );
