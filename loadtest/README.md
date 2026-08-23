@@ -1,4 +1,26 @@
-# Load tests — real-time tracking socket (WBS P5.10)
+# Load tests
+
+Two load tests live here: the REST API test (P12.5) and the real-time tracking
+socket test (P5.10). Both use the seeded demo customer to obtain a JWT, so start
+the backend with `SEED_DEMO_DATA=true`.
+
+## REST API — 500 concurrent users (WBS P12.5)
+
+Validates the hot read paths (discovery, catalog, recommendations) + the public
+health check under **500 concurrent users** (BRD NFR: "Load test: 500 concurrent
+users").
+
+```bash
+# install: winget install k6  (or https://k6.io/docs/get-started/installation/)
+BASE_URL=http://localhost:8080 k6 run loadtest/api_load_test.js
+```
+Ramps 0 → 500 → 0 VUs over ~6 min. Thresholds: `http_req_failed` < 1%, p95 latency
+< 1s. `setup()` logs in the demo customer once and shares the token across VUs;
+override with `EMAIL` / `PASSWORD` env vars.
+
+---
+
+# Real-time tracking socket (WBS P5.10)
 
 Validates that the STOMP-over-WebSocket tracking endpoint (`/ws`) holds **200
 concurrent connections** (BRD NFR: "Load test: 200 concurrent WebSocket
