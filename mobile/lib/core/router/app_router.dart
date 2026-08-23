@@ -30,6 +30,7 @@ import '../../features/notifications/presentation/screens/notification_preferenc
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/provider/presentation/screens/availability_screen.dart';
+import '../../features/provider/presentation/screens/demand_screen.dart';
 import '../../features/provider/presentation/screens/earnings_screen.dart';
 import '../../features/provider/presentation/screens/provider_profile_screen.dart';
 import '../../features/reviews/presentation/screens/rate_review_screen.dart';
@@ -131,6 +132,11 @@ final appRouter = GoRouter(
       path: '/availability',
       name: 'availability',
       builder: (c, s) => const AvailabilityScreen(),
+    ),
+    GoRoute(
+      path: '/demand',
+      name: 'demand',
+      builder: (c, s) => const DemandScreen(),
     ),
     GoRoute(
       path: '/admin',

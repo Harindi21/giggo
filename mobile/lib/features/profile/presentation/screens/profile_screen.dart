@@ -54,6 +54,8 @@ class ProfileScreen extends ConsumerWidget {
               const SizedBox(height: 8),
               _earningsTile(context),
               const SizedBox(height: 8),
+              _demandTile(context),
+              const SizedBox(height: 8),
               _availabilityTile(context),
               const SizedBox(height: 8),
               _verificationTile(context, ref),
@@ -64,6 +66,31 @@ class ProfileScreen extends ConsumerWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _demandTile(BuildContext context) {
+    return Card(
+      child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        leading: const CircleAvatar(
+          backgroundColor: AppColors.primary,
+          child: Icon(Icons.insights_outlined, color: Colors.white),
+        ),
+        title: const Text(
+          'Demand insights',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        subtitle: const Text(
+          'Weekly demand & next-week forecast for your services',
+          style: TextStyle(color: AppColors.textMuted),
+        ),
+        trailing: const Icon(Icons.chevron_right, color: AppColors.textMuted),
+        onTap: () => context.push('/demand'),
       ),
     );
   }

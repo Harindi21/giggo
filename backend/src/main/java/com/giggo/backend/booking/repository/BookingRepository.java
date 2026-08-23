@@ -48,4 +48,7 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             + "(SELECT customer_id FROM bookings GROUP BY customer_id HAVING COUNT(*) > 1) t",
             nativeQuery = true)
     long countRepeatCustomers();
+
+    /** Bookings created since a cutoff, for demand forecasting (AI #4). */
+    List<Booking> findByCreatedAtAfter(OffsetDateTime cutoff);
 }
