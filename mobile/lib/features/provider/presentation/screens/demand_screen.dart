@@ -38,7 +38,11 @@ class DemandScreen extends ConsumerWidget {
               return ListView(
                 children: const [
                   SizedBox(height: 120),
-                  Icon(Icons.insights_outlined, size: 56, color: AppColors.textMuted),
+                  Icon(
+                    Icons.insights_outlined,
+                    size: 56,
+                    color: AppColors.textMuted,
+                  ),
                   SizedBox(height: 12),
                   Text(
                     'No demand data yet.\nAdd skills to your profile to see insights.',
@@ -56,7 +60,10 @@ class DemandScreen extends ConsumerWidget {
                   child: Text(
                     'Bookings per week over the last 8 weeks, with next week\'s '
                     'forecast for your service categories.',
-                    style: TextStyle(fontSize: 12.5, color: AppColors.textMuted),
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      color: AppColors.textMuted,
+                    ),
                   ),
                 ),
                 for (final d in items) _card(d),
@@ -101,7 +108,11 @@ class DemandScreen extends ConsumerWidget {
               const SizedBox(width: 4),
               Text(
                 label,
-                style: TextStyle(fontWeight: FontWeight.w700, color: color, fontSize: 12.5),
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: color,
+                  fontSize: 12.5,
+                ),
               ),
             ],
           ),
@@ -110,12 +121,18 @@ class DemandScreen extends ConsumerWidget {
           const SizedBox(height: 10),
           Row(
             children: [
-              const Icon(Icons.calendar_today_outlined,
-                  size: 14, color: AppColors.textMuted),
+              const Icon(
+                Icons.calendar_today_outlined,
+                size: 14,
+                color: AppColors.textMuted,
+              ),
               const SizedBox(width: 6),
               Text(
                 'Next week forecast: ',
-                style: const TextStyle(fontSize: 12.5, color: AppColors.textMuted),
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  color: AppColors.textMuted,
+                ),
               ),
               Text(
                 '~${d.forecastNextWeek} booking${d.forecastNextWeek == 1 ? '' : 's'}',
@@ -133,7 +150,9 @@ class DemandScreen extends ConsumerWidget {
   }
 
   Widget _bars(List<int> counts) {
-    final max = counts.isEmpty ? 1 : counts.reduce((a, b) => a > b ? a : b).clamp(1, 1 << 30);
+    final max = counts.isEmpty
+        ? 1
+        : counts.reduce((a, b) => a > b ? a : b).clamp(1, 1 << 30);
     return SizedBox(
       height: 56,
       child: Row(
@@ -148,7 +167,10 @@ class DemandScreen extends ConsumerWidget {
                   children: [
                     Text(
                       '$c',
-                      style: const TextStyle(fontSize: 9, color: AppColors.textMuted),
+                      style: const TextStyle(
+                        fontSize: 9,
+                        color: AppColors.textMuted,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Container(
