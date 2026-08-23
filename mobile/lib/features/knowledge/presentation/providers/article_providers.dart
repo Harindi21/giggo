@@ -13,3 +13,8 @@ final articlesProvider = FutureProvider.family<List<Article>, String>((ref, q) {
 final articleProvider = FutureProvider.family<Article, String>((ref, slug) {
   return ref.watch(articleRepositoryProvider).getBySlug(slug);
 });
+
+/// "Recommended for you" guides for the signed-in user (P9.3).
+final recommendedArticlesProvider = FutureProvider<List<Article>>((ref) {
+  return ref.watch(articleRepositoryProvider).getRecommended();
+});
