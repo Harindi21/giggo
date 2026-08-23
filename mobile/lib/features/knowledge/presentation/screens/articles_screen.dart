@@ -190,12 +190,18 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
                 ),
                 Row(
                   children: [
-                    const Icon(Icons.menu_book_outlined,
-                        size: 13, color: Colors.white70),
+                    const Icon(
+                      Icons.menu_book_outlined,
+                      size: 13,
+                      color: Colors.white70,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       'Read guide',
-                      style: const TextStyle(fontSize: 11.5, color: Colors.white70),
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        color: Colors.white70,
+                      ),
                     ),
                   ],
                 ),
