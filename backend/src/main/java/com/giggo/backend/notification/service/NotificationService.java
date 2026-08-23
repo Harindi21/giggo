@@ -10,12 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.giggo.backend.common.exception.ForbiddenOperationException;
 import com.giggo.backend.common.exception.ResourceNotFoundException;
 import com.giggo.backend.notification.domain.DevicePlatform;
 import com.giggo.backend.notification.domain.DeviceToken;
 import com.giggo.backend.notification.domain.Notification;
 import com.giggo.backend.notification.domain.NotificationCategory;
+import com.giggo.backend.notification.domain.PushStatus;
 import com.giggo.backend.notification.push.PushSender;
 import com.giggo.backend.notification.repository.DeviceTokenRepository;
 import com.giggo.backend.notification.repository.NotificationRepository;
@@ -27,20 +31,25 @@ import com.giggo.backend.notification.repository.NotificationRepository;
 @Service
 public class NotificationService {
 
+    private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
+
     private final NotificationRepository notificationRepository;
     private final DeviceTokenRepository deviceTokenRepository;
     private final NotificationPreferenceService preferenceService;
     private final PushSender pushSender;
+    private final int maxPushAttempts;
 
     public NotificationService(
             NotificationRepository notificationRepository,
             DeviceTokenRepository deviceTokenRepository,
             NotificationPreferenceService preferenceService,
             List<PushSender> pushSenders,
-            @Value("${giggo.notifications.push-provider:stub}") String provider) {
+            @Value("${giggo.notifications.push-provider:stub}") String provider,
+            @Value("${giggo.notifications.max-push-attempts:3}") int maxPushAttempts) {
         this.notificationRepository = notificationRepository;
         this.deviceTokenRepository = deviceTokenRepository;
         this.preferenceService = preferenceService;
+        this.maxPushAttempts = maxPushAttempts;
         this.pushSender = pushSenders.stream()
                 .filter(p -> provider.equalsIgnoreCase(p.name()))
                 .findFirst()
@@ -48,8 +57,9 @@ public class NotificationService {
     }
 
     /**
-     * Persist a notification for a user and push it to their devices. Runs in its
-     * own transaction so it can be called from an after-commit event listener.
+     * Persist a notification for a user and attempt to push it. Runs in its own
+     * transaction so it can be called from an after-commit event listener. The
+     * in-app inbox entry is always kept; the push is tracked and retryable (P8.6).
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Notification notify(UUID userId, String type, String title, String body, UUID bookingId) {
@@ -60,18 +70,50 @@ public class NotificationService {
                 .body(body)
                 .bookingId(bookingId)
                 .build());
+        return deliver(saved);
+    }
 
-        // In-app inbox always records; push delivery honours the user's preference (P8.5).
-        if (preferenceService.isPushEnabled(userId, NotificationCategory.of(type))) {
-            List<String> tokens = deviceTokenRepository.findByUserId(userId).stream()
-                    .map(DeviceToken::getToken)
-                    .toList();
-            Map<String, String> data = bookingId == null
-                    ? Map.of("type", type)
-                    : Map.of("type", type, "bookingId", bookingId.toString());
-            pushSender.send(tokens, title, body, data);
+    /** Retry pushes that previously failed and are still under the attempt cap (P8.6). */
+    @Transactional
+    public int retryFailed() {
+        List<Notification> failed = notificationRepository
+                .findTop100ByPushStatusAndPushAttemptsLessThanOrderByCreatedAtAsc(
+                        PushStatus.FAILED, maxPushAttempts);
+        failed.forEach(this::deliver);
+        return failed.size();
+    }
+
+    /**
+     * Attempt push delivery for a notification and record the outcome. Push is
+     * skipped (never failed) when the user muted the category (P8.5) or has no
+     * registered devices; a provider error is recorded as FAILED for retry.
+     */
+    private Notification deliver(Notification n) {
+        if (!preferenceService.isPushEnabled(n.getUserId(), NotificationCategory.of(n.getType()))) {
+            n.setPushStatus(PushStatus.SKIPPED);
+            return notificationRepository.save(n);
         }
-        return saved;
+        List<String> tokens = deviceTokenRepository.findByUserId(n.getUserId()).stream()
+                .map(DeviceToken::getToken)
+                .toList();
+        if (tokens.isEmpty()) {
+            n.setPushStatus(PushStatus.SKIPPED);
+            return notificationRepository.save(n);
+        }
+        n.setPushAttempts(n.getPushAttempts() + 1);
+        n.setLastAttemptAt(OffsetDateTime.now());
+        Map<String, String> data = n.getBookingId() == null
+                ? Map.of("type", n.getType())
+                : Map.of("type", n.getType(), "bookingId", n.getBookingId().toString());
+        try {
+            pushSender.send(tokens, n.getTitle(), n.getBody(), data);
+            n.setPushStatus(PushStatus.SENT);
+        } catch (Exception ex) {
+            n.setPushStatus(PushStatus.FAILED);
+            log.warn("Push delivery failed for notification {} (attempt {}): {}",
+                    n.getId(), n.getPushAttempts(), ex.getMessage());
+        }
+        return notificationRepository.save(n);
     }
 
     @Transactional(readOnly = true)

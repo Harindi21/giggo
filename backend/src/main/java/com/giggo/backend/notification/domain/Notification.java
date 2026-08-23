@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
@@ -44,6 +46,19 @@ public class Notification {
     /** Null until the user reads it. */
     @Column(name = "read_at")
     private OffsetDateTime readAt;
+
+    // ---- push delivery tracking (P8.6) ----
+    @Enumerated(EnumType.STRING)
+    @Column(name = "push_status", nullable = false, length = 20)
+    @Builder.Default
+    private PushStatus pushStatus = PushStatus.PENDING;
+
+    @Column(name = "push_attempts", nullable = false)
+    @Builder.Default
+    private int pushAttempts = 0;
+
+    @Column(name = "last_attempt_at")
+    private OffsetDateTime lastAttemptAt;
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;

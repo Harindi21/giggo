@@ -26,6 +26,7 @@ import com.giggo.backend.common.exception.ForbiddenOperationException;
 import com.giggo.backend.notification.domain.DevicePlatform;
 import com.giggo.backend.notification.domain.DeviceToken;
 import com.giggo.backend.notification.domain.Notification;
+import com.giggo.backend.notification.domain.PushStatus;
 import com.giggo.backend.notification.push.PushSender;
 import com.giggo.backend.notification.repository.DeviceTokenRepository;
 import com.giggo.backend.notification.repository.NotificationRepository;
@@ -47,7 +48,7 @@ class NotificationServiceTest {
     void setUp() {
         service = new NotificationService(
                 notificationRepository, deviceTokenRepository, preferenceService,
-                List.of(pushSender), "stub");
+                List.of(pushSender), "stub", 3);
     }
 
     @Test
@@ -62,7 +63,59 @@ class NotificationServiceTest {
 
         assertThat(out.getUserId()).isEqualTo(userId);
         assertThat(out.getType()).isEqualTo("BOOKING_ACCEPTED");
+        assertThat(out.getPushStatus()).isEqualTo(PushStatus.SENT);
+        assertThat(out.getPushAttempts()).isEqualTo(1);
         verify(pushSender).send(eq(List.of("tok-1")), anyString(), anyString(), anyMap());
+    }
+
+    @Test
+    @DisplayName("notify skips push (no failure) when the user has no devices")
+    void notifySkipsWithoutDevices() {
+        when(notificationRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(preferenceService.isPushEnabled(eq(userId), any())).thenReturn(true);
+        when(deviceTokenRepository.findByUserId(userId)).thenReturn(List.of());
+
+        Notification out = service.notify(userId, "BOOKING_ACCEPTED", "t", "b", null);
+
+        assertThat(out.getPushStatus()).isEqualTo(PushStatus.SKIPPED);
+        verify(pushSender, never()).send(any(), any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("notify records FAILED when the push provider throws (P8.6)")
+    void notifyRecordsFailure() {
+        when(notificationRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(preferenceService.isPushEnabled(eq(userId), any())).thenReturn(true);
+        when(deviceTokenRepository.findByUserId(userId)).thenReturn(List.of(
+                DeviceToken.builder().token("tok-1").platform(DevicePlatform.ANDROID).build()));
+        org.mockito.Mockito.doThrow(new RuntimeException("gateway down"))
+                .when(pushSender).send(any(), any(), any(), any());
+
+        Notification out = service.notify(userId, "PAYMENT_HELD", "t", "b", null);
+
+        assertThat(out.getPushStatus()).isEqualTo(PushStatus.FAILED);
+        assertThat(out.getPushAttempts()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("retryFailed re-delivers failed pushes and marks them SENT")
+    void retryFailedResends() {
+        Notification failed = Notification.builder()
+                .id(UUID.randomUUID()).userId(userId).type("BOOKING_ACCEPTED")
+                .title("t").body("b").pushStatus(PushStatus.FAILED).pushAttempts(1).build();
+        when(notificationRepository
+                .findTop100ByPushStatusAndPushAttemptsLessThanOrderByCreatedAtAsc(PushStatus.FAILED, 3))
+                .thenReturn(List.of(failed));
+        when(notificationRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(preferenceService.isPushEnabled(eq(userId), any())).thenReturn(true);
+        when(deviceTokenRepository.findByUserId(userId)).thenReturn(List.of(
+                DeviceToken.builder().token("tok-1").platform(DevicePlatform.ANDROID).build()));
+
+        int retried = service.retryFailed();
+
+        assertThat(retried).isEqualTo(1);
+        assertThat(failed.getPushStatus()).isEqualTo(PushStatus.SENT);
+        assertThat(failed.getPushAttempts()).isEqualTo(2);
     }
 
     @Test
