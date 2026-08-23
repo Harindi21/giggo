@@ -95,6 +95,7 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       children: [
+        if (_query.isEmpty) _recommendedStrip(),
         SizedBox(
           height: 38,
           child: ListView(
@@ -113,6 +114,102 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
         const SizedBox(height: 12),
         for (final a in filtered) _card(a),
       ],
+    );
+  }
+
+  Widget _recommendedStrip() {
+    final async = ref.watch(recommendedArticlesProvider);
+    return async.maybeWhen(
+      data: (list) {
+        if (list.isEmpty) return const SizedBox.shrink();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Recommended for you',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 116,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: list.length,
+                separatorBuilder: (_, _) => const SizedBox(width: 10),
+                itemBuilder: (_, i) => _recCard(list[i]),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+
+  Widget _recCard(Article a) {
+    return SizedBox(
+      width: 220,
+      child: Material(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(AppTheme.radiusCard),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppTheme.radiusCard),
+          onTap: () => context.push('/articles/${a.slug}'),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  a.category,
+                  style: const TextStyle(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.accent,
+                    letterSpacing: 0.4,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Expanded(
+                  child: Text(
+                    a.title,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      height: 1.25,
+                    ),
+                  ),
+                ),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.menu_book_outlined,
+                      size: 13,
+                      color: Colors.white70,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Read guide',
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 

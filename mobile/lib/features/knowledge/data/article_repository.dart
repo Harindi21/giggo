@@ -34,6 +34,19 @@ class ArticleRepository {
     }
   }
 
+  /// "Recommended for you" guides, matched to the provider's skills (P9.3).
+  Future<List<Article>> getRecommended() async {
+    try {
+      final res = await _dio.get('${ApiConfig.apiPrefix}/articles/recommended');
+      final data = res.data['data'] as List<dynamic>;
+      return data
+          .map((e) => Article.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw ApiException(_message(e));
+    }
+  }
+
   /// Record a view (P9.4).
   Future<Article> recordView(String slug) async {
     try {
