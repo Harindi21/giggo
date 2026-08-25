@@ -155,7 +155,10 @@ class AuthTextField extends StatelessWidget {
         fillColor: AppColors.surfaceBlue,
         isDense: true,
         suffixIcon: suffixIcon,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 16,
+        ),
         border: _border(Colors.transparent, 0),
         enabledBorder: _border(Colors.transparent, 0),
         focusedBorder: _border(AppColors.accent, 1.4),
@@ -192,7 +195,9 @@ class PrimaryButton extends StatelessWidget {
           disabledBackgroundColor: AppColors.accent.withValues(alpha: 0.5),
           disabledForegroundColor: Colors.white,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           textStyle: GoogleFonts.redHatDisplay(
             fontSize: 16,
             fontWeight: FontWeight.w700,

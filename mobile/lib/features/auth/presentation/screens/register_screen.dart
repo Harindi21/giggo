@@ -134,9 +134,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               suffixIcon: _eye(_obscureConfirm, () {
                 setState(() => _obscureConfirm = !_obscureConfirm);
               }),
-              validator: (v) => (v != _passwordCtrl.text)
-                  ? 'Passwords do not match'
-                  : null,
+              validator: (v) =>
+                  (v != _passwordCtrl.text) ? 'Passwords do not match' : null,
             ),
             const SizedBox(height: 24),
 
