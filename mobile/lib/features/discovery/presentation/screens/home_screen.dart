@@ -33,23 +33,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     context.push('/home/search?q=${Uri.encodeComponent(query)}');
   }
 
-  IconData _iconFor(String category) {
-    switch (category) {
-      case 'Property Maintenance':
-        return Icons.home_repair_service_outlined;
-      case 'Moving & Delivery':
-        return Icons.local_shipping_outlined;
-      case 'Life Style & Personal':
-        return Icons.spa_outlined;
-      case 'Business & Professional':
-        return Icons.business_center_outlined;
-      case 'Vehicle Services':
-        return Icons.directions_car_outlined;
-      default:
-        return Icons.category_outlined;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final categories = ref.watch(categoriesProvider);
@@ -68,11 +51,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             SliverToBoxAdapter(child: _recommendedSection()),
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 20, 20, 8),
+                padding: EdgeInsets.fromLTRB(20, 24, 20, 8),
                 child: Text(
                   'Service Categories',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 20,
                     fontWeight: FontWeight.w800,
                     color: AppColors.textPrimary,
                   ),
@@ -89,7 +72,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               error: (e, _) => SliverToBoxAdapter(child: _error(e.toString())),
               data: (list) => SliverList.builder(
                 itemCount: list.length,
-                itemBuilder: (context, i) => _categoryTile(list[i]),
+                itemBuilder: (context, i) => _CategoryGroup(
+                  category: list[i],
+                  initiallyExpanded: i == 0,
+                ),
               ),
             ),
             SliverToBoxAdapter(child: _knowledgeCard()),
@@ -107,7 +93,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         color: AppColors.primary,
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
       ),
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 22),
       child: SafeArea(
         bottom: false,
         child: Column(
@@ -135,30 +121,61 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ],
             ),
             const SizedBox(height: 18),
-            TextField(
-              controller: _searchCtrl,
-              textInputAction: TextInputAction.search,
-              onSubmitted: _submitSearch,
-              decoration: InputDecoration(
-                fillColor: Colors.white,
-                filled: true,
-                hintText: 'Search services or providers',
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: AppColors.textMuted,
-                ),
-                suffixIcon: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_forward,
-                    color: AppColors.accent,
-                  ),
-                  onPressed: () => _submitSearch(_searchCtrl.text),
-                ),
-              ),
-            ),
+            _searchBar(),
           ],
         ),
       ),
+    );
+  }
+
+  /// Orange square search button + white field, per the Figma home header.
+  Widget _searchBar() {
+    return Row(
+      children: [
+        InkWell(
+          onTap: () => _submitSearch(_searchCtrl.text),
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            height: 48,
+            width: 48,
+            decoration: BoxDecoration(
+              color: AppColors.accent,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.search, color: Colors.white),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: TextField(
+            controller: _searchCtrl,
+            textInputAction: TextInputAction.search,
+            onSubmitted: _submitSearch,
+            decoration: InputDecoration(
+              fillColor: Colors.white,
+              filled: true,
+              hintText: 'Search services',
+              hintStyle: const TextStyle(color: AppColors.textMuted),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 18,
+                vertical: 14,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -217,41 +234,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: const Text('View Tasks'),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _categoryTile(Category c) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      child: Card(
-        child: ListTile(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          leading: CircleAvatar(
-            backgroundColor: AppColors.surfaceBlue.withValues(alpha: 0.7),
-            child: Icon(_iconFor(c.name), color: AppColors.primary),
-          ),
-          title: Text(
-            c.name,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          subtitle: c.description != null
-              ? Text(
-                  c.description!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                )
-              : null,
-          trailing: const Icon(Icons.chevron_right, color: AppColors.textMuted),
-          onTap: () => context.push(
-            '/home/category/${c.id}?name=${Uri.encodeComponent(c.name)}',
-          ),
         ),
       ),
     );
@@ -360,7 +342,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Text(
                 'Recommended for you',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
                 ),
@@ -471,4 +453,139 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ],
     ),
   );
+}
+
+/// An expandable service-category group. Collapsed it shows just the name and a
+/// chevron; expanded it lazily loads the category's skills and lays them out as
+/// light-blue chips (matching the Figma home). Tapping a chip opens the
+/// category's provider list.
+class _CategoryGroup extends ConsumerStatefulWidget {
+  final Category category;
+  final bool initiallyExpanded;
+
+  const _CategoryGroup({
+    required this.category,
+    this.initiallyExpanded = false,
+  });
+
+  @override
+  ConsumerState<_CategoryGroup> createState() => _CategoryGroupState();
+}
+
+class _CategoryGroupState extends ConsumerState<_CategoryGroup> {
+  late bool _expanded = widget.initiallyExpanded;
+
+  void _openCategory() {
+    final name = Uri.encodeComponent(widget.category.name);
+    context.push('/home/category/${widget.category.id}?name=$name');
+  }
+
+  // A skill chip searches for that service (the results screen filters by it).
+  void _openSkill(String skillName) {
+    context.push('/home/search?q=${Uri.encodeComponent(skillName)}');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          onTap: () => setState(() => _expanded = !_expanded),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.category.name,
+                    style: const TextStyle(
+                      fontSize: 15.5,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+                AnimatedRotation(
+                  turns: _expanded ? 0.5 : 0,
+                  duration: const Duration(milliseconds: 180),
+                  child: const Icon(
+                    Icons.keyboard_arrow_down,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_expanded)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
+            child: _skills(),
+          ),
+        const Divider(height: 1, indent: 20, endIndent: 20),
+      ],
+    );
+  }
+
+  Widget _skills() {
+    final skills = ref.watch(skillsProvider(widget.category.id));
+    return skills.when(
+      loading: () => const Align(
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 4),
+          child: SizedBox(
+            height: 18,
+            width: 18,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      ),
+      error: (e, _) => Align(
+        alignment: Alignment.centerLeft,
+        child: TextButton(
+          onPressed: () => ref.invalidate(skillsProvider(widget.category.id)),
+          child: const Text("Couldn't load services — tap to retry"),
+        ),
+      ),
+      data: (list) {
+        if (list.isEmpty) {
+          return GestureDetector(
+            onTap: _openCategory,
+            child: const Text(
+              'See providers in this category',
+              style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+            ),
+          );
+        }
+        return Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: [for (final s in list) _chip(s.name)],
+        );
+      },
+    );
+  }
+
+  Widget _chip(String label) {
+    return GestureDetector(
+      onTap: () => _openSkill(label),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceBlue,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: AppColors.primary,
+          ),
+        ),
+      ),
+    );
+  }
 }
