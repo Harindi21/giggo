@@ -3,10 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/app.dart';
 
 void main() {
-  testWidgets('App renders localized home screen', (WidgetTester tester) async {
+  testWidgets('App renders the login screen', (WidgetTester tester) async {
     await tester.pumpWidget(const ProviderScope(child: GiggoApp()));
     await tester.pumpAndSettle();
 
-    expect(find.text('Welcome back'), findsOneWidget);
+    expect(find.text('Log in'), findsOneWidget);
   });
 }

@@ -154,7 +154,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
           ],
           const SizedBox(height: 32),
           PrimaryButton(
-            label: 'Submit',
+            label: 'Verify',
             loading: _verifying,
             onPressed: _code.length == _codeLength ? _verify : null,
           ),

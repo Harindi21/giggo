@@ -48,7 +48,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Enter the 6-digit code'), findsOneWidget);
+    expect(find.text('Verify your email'), findsOneWidget);
     expect(find.textContaining('ann@example.com'), findsOneWidget);
     expect(find.textContaining('Resend in'), findsOneWidget);
 
