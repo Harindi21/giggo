@@ -2,113 +2,178 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../widgets/auth_widgets.dart';
 
-class RoleSelectionScreen extends StatelessWidget {
+/// "How do you want to use Giggo as?" — the customer/provider role picker,
+/// rendered as a full navy screen with the two 3D characters (mockup).
+class RoleSelectionScreen extends StatefulWidget {
   const RoleSelectionScreen({super.key});
+
+  @override
+  State<RoleSelectionScreen> createState() => _RoleSelectionScreenState();
+}
+
+class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
+  String? _selected; // 'CUSTOMER' or 'PROVIDER'
+
+  void _continue() {
+    if (_selected == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please pick how you want to use Giggo')),
+      );
+      return;
+    }
+    context.go('/register?role=$_selected');
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.primary,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 32),
-              Text(
-                'Welcome to GIGGO',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
+        child: LayoutBuilder(
+          builder: (context, c) {
+            final h = c.maxHeight;
+            final w = c.maxWidth;
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // Person with phone — top-right, overlapping the corner.
+                Positioned(
+                  top: h * 0.04,
+                  right: -w * 0.05,
+                  child: Image.asset(
+                    AuthAssets.heroRoleCustomer,
+                    height: h * 0.26,
+                    fit: BoxFit.contain,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'How do you want to use GIGGO?',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
-              ),
-              const SizedBox(height: 40),
-              _RoleCard(
-                title: 'I need a service',
-                subtitle: 'Hire trusted professionals near you',
-                icon: Icons.search,
-                onTap: () => context.go('/register?role=CUSTOMER'),
-              ),
-              const SizedBox(height: 20),
-              _RoleCard(
-                title: 'I provide services',
-                subtitle: 'Offer your skills and earn',
-                icon: Icons.handyman,
-                onTap: () => context.go('/register?role=PROVIDER'),
-              ),
-            ],
-          ),
+                // Person with laptop — anchored bottom-left, large.
+                Positioned(
+                  bottom: h * 0.05,
+                  left: -w * 0.04,
+                  child: Image.asset(
+                    AuthAssets.heroRoleProvider,
+                    height: h * 0.40,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+
+                // Foreground content.
+                Padding(
+                  padding: EdgeInsets.fromLTRB(28, h * 0.02, 28, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Image.asset(AuthAssets.logo, height: 42),
+                      SizedBox(height: h * 0.16),
+                      const Text(
+                        'How do you want to\nuse Giggo as?',
+                        style: TextStyle(
+                          color: AppColors.textOnDark,
+                          fontSize: 26,
+                          height: 1.25,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      SizedBox(height: h * 0.04),
+                      _RoleButton(
+                        label: 'Customer',
+                        selected: _selected == 'CUSTOMER',
+                        onTap: () => setState(() => _selected = 'CUSTOMER'),
+                      ),
+                      const SizedBox(height: 16),
+                      _RoleButton(
+                        label: 'Service Provider',
+                        selected: _selected == 'PROVIDER',
+                        onTap: () => setState(() => _selected = 'PROVIDER'),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Continue — bottom-right.
+                Positioned(
+                  right: 24,
+                  bottom: h * 0.03,
+                  child: GestureDetector(
+                    onTap: _continue,
+                    behavior: HitTestBehavior.opaque,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Continue',
+                          style: TextStyle(
+                            color: _selected == null
+                                ? AppColors.accent.withValues(alpha: 0.6)
+                                : AppColors.accent,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.chevron_right,
+                          color: _selected == null
+                              ? AppColors.accent.withValues(alpha: 0.6)
+                              : AppColors.accent,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 }
 
-class _RoleCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
+class _RoleButton extends StatelessWidget {
+  final String label;
+  final bool selected;
   final VoidCallback onTap;
 
-  const _RoleCard({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
+  const _RoleButton({
+    required this.label,
+    required this.selected,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(20),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        width: 250,
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
         decoration: BoxDecoration(
-          color: AppColors.surfaceBlue,
-          borderRadius: BorderRadius.circular(16),
+          color: AppColors.accent.withValues(alpha: selected ? 1 : 0.85),
+          borderRadius: BorderRadius.circular(10),
+          border: selected
+              ? Border.all(color: Colors.white, width: 2)
+              : Border.all(color: Colors.transparent, width: 2),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: AppColors.accent.withValues(alpha: 0.4),
+                    blurRadius: 14,
+                    offset: const Offset(0, 6),
+                  ),
+                ]
+              : null,
         ),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 26,
-              backgroundColor: AppColors.primary,
-              child: Icon(icon, color: Colors.white),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textBody,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.chevron_right, color: AppColors.primary),
-          ],
+        child: Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
     );

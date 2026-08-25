@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 class AppTheme {
@@ -22,6 +23,9 @@ class AppTheme {
     );
 
     return base.copyWith(
+      // GIGGO brand typeface (Red Hat Display, per the Figma auth screens).
+      textTheme: GoogleFonts.redHatDisplayTextTheme(base.textTheme),
+
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textOnDark,
@@ -37,7 +41,10 @@ class AppTheme {
           disabledBackgroundColor: AppColors.accent.withValues(alpha: 0.5),
           disabledForegroundColor: Colors.white,
           elevation: 0,
-          textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+          textStyle: GoogleFonts.redHatDisplay(
+            fontWeight: FontWeight.w700,
+            fontSize: 15,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusPill),
           ),
