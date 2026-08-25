@@ -3,242 +3,369 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/giggo_top_bar.dart';
 import '../../../auth/data/models/user_model.dart';
 import '../../../profile/data/profile_repository.dart';
+import '../../data/booking_repository.dart';
 import '../../data/models/booking_models.dart';
 import '../providers/booking_providers.dart';
 
-/// Customer bookings dashboard (P4.11). Lists the signed-in customer's bookings
-/// grouped into active / history; each card opens the booking detail + status
-/// timeline (P4.9). Replaces the interim tracking launcher.
-class CustomerBookingsScreen extends ConsumerWidget {
+/// Customer tasks dashboard (P4.11), aligned to the Figma: a navy header over
+/// four status sections — Tasks Requested, Tasks To Get Done, Ongoing Tasks and
+/// Tasks Completed — each a light-blue card with the relevant actions.
+class CustomerBookingsScreen extends ConsumerStatefulWidget {
   const CustomerBookingsScreen({super.key});
 
-  static const _activeSet = {'REQUESTED', 'ACCEPTED', 'EN_ROUTE', 'STARTED'};
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CustomerBookingsScreen> createState() =>
+      _CustomerBookingsScreenState();
+}
+
+class _CustomerBookingsScreenState
+    extends ConsumerState<CustomerBookingsScreen> {
+  @override
+  Widget build(BuildContext context) {
     final meAsync = ref.watch(profileProvider);
     final bookingsAsync = ref.watch(myBookingsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Bookings')),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(myBookingsProvider);
           await ref.read(myBookingsProvider.future);
         },
-        child: meAsync.when(
-          loading: () => _spinner(),
-          error: (e, _) => _message(e.toString()),
-          data: (me) => bookingsAsync.when(
-            loading: () => _spinner(),
-            error: (e, _) => _message(e.toString()),
-            data: (all) => _list(context, me, all),
-          ),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            const GiggoTopBar(),
+            meAsync.when(
+              loading: _spinner,
+              error: (e, _) => _message(e.toString()),
+              data: (me) => bookingsAsync.when(
+                loading: _spinner,
+                error: (e, _) => _message(e.toString()),
+                data: (all) => _content(me, all),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _list(BuildContext context, UserModel me, List<Booking> all) {
-    final mine = all.where((b) => b.customerId == me.id).toList();
-    final active = mine.where((b) => _activeSet.contains(b.status)).toList();
-    final history = mine.where((b) => !_activeSet.contains(b.status)).toList();
+  Widget _content(UserModel me, List<Booking> all) {
+    final mine = all.where((b) => b.customerId == me.id).toList()
+      ..sort((a, b) => b.scheduledAt.compareTo(a.scheduledAt));
 
-    if (mine.isEmpty) {
-      return ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(24),
+    if (mine.isEmpty) return _empty();
+
+    List<Booking> inState(Set<String> s) =>
+        mine.where((b) => s.contains(b.status)).toList();
+
+    final requested = inState({'REQUESTED'});
+    final toDo = inState({'ACCEPTED'});
+    final ongoing = inState({'EN_ROUTE', 'STARTED', 'COMPLETED'});
+    final completed = inState({
+      'PAID',
+      'RATED',
+      'CANCELLED',
+      'DECLINED',
+      'EXPIRED',
+    });
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 100),
-          const Icon(
-            Icons.event_note_outlined,
-            size: 56,
-            color: AppColors.textMuted,
-          ),
-          const SizedBox(height: 12),
-          const Text(
-            'No bookings yet',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            'Find a trusted professional and book your first service.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.textMuted),
-          ),
-          const SizedBox(height: 20),
-          Center(
-            child: ElevatedButton.icon(
-              onPressed: () => context.go('/home'),
-              icon: const Icon(Icons.search, size: 18),
-              label: const Text('Find a provider'),
-            ),
-          ),
+          _section('Tasks Requested', requested),
+          _section('Tasks To Get Done', toDo),
+          _section('Ongoing Tasks', ongoing),
+          _section('Tasks Completed', completed),
         ],
-      );
-    }
-
-    return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-      children: [
-        if (active.isNotEmpty) ...[
-          _sectionHeader('Active', active.length),
-          for (final b in active) _bookingCard(context, b),
-          const SizedBox(height: 8),
-        ],
-        if (history.isNotEmpty) ...[
-          _sectionHeader('History', history.length),
-          for (final b in history) _bookingCard(context, b),
-        ],
-      ],
+      ),
     );
   }
 
-  Widget _sectionHeader(String title, int count) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10, top: 4),
-      child: Row(
-        children: [
-          Text(
+  Widget _section(String title, List<Booking> items) {
+    if (items.isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 6, 4, 12),
+          child: Text(
             title,
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: 20,
               fontWeight: FontWeight.w800,
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceBlue.withValues(alpha: 0.7),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              '$count',
+        ),
+        for (final b in items) _card(b),
+        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Widget _card(Booking b) {
+    final title = _notBlank(b.taskTitle)
+        ? b.taskTitle!
+        : (b.skillName ?? 'Task');
+    final subtitle = _notBlank(b.taskTitle) ? b.skillName : null;
+    final canCancel = b.status == 'REQUESTED' || b.status == 'ACCEPTED';
+    final awaitingPay = b.status == 'COMPLETED';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceBlue,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+              if (canCancel) ...[
+                const SizedBox(width: 8),
+                _pill('Cancel', () => _cancel(b)),
+              ],
+            ],
+          ),
+          if (subtitle != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
               style: const TextStyle(
-                fontSize: 12,
+                fontSize: 13.5,
                 fontWeight: FontWeight.w700,
-                color: AppColors.primary,
+                color: AppColors.textPrimary,
               ),
             ),
-          ),
+          ],
+          if (_notBlank(b.description)) ...[
+            const SizedBox(height: 6),
+            Text(
+              b.description!,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 13, color: AppColors.textBody),
+            ),
+          ],
+          if (awaitingPay) _times(b),
+          const SizedBox(height: 14),
+          _actions(b),
         ],
       ),
     );
   }
 
-  Widget _bookingCard(BuildContext context, Booking b) {
-    final title = _notBlank(b.taskTitle)
-        ? b.taskTitle!
-        : (b.skillName ?? 'Booking');
-    final showSkill = _notBlank(b.taskTitle) && b.skillName != null;
+  /// Started / ended / duration block shown once the provider ends the task.
+  Widget _times(Booking b) {
+    final lines = <String>[
+      if (b.startedAt != null)
+        'Provider started the task at : ${_fmtTime(b.startedAt!.toLocal())}',
+      if (b.completedAt != null)
+        'Ended the task at : ${_fmtTime(b.completedAt!.toLocal())}',
+      if (b.startedAt != null && b.completedAt != null)
+        'Duration : ${_duration(b.startedAt!, b.completedAt!)}',
+    ];
+    if (lines.isEmpty) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Material(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppTheme.radiusCard),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(AppTheme.radiusCard),
-          onTap: () => context.push('/booking/${b.id}'),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppTheme.radiusCard),
-              border: Border.all(color: AppColors.divider),
+      padding: const EdgeInsets.only(top: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final l in lines)
+            Text(
+              l,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 15,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          if (showSkill)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 2),
-                              child: Text(
-                                b.skillName!,
-                                style: const TextStyle(
-                                  fontSize: 12.5,
-                                  color: AppColors.textMuted,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    _statusChip(b.status),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                _row(
-                  Icons.event_outlined,
-                  _fmtDateTime(b.scheduledAt.toLocal()),
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _row(
-                        Icons.payments_outlined,
-                        '${_rs(b.totalPrice)} • ${_fmtHours(b.estimatedHours)}',
-                      ),
-                    ),
-                    const Icon(
-                      Icons.chevron_right,
-                      color: AppColors.textMuted,
-                      size: 20,
-                    ),
-                  ],
-                ),
-              ],
+        ],
+      ),
+    );
+  }
+
+  Widget _actions(Booking b) {
+    final pills = <Widget>[];
+    switch (b.status) {
+      case 'REQUESTED':
+      case 'ACCEPTED':
+        pills.add(_pill('View Fee', () => context.push('/booking/${b.id}')));
+        break;
+      case 'EN_ROUTE':
+      case 'STARTED':
+        pills.add(_pill('View Journey', () => _openJourney(b)));
+        pills.add(_pill('View Fee', () => context.push('/booking/${b.id}')));
+        break;
+      case 'COMPLETED':
+        pills.add(_pill('Pay Fee', () => context.push('/payment/${b.id}')));
+        pills.add(_pill('View Fee', () => context.push('/booking/${b.id}')));
+        break;
+      case 'PAID':
+        pills.add(_pill('Rate', () => context.push('/review/${b.id}')));
+        pills.add(
+          _pill('Receipt', () => context.push('/receipt/${b.id}'), subtle: true),
+        );
+        break;
+      case 'RATED':
+        pills.add(
+          _pill('Receipt', () => context.push('/receipt/${b.id}'), subtle: true),
+        );
+        break;
+      default: // CANCELLED / DECLINED / EXPIRED
+        return Row(
+          children: [
+            _statusTag(b.status),
+            const Spacer(),
+            Text(
+              _fmtDate(b.scheduledAt.toLocal()),
+              style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
             ),
+          ],
+        );
+    }
+
+    final showContact = b.status != 'PAID' && b.status != 'RATED';
+    return Row(
+      children: [
+        for (final p in pills) ...[p, const SizedBox(width: 10)],
+        const Spacer(),
+        if (showContact) ...[
+          _circle(Icons.call, () => _comingSoon('Calling')),
+          const SizedBox(width: 10),
+          _circle(Icons.chat_bubble, () => _comingSoon('Chat')),
+        ] else
+          Text(
+            _fmtDate((b.completedAt ?? b.scheduledAt).toLocal()),
+            style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+          ),
+      ],
+    );
+  }
+
+  void _openJourney(Booking b) {
+    var loc = '/track/${b.id}';
+    if (b.latitude != null && b.longitude != null) {
+      loc += '?destLat=${b.latitude}&destLng=${b.longitude}';
+    }
+    context.push(loc);
+  }
+
+  Future<void> _cancel(Booking b) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (dctx) => AlertDialog(
+        title: const Text('Cancel this task?'),
+        content: const Text(
+          'This cancels your request. You can book again anytime.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dctx, false),
+            child: const Text('Keep'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dctx, true),
+            child: const Text(
+              'Cancel task',
+              style: TextStyle(color: AppColors.error),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    try {
+      await ref.read(bookingRepositoryProvider).cancelBooking(b.id);
+      ref.invalidate(myBookingsProvider);
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Task cancelled')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Could not cancel: $e')));
+      }
+    }
+  }
+
+  void _comingSoon(String what) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('$what is coming soon')));
+  }
+
+  // ---- Small building blocks ----
+
+  Widget _pill(String label, VoidCallback onTap, {bool subtle = false}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+        decoration: BoxDecoration(
+          color: subtle
+              ? AppColors.accent.withValues(alpha: 0.14)
+              : AppColors.accent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: subtle ? AppColors.accentDark : Colors.white,
+            fontWeight: FontWeight.w700,
+            fontSize: 13,
           ),
         ),
       ),
     );
   }
 
-  Widget _row(IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: AppColors.textMuted),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(color: AppColors.textBody, fontSize: 13.5),
-            ),
-          ),
-        ],
+  Widget _circle(IconData icon, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      customBorder: const CircleBorder(),
+      child: Container(
+        height: 44,
+        width: 44,
+        decoration: const BoxDecoration(
+          color: AppColors.primary,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: Colors.white, size: 19),
       ),
     );
   }
 
-  Widget _statusChip(String status) {
-    final (label, color) = _statusMeta(status);
+  Widget _statusTag(String status) {
+    final (label, color) = switch (status) {
+      'CANCELLED' => ('Cancelled', AppColors.error),
+      'DECLINED' => ('Declined', AppColors.error),
+      'EXPIRED' => ('Expired', AppColors.textMuted),
+      _ => (status, AppColors.textMuted),
+    };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
@@ -256,41 +383,61 @@ class CustomerBookingsScreen extends ConsumerWidget {
     );
   }
 
-  (String, Color) _statusMeta(String s) => switch (s) {
-    'REQUESTED' => ('Requested', AppColors.accent),
-    'ACCEPTED' => ('Accepted', AppColors.info),
-    'EN_ROUTE' => ('On the way', AppColors.info),
-    'STARTED' => ('In progress', AppColors.info),
-    'COMPLETED' => ('Completed', AppColors.success),
-    'RATED' => ('Reviewed', AppColors.success),
-    'PAID' => ('Paid', AppColors.success),
-    'CANCELLED' => ('Cancelled', AppColors.error),
-    'DECLINED' => ('Declined', AppColors.error),
-    'EXPIRED' => ('Expired', AppColors.textMuted),
-    _ => (s, AppColors.textMuted),
-  };
+  Widget _empty() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 80, 24, 24),
+      child: Column(
+        children: [
+          const Icon(
+            Icons.event_note_outlined,
+            size: 56,
+            color: AppColors.textMuted,
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'No tasks yet',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'Find a trusted professional and book your first service.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: AppColors.textMuted),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            onPressed: () => context.go('/home'),
+            icon: const Icon(Icons.search, size: 18),
+            label: const Text('Find a provider'),
+          ),
+        ],
+      ),
+    );
+  }
 
-  Widget _spinner() => ListView(
-    physics: const AlwaysScrollableScrollPhysics(),
-    children: const [
-      SizedBox(height: 160),
-      Center(child: CircularProgressIndicator()),
-    ],
+  Widget _spinner() => const Padding(
+    padding: EdgeInsets.only(top: 160),
+    child: Center(child: CircularProgressIndicator()),
   );
 
-  Widget _message(String msg) => ListView(
-    physics: const AlwaysScrollableScrollPhysics(),
-    padding: const EdgeInsets.all(24),
-    children: [
-      const SizedBox(height: 120),
-      const Icon(Icons.error_outline, color: AppColors.textMuted, size: 40),
-      const SizedBox(height: 8),
-      Text(
-        msg,
-        textAlign: TextAlign.center,
-        style: const TextStyle(color: AppColors.textMuted),
-      ),
-    ],
+  Widget _message(String msg) => Padding(
+    padding: const EdgeInsets.fromLTRB(24, 120, 24, 24),
+    child: Column(
+      children: [
+        const Icon(Icons.error_outline, color: AppColors.textMuted, size: 40),
+        const SizedBox(height: 8),
+        Text(
+          msg,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: AppColors.textMuted),
+        ),
+      ],
+    ),
   );
 
   bool _notBlank(String? v) => v != null && v.trim().isNotEmpty;
@@ -300,15 +447,20 @@ class CustomerBookingsScreen extends ConsumerWidget {
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
   ];
 
-  String _rs(double v) => 'Rs. ${v.toStringAsFixed(0)}';
+  String _fmtDate(DateTime dt) =>
+      '${dt.day} ${_months[dt.month - 1]} ${dt.year}';
 
-  String _fmtHours(double h) =>
-      h == h.roundToDouble() ? '${h.toInt()} h' : '${h.toStringAsFixed(1)} h';
+  String _fmtTime(DateTime dt) {
+    final h = dt.hour.toString().padLeft(2, '0');
+    final m = dt.minute.toString().padLeft(2, '0');
+    return '$h:$m';
+  }
 
-  String _fmtDateTime(DateTime dt) {
-    final h12 = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
-    final ampm = dt.hour < 12 ? 'AM' : 'PM';
-    final mm = dt.minute.toString().padLeft(2, '0');
-    return '${_months[dt.month - 1]} ${dt.day}, ${dt.year} · $h12:$mm $ampm';
+  String _duration(DateTime a, DateTime b) {
+    final mins = b.difference(a).inMinutes;
+    final h = mins ~/ 60;
+    final m = mins % 60;
+    if (h == 0) return '${m}min';
+    return '${h}h ${m}min';
   }
 }
