@@ -3,11 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/giggo_wordmark.dart';
 import '../../data/models/article_models.dart';
 import '../providers/article_providers.dart';
 
-/// Knowledge Hub list (P9.2): guides filtered by category. Surfaces P9.1.
+/// Knowledge Hub (P9), aligned to the Figma: a navy header with the "Learn new
+/// things / And master you trade" heading over a list of alternating
+/// navy / light-blue article cards. Search, profession recommendations and
+/// category filters are kept as useful additions.
 class ArticlesScreen extends ConsumerStatefulWidget {
   const ArticlesScreen({super.key});
 
@@ -30,54 +33,110 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
   Widget build(BuildContext context) {
     final async = ref.watch(articlesProvider(_query));
     return Scaffold(
-      appBar: AppBar(title: const Text('Knowledge Hub')),
-      body: Column(
-        children: [
-          _searchBar(),
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: () async {
-                ref.invalidate(articlesProvider(_query));
-                await ref.read(articlesProvider(_query).future);
-              },
-              child: async.when(
-                loading: () => _spinner(),
-                error: (e, _) => _message(e.toString()),
-                data: (items) => _list(items),
-              ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(articlesProvider(_query));
+          await ref.read(articlesProvider(_query).future);
+        },
+        child: ListView(
+          padding: EdgeInsets.zero,
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            _header(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+              child: _searchBar(),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _searchBar() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: TextField(
-        controller: _searchCtrl,
-        textInputAction: TextInputAction.search,
-        onSubmitted: (v) => setState(() => _query = v.trim()),
-        decoration: InputDecoration(
-          hintText: 'Search guides…',
-          prefixIcon: const Icon(Icons.search),
-          isDense: true,
-          suffixIcon: _query.isEmpty
-              ? null
-              : IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () {
-                    _searchCtrl.clear();
-                    setState(() => _query = '');
-                  },
-                ),
+            async.when(
+              loading: _spinner,
+              error: (e, _) => _message(e.toString()),
+              data: _body,
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _list(List<Article> items) {
+  Widget _header() {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      child: SafeArea(
+        bottom: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const GiggoWordmark(fontSize: 26, onDark: true),
+                InkWell(
+                  onTap: () => context.go('/profile'),
+                  borderRadius: BorderRadius.circular(24),
+                  child: const CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.white24,
+                    child: Icon(Icons.person, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            Text.rich(
+              const TextSpan(
+                style: TextStyle(
+                  fontSize: 26,
+                  height: 1.25,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textOnDark,
+                ),
+                children: [
+                  TextSpan(text: 'Learn '),
+                  TextSpan(
+                    text: 'new',
+                    style: TextStyle(color: AppColors.accent),
+                  ),
+                  TextSpan(text: ' things\nAnd master you '),
+                  TextSpan(
+                    text: 'trade',
+                    style: TextStyle(color: AppColors.accent),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _searchBar() {
+    return TextField(
+      controller: _searchCtrl,
+      textInputAction: TextInputAction.search,
+      onSubmitted: (v) => setState(() => _query = v.trim()),
+      decoration: InputDecoration(
+        hintText: 'Search guides…',
+        prefixIcon: const Icon(Icons.search),
+        isDense: true,
+        suffixIcon: _query.isEmpty
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () {
+                  _searchCtrl.clear();
+                  setState(() => _query = '');
+                },
+              ),
+      ),
+    );
+  }
+
+  Widget _body(List<Article> items) {
     if (items.isEmpty) {
       return _message(
         _query.isEmpty
@@ -91,29 +150,31 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
         ? items
         : items.where((a) => a.category == _category).toList();
 
-    return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-      children: [
-        if (_query.isEmpty) _recommendedStrip(),
-        SizedBox(
-          height: 38,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              _chip(
-                'All',
-                _category == null,
-                () => setState(() => _category = null),
-              ),
-              for (final c in categories)
-                _chip(c, _category == c, () => setState(() => _category = c)),
-            ],
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (_query.isEmpty) _recommendedStrip(),
+          SizedBox(
+            height: 38,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                _chip(
+                  'All',
+                  _category == null,
+                  () => setState(() => _category = null),
+                ),
+                for (final c in categories)
+                  _chip(c, _category == c, () => setState(() => _category = c)),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
-        for (final a in filtered) _card(a),
-      ],
+          const SizedBox(height: 14),
+          for (final (i, a) in filtered.indexed) _card(a, i),
+        ],
+      ),
     );
   }
 
@@ -128,12 +189,12 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
             const Text(
               'Recommended for you',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: FontWeight.w800,
                 color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             SizedBox(
               height: 116,
               child: ListView.separated(
@@ -143,7 +204,7 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
                 itemBuilder: (_, i) => _recCard(list[i]),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 18),
           ],
         );
       },
@@ -156,9 +217,9 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
       width: 220,
       child: Material(
         color: AppColors.primary,
-        borderRadius: BorderRadius.circular(AppTheme.radiusCard),
+        borderRadius: BorderRadius.circular(16),
         child: InkWell(
-          borderRadius: BorderRadius.circular(AppTheme.radiusCard),
+          borderRadius: BorderRadius.circular(16),
           onTap: () => context.push('/articles/${a.slug}'),
           child: Padding(
             padding: const EdgeInsets.all(14),
@@ -188,20 +249,17 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
                     ),
                   ),
                 ),
-                Row(
+                const Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.menu_book_outlined,
                       size: 13,
                       color: Colors.white70,
                     ),
-                    const SizedBox(width: 4),
+                    SizedBox(width: 4),
                     Text(
                       'Read guide',
-                      style: const TextStyle(
-                        fontSize: 11.5,
-                        color: Colors.white70,
-                      ),
+                      style: TextStyle(fontSize: 11.5, color: Colors.white70),
                     ),
                   ],
                 ),
@@ -231,108 +289,48 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
     );
   }
 
-  Widget _card(Article a) {
+  /// Article card with alternating navy / light-blue background (Figma hub).
+  Widget _card(Article a, int index) {
+    final dark = index.isOdd;
+    final bg = dark ? AppColors.primary : AppColors.surfaceBlue;
+    final titleColor = dark ? Colors.white : AppColors.textPrimary;
+    final subColor = dark ? Colors.white70 : AppColors.textBody;
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 14),
       child: Material(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppTheme.radiusCard),
+        color: bg,
+        borderRadius: BorderRadius.circular(16),
         child: InkWell(
-          borderRadius: BorderRadius.circular(AppTheme.radiusCard),
+          borderRadius: BorderRadius.circular(16),
           onTap: () => context.push('/articles/${a.slug}'),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppTheme.radiusCard),
-              border: Border.all(color: AppColors.divider),
-            ),
+          child: Padding(
+            padding: const EdgeInsets.all(18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceBlue.withValues(alpha: 0.7),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    a.category,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
                 Text(
                   a.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
+                    height: 1.3,
+                    color: titleColor,
                   ),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  a.excerpt,
-                  style: const TextStyle(
-                    color: AppColors.textBody,
-                    fontSize: 13,
-                    height: 1.35,
+                if (a.excerpt.trim().isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    a.excerpt,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      height: 1.35,
+                      color: subColor,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Text(
-                      a.authorName,
-                      style: const TextStyle(
-                        fontSize: 11.5,
-                        color: AppColors.textMuted,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    const Icon(
-                      Icons.visibility_outlined,
-                      size: 13,
-                      color: AppColors.textMuted,
-                    ),
-                    const SizedBox(width: 3),
-                    Text(
-                      '${a.viewCount}',
-                      style: const TextStyle(
-                        fontSize: 11.5,
-                        color: AppColors.textMuted,
-                      ),
-                    ),
-                    if (a.ratingCount > 0) ...[
-                      const SizedBox(width: 10),
-                      const Icon(
-                        Icons.star_rounded,
-                        size: 14,
-                        color: AppColors.accent,
-                      ),
-                      const SizedBox(width: 2),
-                      Text(
-                        a.avgRating.toStringAsFixed(1),
-                        style: const TextStyle(
-                          fontSize: 11.5,
-                          color: AppColors.textMuted,
-                        ),
-                      ),
-                    ],
-                    const Spacer(),
-                    const Icon(
-                      Icons.arrow_forward,
-                      size: 16,
-                      color: AppColors.accent,
-                    ),
-                  ],
-                ),
+                ],
               ],
             ),
           ),
@@ -341,30 +339,27 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
     );
   }
 
-  Widget _spinner() => ListView(
-    physics: const AlwaysScrollableScrollPhysics(),
-    children: const [
-      SizedBox(height: 160),
-      Center(child: CircularProgressIndicator()),
-    ],
+  Widget _spinner() => const Padding(
+    padding: EdgeInsets.only(top: 120),
+    child: Center(child: CircularProgressIndicator()),
   );
 
-  Widget _message(String msg) => ListView(
-    physics: const AlwaysScrollableScrollPhysics(),
-    padding: const EdgeInsets.all(24),
-    children: [
-      const SizedBox(height: 120),
-      const Icon(
-        Icons.menu_book_outlined,
-        color: AppColors.textMuted,
-        size: 44,
-      ),
-      const SizedBox(height: 8),
-      Text(
-        msg,
-        textAlign: TextAlign.center,
-        style: const TextStyle(color: AppColors.textMuted),
-      ),
-    ],
+  Widget _message(String msg) => Padding(
+    padding: const EdgeInsets.fromLTRB(24, 80, 24, 24),
+    child: Column(
+      children: [
+        const Icon(
+          Icons.menu_book_outlined,
+          color: AppColors.textMuted,
+          size: 44,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          msg,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: AppColors.textMuted),
+        ),
+      ],
+    ),
   );
 }
