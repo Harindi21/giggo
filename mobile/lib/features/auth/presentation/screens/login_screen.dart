@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../providers/auth_controller.dart';
+import '../widgets/auth_widgets.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -26,6 +27,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _submit() async {
+    FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) return;
     final ok = await ref
         .read(authControllerProvider.notifier)
@@ -33,123 +35,91 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (ok && mounted) context.go('/home');
   }
 
+  void _comingSoon(String what) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('$what is coming soon')));
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(authControllerProvider);
 
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+    return AuthScaffold(
+      heroAsset: AuthAssets.heroLogin,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (state.error != null) AuthErrorBanner(message: state.error!),
+
+            AuthTextField(
+              controller: _emailCtrl,
+              hint: 'Email',
+              keyboardType: TextInputType.emailAddress,
+              validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? 'Enter your email' : null,
+            ),
+            const SizedBox(height: 16),
+            AuthTextField(
+              controller: _passwordCtrl,
+              hint: 'Password',
+              obscure: _obscure,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscure ? Icons.visibility_off : Icons.visibility,
+                  color: AppColors.primary.withValues(alpha: 0.45),
+                  size: 20,
+                ),
+                onPressed: () => setState(() => _obscure = !_obscure),
+              ),
+              validator: (v) =>
+                  (v == null || v.isEmpty) ? 'Enter your password' : null,
+            ),
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerRight,
+              child: GestureDetector(
+                onTap: () => _comingSoon('Password reset'),
+                child: const Text(
+                  'Forgot password',
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
+
+            PrimaryButton(
+              label: 'Log in',
+              loading: state.loading,
+              onPressed: _submit,
+            ),
+            const SizedBox(height: 20),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 40),
-                Text(
-                  'Welcome back',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
+                const Text(
+                  "Don't you have an account? ",
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 13),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Log in to continue',
-                  style: TextStyle(color: AppColors.textMuted),
-                ),
-                const SizedBox(height: 32),
-
-                if (state.error != null) ...[
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.error.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      state.error!,
-                      style: const TextStyle(color: AppColors.error),
+                GestureDetector(
+                  onTap: () => context.go('/role'),
+                  child: const Text(
+                    'Sign up',
+                    style: TextStyle(
+                      color: AppColors.accent,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                ],
-
-                TextFormField(
-                  controller: _emailCtrl,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                  validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Enter your email'
-                      : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _passwordCtrl,
-                  obscureText: _obscure,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscure ? Icons.visibility : Icons.visibility_off,
-                      ),
-                      onPressed: () => setState(() => _obscure = !_obscure),
-                    ),
-                  ),
-                  validator: (v) =>
-                      (v == null || v.isEmpty) ? 'Enter your password' : null,
-                ),
-                const SizedBox(height: 28),
-
-                ElevatedButton(
-                  onPressed: state.loading ? null : _submit,
-                  child: state.loading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Text('Log in'),
-                ),
-                const SizedBox(height: 16),
-
-                Row(
-                  children: const [
-                    Expanded(child: Divider()),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12),
-                      child: Text('or'),
-                    ),
-                    Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // Google placeholder — wired up in P1.3
-                OutlinedButton.icon(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Google sign-in coming soon'),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.g_mobiledata, size: 28),
-                  label: const Text('Continue with Google'),
-                ),
-                const SizedBox(height: 24),
-
-                TextButton(
-                  onPressed: () => context.go('/role'),
-                  child: const Text("Don't have an account? Sign up"),
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 26),
+            const SocialRow(),
+          ],
         ),
       ),
     );

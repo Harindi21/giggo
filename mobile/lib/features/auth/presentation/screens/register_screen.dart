@@ -6,6 +6,7 @@ import '../../../../core/network/api_exception.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/auth_repository.dart';
 import '../../data/models/register_request.dart';
+import '../widgets/auth_widgets.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   final String role; // 'CUSTOMER' or 'PROVIDER'
@@ -21,8 +22,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _emailCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
+  final _confirmCtrl = TextEditingController();
 
   bool _obscure = true;
+  bool _obscureConfirm = true;
   bool _loading = false;
   String? _error;
 
@@ -34,10 +37,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _emailCtrl.dispose();
     _phoneCtrl.dispose();
     _passwordCtrl.dispose();
+    _confirmCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
+    FocusScope.of(context).unfocus();
     setState(() => _error = null);
     if (!_formKey.currentState!.validate()) return;
 
@@ -67,93 +72,117 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_isProvider ? 'Provider sign up' : 'Customer sign up'),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+    return AuthScaffold(
+      heroAsset: AuthAssets.heroSignup,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Create your account',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              _isProvider ? 'as a Service Provider' : 'as a Customer',
+              style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+            ),
+            const SizedBox(height: 22),
+
+            if (_error != null) AuthErrorBanner(message: _error!),
+
+            AuthTextField(
+              controller: _nameCtrl,
+              hint: 'Full name',
+              textCapitalization: TextCapitalization.words,
+              validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? 'Enter your name' : null,
+            ),
+            const SizedBox(height: 14),
+            AuthTextField(
+              controller: _emailCtrl,
+              hint: 'Email',
+              keyboardType: TextInputType.emailAddress,
+              validator: _validateEmail,
+            ),
+            const SizedBox(height: 14),
+            AuthTextField(
+              controller: _phoneCtrl,
+              hint: 'Mobile number (07XXXXXXXX)',
+              keyboardType: TextInputType.phone,
+              validator: _validatePhone,
+            ),
+            const SizedBox(height: 14),
+            AuthTextField(
+              controller: _passwordCtrl,
+              hint: 'Password',
+              obscure: _obscure,
+              suffixIcon: _eye(_obscure, () {
+                setState(() => _obscure = !_obscure);
+              }),
+              validator: _validatePassword,
+            ),
+            const SizedBox(height: 14),
+            AuthTextField(
+              controller: _confirmCtrl,
+              hint: 'Confirm Password',
+              obscure: _obscureConfirm,
+              suffixIcon: _eye(_obscureConfirm, () {
+                setState(() => _obscureConfirm = !_obscureConfirm);
+              }),
+              validator: (v) => (v != _passwordCtrl.text)
+                  ? 'Passwords do not match'
+                  : null,
+            ),
+            const SizedBox(height: 24),
+
+            PrimaryButton(
+              label: 'Sign Up',
+              loading: _loading,
+              onPressed: _submit,
+            ),
+            const SizedBox(height: 18),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (_error != null) ...[
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.error.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      _error!,
-                      style: const TextStyle(color: AppColors.error),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                TextFormField(
-                  controller: _nameCtrl,
-                  textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(labelText: 'Full name'),
-                  validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Enter your name'
-                      : null,
+                const Text(
+                  'Already have an account? ',
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 13),
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _emailCtrl,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                  validator: _validateEmail,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _phoneCtrl,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    labelText: 'Mobile number',
-                    hintText: '07XXXXXXXX',
-                  ),
-                  validator: _validatePhone,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _passwordCtrl,
-                  obscureText: _obscure,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscure ? Icons.visibility : Icons.visibility_off,
-                      ),
-                      onPressed: () => setState(() => _obscure = !_obscure),
+                GestureDetector(
+                  onTap: () => context.go('/login'),
+                  child: const Text(
+                    'Log in',
+                    style: TextStyle(
+                      color: AppColors.accent,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  validator: _validatePassword,
-                ),
-                const SizedBox(height: 28),
-                ElevatedButton(
-                  onPressed: _loading ? null : _submit,
-                  child: _loading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Text('Create account'),
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 24),
+            const SocialRow(),
+          ],
         ),
       ),
     );
   }
+
+  Widget _eye(bool obscured, VoidCallback onTap) => IconButton(
+    icon: Icon(
+      obscured ? Icons.visibility_off : Icons.visibility,
+      color: AppColors.primary.withValues(alpha: 0.45),
+      size: 20,
+    ),
+    onPressed: onTap,
+  );
 
   String? _validateEmail(String? v) {
     if (v == null || v.trim().isEmpty) return 'Enter your email';

@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/auth_repository.dart';
+import '../widgets/auth_widgets.dart';
 
 /// Email verification code entry (P1.2). The user types the 6-digit code sent
 /// at registration; on success they return to the login screen. A resend link
@@ -109,78 +110,65 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Verify your email')),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 12),
-              const Icon(
-                Icons.mark_email_unread_outlined,
-                size: 64,
-                color: AppColors.primary,
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Enter the 6-digit code',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text.rich(
-                TextSpan(
-                  text: 'We sent it to ',
-                  style: const TextStyle(color: AppColors.textMuted),
-                  children: [
-                    TextSpan(
-                      text: widget.email,
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 28),
-              _pinField(),
-              if (_error != null) ...[
-                const SizedBox(height: 16),
-                Text(
-                  _error!,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppColors.error),
-                ),
-              ],
-              const SizedBox(height: 28),
-              ElevatedButton(
-                onPressed: (_verifying || _code.length != _codeLength)
-                    ? null
-                    : _verify,
-                child: _verifying
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Text('Verify'),
-              ),
-              const SizedBox(height: 16),
-              _resendRow(),
-            ],
+    return AuthScaffold(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(height: 8),
+          const Text(
+            'Verify your email',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+            ),
           ),
-        ),
+          const SizedBox(height: 10),
+          Text.rich(
+            TextSpan(
+              text: 'We sent a code to ',
+              style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
+              children: [
+                TextSpan(
+                  text: widget.email,
+                  style: const TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const TextSpan(text: '. Enter it below.'),
+              ],
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 32),
+          _pinField(),
+          if (_error != null) ...[
+            const SizedBox(height: 16),
+            Text(
+              _error!,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.error),
+            ),
+          ],
+          const SizedBox(height: 32),
+          PrimaryButton(
+            label: 'Submit',
+            loading: _verifying,
+            onPressed: _code.length == _codeLength ? _verify : null,
+          ),
+          const SizedBox(height: 18),
+          _resendRow(),
+          const SizedBox(height: 10),
+          TextButton(
+            onPressed: () => context.go('/login'),
+            child: const Text(
+              '‹ Back to Login',
+              style: TextStyle(color: AppColors.textMuted),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -234,15 +222,15 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
     final active = i == _code.length && _focus.hasFocus;
     return Container(
       width: 46,
-      height: 56,
+      height: 54,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surfaceBlue,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: active
               ? AppColors.accent
-              : (filled ? AppColors.primary : AppColors.border),
+              : (filled ? AppColors.primary : Colors.transparent),
           width: active || filled ? 2 : 1,
         ),
       ),
@@ -259,12 +247,10 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
 
   Widget _resendRow() {
     if (_resending) {
-      return const Center(
-        child: SizedBox(
-          height: 18,
-          width: 18,
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
+      return const SizedBox(
+        height: 18,
+        width: 18,
+        child: CircularProgressIndicator(strokeWidth: 2),
       );
     }
     if (_cooldown > 0) {
@@ -274,8 +260,6 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
         style: const TextStyle(color: AppColors.textMuted),
       );
     }
-    return Center(
-      child: TextButton(onPressed: _resend, child: const Text('Resend code')),
-    );
+    return TextButton(onPressed: _resend, child: const Text('Resend code'));
   }
 }
