@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/giggo_top_bar.dart';
 import '../../../auth/data/models/user_model.dart';
 import '../../../profile/data/profile_repository.dart';
 import '../../data/booking_repository.dart';
 import '../../data/models/booking_models.dart';
 import '../providers/booking_providers.dart';
 
-/// Provider job management (P4.10). Lists the jobs assigned to the signed-in
-/// provider, grouped into new requests / active / past, with inline lifecycle
-/// actions (accept, decline, en route, start, complete) that drive the exact
-/// timeline the customer sees.
+/// Provider job management (P4.10), aligned to the Figma: a navy header over
+/// four sections — Tasks Requests, Tasks To Do, Ongoing Tasks, Tasks Completed —
+/// with the lifecycle actions (accept/deny, start journey, start task, end task)
+/// that drive the exact timeline the customer sees.
 class ProviderJobsScreen extends ConsumerStatefulWidget {
   const ProviderJobsScreen({super.key});
 
@@ -21,7 +22,6 @@ class ProviderJobsScreen extends ConsumerStatefulWidget {
 }
 
 class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
-  static const _activeSet = {'ACCEPTED', 'EN_ROUTE', 'STARTED'};
   String? _busyId;
 
   @override
@@ -30,126 +30,102 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
     final jobsAsync = ref.watch(myBookingsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Jobs')),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(myBookingsProvider);
           await ref.read(myBookingsProvider.future);
         },
-        child: meAsync.when(
-          loading: () => _spinner(),
-          error: (e, _) => _message(e.toString()),
-          data: (me) => jobsAsync.when(
-            loading: () => _spinner(),
-            error: (e, _) => _message(e.toString()),
-            data: (all) => _list(me, all),
-          ),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            const GiggoTopBar(),
+            meAsync.when(
+              loading: _spinner,
+              error: (e, _) => _message(e.toString()),
+              data: (me) => jobsAsync.when(
+                loading: _spinner,
+                error: (e, _) => _message(e.toString()),
+                data: (all) => _content(me, all),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _list(UserModel me, List<Booking> all) {
-    final mine = all.where((b) => b.providerId == me.id).toList();
-    final requests = mine.where((b) => b.status == 'REQUESTED').toList();
-    final active = mine.where((b) => _activeSet.contains(b.status)).toList();
-    final past = mine
-        .where((b) => b.status != 'REQUESTED' && !_activeSet.contains(b.status))
-        .toList();
+  Widget _content(UserModel me, List<Booking> all) {
+    final mine = all.where((b) => b.providerId == me.id).toList()
+      ..sort((a, b) => b.scheduledAt.compareTo(a.scheduledAt));
+    if (mine.isEmpty) return _empty();
 
-    if (mine.isEmpty) {
-      return ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        children: [
-          const SizedBox(height: 120),
-          const Icon(Icons.work_outline, size: 56, color: AppColors.textMuted),
-          const SizedBox(height: 12),
-          const Text(
-            'No jobs yet',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            'New booking requests will appear here.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.textMuted),
-          ),
-        ],
-      );
-    }
+    List<Booking> inState(Set<String> s) =>
+        mine.where((b) => s.contains(b.status)).toList();
 
-    return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-      children: [
-        if (requests.isNotEmpty) ...[
-          _sectionHeader('New requests', requests.length),
-          for (final b in requests) _jobCard(b),
-          const SizedBox(height: 8),
-        ],
-        if (active.isNotEmpty) ...[
-          _sectionHeader('Active', active.length),
-          for (final b in active) _jobCard(b),
-          const SizedBox(height: 8),
-        ],
-        if (past.isNotEmpty) ...[
-          _sectionHeader('Past', past.length),
-          for (final b in past) _jobCard(b),
-        ],
-      ],
-    );
-  }
+    final requests = inState({'REQUESTED'});
+    final toDo = inState({'ACCEPTED'});
+    final ongoing = inState({'EN_ROUTE', 'STARTED'});
+    final completed = inState({
+      'COMPLETED',
+      'PAID',
+      'RATED',
+      'CANCELLED',
+      'DECLINED',
+      'EXPIRED',
+    });
 
-  Widget _sectionHeader(String title, int count) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10, top: 4),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceBlue.withValues(alpha: 0.7),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              '$count',
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: AppColors.primary,
-              ),
-            ),
-          ),
+          _section('Tasks Requests', requests),
+          _section('Tasks To Do', toDo),
+          _section('Ongoing Tasks', ongoing),
+          _section('Tasks Completed', completed),
         ],
       ),
     );
   }
 
-  Widget _jobCard(Booking b) {
-    final title = _notBlank(b.taskTitle)
-        ? b.taskTitle!
-        : (b.skillName ?? 'Job');
+  Widget _section(String title, List<Booking> items) {
+    if (items.isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 6, 4, 12),
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ),
+        for (final b in items) _card(b),
+        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Widget _card(Booking b) {
+    final name = _notBlank(b.contactName)
+        ? b.contactName!
+        : (_notBlank(b.taskTitle) ? b.taskTitle! : (b.skillName ?? 'Job'));
+    final service = _notBlank(b.contactName)
+        ? (b.taskTitle ?? b.skillName)
+        : (_notBlank(b.taskTitle) ? b.skillName : null);
+    final busy = _busyId == b.id;
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppTheme.radiusCard),
-        border: Border.all(color: AppColors.divider),
+        color: AppColors.surfaceBlue,
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,155 +134,177 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    if (_notBlank(b.taskTitle) && b.skillName != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 2),
-                        child: Text(
-                          b.skillName!,
-                          style: const TextStyle(
-                            fontSize: 12.5,
-                            color: AppColors.textMuted,
-                          ),
-                        ),
-                      ),
-                  ],
+                child: Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
               ),
-              _statusChip(b.status),
+              const SizedBox(width: 8),
+              ..._topRightActions(b, busy),
             ],
           ),
-          const SizedBox(height: 12),
-          _row(Icons.event_outlined, _fmtDateTime(b.scheduledAt.toLocal())),
-          if (_notBlank(b.contactName))
-            _row(Icons.person_outline, b.contactName!),
+          if (service != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              service,
+              style: const TextStyle(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
+          if (_notBlank(b.description)) ...[
+            const SizedBox(height: 6),
+            Text(
+              b.description!,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 13, color: AppColors.textBody),
+            ),
+          ],
+          const SizedBox(height: 10),
           if (_notBlank(b.addressLine))
-            _row(Icons.location_on_outlined, b.addressLine!),
-          _row(
-            Icons.payments_outlined,
-            '${_rs(b.totalPrice)} • ${_fmtHours(b.estimatedHours)}',
-          ),
-          const SizedBox(height: 4),
-          _actions(b),
+            _infoRow(Icons.location_on_outlined, b.addressLine!),
+          _infoRow(Icons.event_outlined, _fmtDateTime(b.scheduledAt.toLocal())),
+          if (b.status == 'STARTED' && b.startedAt != null) ...[
+            const SizedBox(height: 6),
+            Text(
+              'Started the task at : ${_fmtTime(b.startedAt!.toLocal())}',
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
+          const SizedBox(height: 12),
+          _bottomActions(b, busy),
         ],
       ),
     );
   }
 
-  Widget _actions(Booking b) {
-    final busy = _busyId == b.id;
+  /// Accept/Deny (requests) or Cancel (accepted / en route) — top-right of card.
+  List<Widget> _topRightActions(Booking b, bool busy) {
     switch (b.status) {
       case 'REQUESTED':
-        return Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: busy ? null : () => _decline(b),
-                  child: const Text('Decline'),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: busy
-                      ? null
-                      : () => _run(
-                          b.id,
-                          () =>
-                              ref.read(bookingRepositoryProvider).accept(b.id),
-                          'Job accepted',
-                        ),
-                  child: _label(busy, 'Accept'),
-                ),
-              ),
-            ],
+        return [
+          _pill(
+            'Accept',
+            busy
+                ? null
+                : () => _run(
+                    b.id,
+                    () => ref.read(bookingRepositoryProvider).accept(b.id),
+                    'Job accepted',
+                  ),
           ),
-        );
+          const SizedBox(width: 8),
+          _pill('Deny', busy ? null : () => _decline(b), subtle: true),
+        ];
       case 'ACCEPTED':
-        return _advanceRow(
-          b,
-          busy,
-          'Start travel',
-          () => ref.read(bookingRepositoryProvider).enRoute(b.id),
-          'On the way',
-          cancellable: true,
-        );
       case 'EN_ROUTE':
-        return _advanceRow(
-          b,
-          busy,
-          'Start job',
-          () => ref.read(bookingRepositoryProvider).start(b.id),
-          'Job started',
-          cancellable: true,
-        );
-      case 'STARTED':
-        return _advanceRow(
-          b,
-          busy,
-          'Mark complete',
-          () => ref.read(bookingRepositoryProvider).complete(b.id),
-          'Job completed',
-          cancellable: false,
-        );
+        return [_pill('Cancel', busy ? null : () => _cancel(b))];
       default:
-        return const SizedBox.shrink();
+        return const [];
     }
   }
 
-  Widget _advanceRow(
-    Booking b,
-    bool busy,
-    String label,
-    Future<Booking> Function() op,
-    String okMsg, {
-    required bool cancellable,
-  }) {
-    final primary = ElevatedButton.icon(
-      onPressed: busy ? null : () => _run(b.id, op, okMsg),
-      icon: busy
-          ? const SizedBox.shrink()
-          : const Icon(Icons.arrow_forward, size: 18),
-      label: _label(busy, label),
-    );
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Row(
-        children: [
-          if (cancellable) ...[
-            Expanded(
-              child: OutlinedButton(
-                onPressed: busy ? null : () => _cancel(b),
-                child: const Text('Cancel'),
-              ),
+  Widget _bottomActions(Booking b, bool busy) {
+    final pills = <Widget>[];
+    switch (b.status) {
+      case 'REQUESTED':
+        pills.add(_pill('View Map', () => _openMap(b)));
+        pills.add(_pill('View Fee', () => context.push('/booking/${b.id}')));
+        break;
+      case 'ACCEPTED':
+        pills.add(
+          _pill(
+            'Start Journey',
+            busy
+                ? null
+                : () => _run(
+                    b.id,
+                    () => ref.read(bookingRepositoryProvider).enRoute(b.id),
+                    'On the way',
+                  ),
+          ),
+        );
+        pills.add(_pill('View Map', () => _openMap(b)));
+        break;
+      case 'EN_ROUTE':
+        pills.add(
+          _pill(
+            'Start Task',
+            busy
+                ? null
+                : () => _run(
+                    b.id,
+                    () => ref.read(bookingRepositoryProvider).start(b.id),
+                    'Job started',
+                  ),
+          ),
+        );
+        pills.add(_pill('View Journey', () => _openMap(b)));
+        break;
+      case 'STARTED':
+        pills.add(
+          _pill(
+            'End Task',
+            busy
+                ? null
+                : () => _run(
+                    b.id,
+                    () => ref.read(bookingRepositoryProvider).complete(b.id),
+                    'Job completed',
+                  ),
+          ),
+        );
+        pills.add(_pill('View Fee', () => context.push('/booking/${b.id}')));
+        break;
+      default: // COMPLETED / PAID / RATED / CANCELLED / DECLINED / EXPIRED
+        return Row(
+          children: [
+            _statusTag(b.status),
+            const Spacer(),
+            Text(
+              _fmtDate((b.completedAt ?? b.scheduledAt).toLocal()),
+              style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
             ),
-            const SizedBox(width: 12),
           ],
-          Expanded(child: primary),
-        ],
-      ),
+        );
+    }
+
+    return Row(
+      children: [
+        for (final p in pills) ...[p, const SizedBox(width: 10)],
+        const Spacer(),
+        _circle(Icons.call, () => _comingSoon('Calling')),
+        const SizedBox(width: 10),
+        _circle(Icons.chat_bubble, () => _comingSoon('Chat')),
+      ],
     );
   }
 
-  Widget _label(bool busy, String text) => busy
-      ? const SizedBox(
-          height: 18,
-          width: 18,
-          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-        )
-      : Text(text);
+  void _openMap(Booking b) {
+    var loc = '/track/${b.id}';
+    if (b.latitude != null && b.longitude != null) {
+      loc += '?destLat=${b.latitude}&destLng=${b.longitude}';
+    }
+    context.push(loc);
+  }
+
+  void _comingSoon(String what) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('$what is coming soon')));
+  }
 
   // ---- actions plumbing ----
   Future<void> _run(
@@ -329,7 +327,7 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
   Future<void> _decline(Booking b) async {
     final ok = await _confirm(
       'Decline this request?',
-      'The customer will be notified that you can\'t take this job.',
+      "The customer will be notified that you can't take this job.",
       'Decline',
     );
     if (!ok) return;
@@ -385,17 +383,57 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
   }
 
   // ---- small UI helpers ----
-  Widget _row(IconData icon, String text) {
+  Widget _pill(String label, VoidCallback? onTap, {bool subtle = false}) {
+    final enabled = onTap != null;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+        decoration: BoxDecoration(
+          color: subtle
+              ? AppColors.accent.withValues(alpha: 0.14)
+              : AppColors.accent.withValues(alpha: enabled ? 1 : 0.5),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: subtle ? AppColors.accentDark : Colors.white,
+            fontWeight: FontWeight.w700,
+            fontSize: 13,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _circle(IconData icon, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      customBorder: const CircleBorder(),
+      child: Container(
+        height: 44,
+        width: 44,
+        decoration: const BoxDecoration(
+          color: AppColors.primary,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: Colors.white, size: 19),
+      ),
+    );
+  }
+
+  Widget _infoRow(IconData icon, String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
+      padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: AppColors.textMuted),
-          const SizedBox(width: 8),
+          Icon(icon, size: 15, color: AppColors.textMuted),
+          const SizedBox(width: 6),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(color: AppColors.textBody, fontSize: 13.5),
+              style: const TextStyle(color: AppColors.textBody, fontSize: 13),
             ),
           ),
         ],
@@ -403,8 +441,16 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
     );
   }
 
-  Widget _statusChip(String status) {
-    final (label, color) = _statusMeta(status);
+  Widget _statusTag(String status) {
+    final (label, color) = switch (status) {
+      'COMPLETED' => ('Completed', AppColors.success),
+      'PAID' => ('Paid', AppColors.success),
+      'RATED' => ('Reviewed', AppColors.success),
+      'CANCELLED' => ('Cancelled', AppColors.error),
+      'DECLINED' => ('Declined', AppColors.error),
+      'EXPIRED' => ('Expired', AppColors.textMuted),
+      _ => (status, AppColors.textMuted),
+    };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
@@ -422,41 +468,51 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
     );
   }
 
-  (String, Color) _statusMeta(String s) => switch (s) {
-    'REQUESTED' => ('New', AppColors.accent),
-    'ACCEPTED' => ('Accepted', AppColors.info),
-    'EN_ROUTE' => ('On the way', AppColors.info),
-    'STARTED' => ('In progress', AppColors.info),
-    'COMPLETED' => ('Completed', AppColors.success),
-    'RATED' => ('Reviewed', AppColors.success),
-    'PAID' => ('Paid', AppColors.success),
-    'CANCELLED' => ('Cancelled', AppColors.error),
-    'DECLINED' => ('Declined', AppColors.error),
-    'EXPIRED' => ('Expired', AppColors.textMuted),
-    _ => (s, AppColors.textMuted),
-  };
+  Widget _empty() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 80, 24, 24),
+      child: Column(
+        children: const [
+          Icon(Icons.work_outline, size: 56, color: AppColors.textMuted),
+          SizedBox(height: 12),
+          Text(
+            'No jobs yet',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: 6),
+          Text(
+            'New booking requests will appear here.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: AppColors.textMuted),
+          ),
+        ],
+      ),
+    );
+  }
 
-  Widget _spinner() => ListView(
-    physics: const AlwaysScrollableScrollPhysics(),
-    children: const [
-      SizedBox(height: 160),
-      Center(child: CircularProgressIndicator()),
-    ],
+  Widget _spinner() => const Padding(
+    padding: EdgeInsets.only(top: 160),
+    child: Center(child: CircularProgressIndicator()),
   );
 
-  Widget _message(String msg) => ListView(
-    physics: const AlwaysScrollableScrollPhysics(),
-    padding: const EdgeInsets.all(24),
-    children: [
-      const SizedBox(height: 120),
-      const Icon(Icons.error_outline, color: AppColors.textMuted, size: 40),
-      const SizedBox(height: 8),
-      Text(
-        msg,
-        textAlign: TextAlign.center,
-        style: const TextStyle(color: AppColors.textMuted),
-      ),
-    ],
+  Widget _message(String msg) => Padding(
+    padding: const EdgeInsets.fromLTRB(24, 120, 24, 24),
+    child: Column(
+      children: [
+        const Icon(Icons.error_outline, color: AppColors.textMuted, size: 40),
+        const SizedBox(height: 8),
+        Text(
+          msg,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: AppColors.textMuted),
+        ),
+      ],
+    ),
   );
 
   bool _notBlank(String? v) => v != null && v.trim().isNotEmpty;
@@ -466,10 +522,14 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
   ];
 
-  String _rs(double v) => 'Rs. ${v.toStringAsFixed(0)}';
+  String _fmtDate(DateTime dt) =>
+      '${dt.day} ${_months[dt.month - 1]} ${dt.year}';
 
-  String _fmtHours(double h) =>
-      h == h.roundToDouble() ? '${h.toInt()} h' : '${h.toStringAsFixed(1)} h';
+  String _fmtTime(DateTime dt) {
+    final h = dt.hour.toString().padLeft(2, '0');
+    final m = dt.minute.toString().padLeft(2, '0');
+    return '$h:$m';
+  }
 
   String _fmtDateTime(DateTime dt) {
     final h12 = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
