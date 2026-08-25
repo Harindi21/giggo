@@ -224,12 +224,20 @@ class _CustomerBookingsScreenState
       case 'PAID':
         pills.add(_pill('Rate', () => context.push('/review/${b.id}')));
         pills.add(
-          _pill('Receipt', () => context.push('/receipt/${b.id}'), subtle: true),
+          _pill(
+            'Receipt',
+            () => context.push('/receipt/${b.id}'),
+            subtle: true,
+          ),
         );
         break;
       case 'RATED':
         pills.add(
-          _pill('Receipt', () => context.push('/receipt/${b.id}'), subtle: true),
+          _pill(
+            'Receipt',
+            () => context.push('/receipt/${b.id}'),
+            subtle: true,
+          ),
         );
         break;
       default: // CANCELLED / DECLINED / EXPIRED

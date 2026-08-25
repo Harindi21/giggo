@@ -352,7 +352,11 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
     );
   }
 
-  Future<bool> _confirm(String title, String message, String confirmLabel) async {
+  Future<bool> _confirm(
+    String title,
+    String message,
+    String confirmLabel,
+  ) async {
     final res = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
