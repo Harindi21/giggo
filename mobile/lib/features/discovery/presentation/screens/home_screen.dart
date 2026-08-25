@@ -463,7 +463,10 @@ class _CategoryGroup extends ConsumerStatefulWidget {
   final Category category;
   final bool initiallyExpanded;
 
-  const _CategoryGroup({required this.category, this.initiallyExpanded = false});
+  const _CategoryGroup({
+    required this.category,
+    this.initiallyExpanded = false,
+  });
 
   @override
   ConsumerState<_CategoryGroup> createState() => _CategoryGroupState();
