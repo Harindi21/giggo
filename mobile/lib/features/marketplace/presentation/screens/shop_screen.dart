@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/giggo_wordmark.dart';
 import '../../data/models/tool_models.dart';
 import '../providers/tool_providers.dart';
 import 'tool_category_icon.dart';
 
-/// Tool Marketplace shop (P10.2): browse tools by category. Surfaces P10.1.
+/// Tool Marketplace shop (P10.2), aligned to the Figma: a navy header with a
+/// search toolbar over a 2-column grid of product cards (photo on top, navy
+/// footer with name, price and an add-to-cart circle). Serves both roles.
 class ShopScreen extends ConsumerStatefulWidget {
   const ShopScreen({super.key});
 
@@ -18,207 +20,404 @@ class ShopScreen extends ConsumerStatefulWidget {
 
 class _ShopScreenState extends ConsumerState<ShopScreen> {
   String? _category; // null = All
+  String _query = '';
+  final _searchCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final async = ref.watch(toolsProvider);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tool Marketplace'),
-        actions: [
-          IconButton(
-            tooltip: 'Saved tools',
-            onPressed: () => context.push('/wishlist'),
-            icon: const Icon(Icons.favorite_border),
-          ),
-          IconButton(
-            tooltip: 'My orders',
-            onPressed: () => context.push('/orders'),
-            icon: const Icon(Icons.receipt_long_outlined),
-          ),
-        ],
-      ),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(toolsProvider);
           await ref.read(toolsProvider.future);
         },
-        child: async.when(
-          loading: () => _spinner(),
-          error: (e, _) => _message(e.toString()),
-          data: (items) => _body(items),
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(child: _header()),
+            ...async.when(
+              loading: () => [
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 80),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+              ],
+              error: (e, _) => [
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _message(e.toString()),
+                ),
+              ],
+              data: _gridSlivers,
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _body(List<Tool> items) {
-    if (items.isEmpty) {
-      return _message('No tools listed yet — check back soon.');
-    }
-    final categories = <String>{for (final t in items) t.category}.toList()
-      ..sort();
-    final filtered = _category == null
-        ? items
-        : items.where((t) => t.category == _category).toList();
-
-    return CustomScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      slivers: [
-        SliverToBoxAdapter(
-          child: SizedBox(
-            height: 38,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+  Widget _header() {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 22),
+      child: SafeArea(
+        bottom: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _chip(
-                  'All',
-                  _category == null,
-                  () => setState(() => _category = null),
+                const GiggoWordmark(fontSize: 26, onDark: true),
+                InkWell(
+                  onTap: () => context.go('/profile'),
+                  borderRadius: BorderRadius.circular(24),
+                  child: const CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.white24,
+                    child: Icon(Icons.person, color: Colors.white),
+                  ),
                 ),
-                for (final c in categories)
-                  _chip(c, _category == c, () => setState(() => _category = c)),
               ],
             ),
-          ),
-        ),
-        SliverPadding(
-          padding: const EdgeInsets.all(16),
-          sliver: SliverGrid(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 0.74,
+            const SizedBox(height: 18),
+            Row(
+              children: [
+                InkWell(
+                  onTap: _showMenu,
+                  borderRadius: BorderRadius.circular(8),
+                  child: const Padding(
+                    padding: EdgeInsets.all(4),
+                    child: Icon(Icons.menu, color: Colors.white, size: 26),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                _circleBtn(Icons.shopping_cart, () => context.push('/orders')),
+                const SizedBox(width: 10),
+                _circleBtn(
+                  Icons.search,
+                  () => setState(() => _query = _searchCtrl.text.trim()),
+                ),
+                const SizedBox(width: 12),
+                Expanded(child: _searchField()),
+              ],
             ),
-            delegate: SliverChildBuilderDelegate(
-              (context, i) => _toolCard(filtered[i]),
-              childCount: filtered.length,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _chip(String label, bool selected, VoidCallback onTap) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: ChoiceChip(
-        label: Text(label),
-        selected: selected,
-        onSelected: (_) => onTap(),
-        showCheckmark: false,
-        selectedColor: AppColors.primary,
-        labelStyle: TextStyle(
-          color: selected ? Colors.white : AppColors.primary,
-          fontWeight: FontWeight.w600,
-          fontSize: 12.5,
+          ],
         ),
       ),
     );
+  }
+
+  Widget _searchField() {
+    return TextField(
+      controller: _searchCtrl,
+      textInputAction: TextInputAction.search,
+      onSubmitted: (v) => setState(() => _query = v.trim()),
+      decoration: InputDecoration(
+        fillColor: Colors.white,
+        filled: true,
+        hintText: 'Search Products',
+        hintStyle: const TextStyle(color: AppColors.textMuted),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+
+  Widget _circleBtn(IconData icon, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      customBorder: const CircleBorder(),
+      child: Container(
+        height: 44,
+        width: 44,
+        decoration: const BoxDecoration(
+          color: AppColors.accent,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: Colors.white, size: 20),
+      ),
+    );
+  }
+
+  void _showMenu() {
+    final items = ref.read(toolsProvider).value ?? const <Tool>[];
+    final categories = <String>{for (final t in items) t.category}.toList()
+      ..sort();
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetCtx) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            ListTile(
+              leading: const Icon(
+                Icons.favorite_border,
+                color: AppColors.primary,
+              ),
+              title: const Text('Saved tools'),
+              onTap: () {
+                Navigator.pop(sheetCtx);
+                context.push('/wishlist');
+              },
+            ),
+            ListTile(
+              leading: const Icon(
+                Icons.receipt_long_outlined,
+                color: AppColors.primary,
+              ),
+              title: const Text('My orders'),
+              onTap: () {
+                Navigator.pop(sheetCtx);
+                context.push('/orders');
+              },
+            ),
+            const Divider(),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
+              child: Text(
+                'Categories',
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+            _catTile(sheetCtx, 'All categories', null),
+            for (final c in categories) _catTile(sheetCtx, c, c),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _catTile(BuildContext sheetCtx, String label, String? value) {
+    final selected = _category == value;
+    return ListTile(
+      title: Text(label),
+      trailing: selected
+          ? const Icon(Icons.check, color: AppColors.accent)
+          : null,
+      selected: selected,
+      onTap: () {
+        setState(() => _category = value);
+        Navigator.pop(sheetCtx);
+      },
+    );
+  }
+
+  List<Widget> _gridSlivers(List<Tool> items) {
+    if (items.isEmpty) {
+      return [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: _message('No tools listed yet — check back soon.'),
+        ),
+      ];
+    }
+    var filtered = _category == null
+        ? items
+        : items.where((t) => t.category == _category).toList();
+    if (_query.isNotEmpty) {
+      final q = _query.toLowerCase();
+      filtered = filtered
+          .where(
+            (t) =>
+                t.name.toLowerCase().contains(q) ||
+                (t.brand?.toLowerCase().contains(q) ?? false),
+          )
+          .toList();
+    }
+
+    if (filtered.isEmpty) {
+      return [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: _message('No tools match your search.'),
+        ),
+      ];
+    }
+
+    return [
+      SliverPadding(
+        padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
+        sliver: SliverGrid(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 14,
+            mainAxisSpacing: 14,
+            childAspectRatio: 0.72,
+          ),
+          delegate: SliverChildBuilderDelegate(
+            (context, i) => _toolCard(filtered[i]),
+            childCount: filtered.length,
+          ),
+        ),
+      ),
+    ];
   }
 
   Widget _toolCard(Tool t) {
     return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(AppTheme.radiusCard),
+      color: AppColors.primary,
+      borderRadius: BorderRadius.circular(16),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
-        borderRadius: BorderRadius.circular(AppTheme.radiusCard),
         onTap: () => context.push('/tools/${t.slug}'),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppTheme.radiusCard),
-            border: Border.all(color: AppColors.divider),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 92,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceBlue.withValues(alpha: 0.5),
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(AppTheme.radiusCard),
-                  ),
-                ),
-                child: Center(
-                  child: Icon(
-                    toolCategoryIcon(t.category),
-                    size: 40,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      t.name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13.5,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    if (t.brand != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        t.brand!,
-                        style: const TextStyle(
-                          fontSize: 11.5,
-                          color: AppColors.textMuted,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(child: _toolImage(t)),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 10, 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          t.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                    ],
-                    const SizedBox(height: 6),
-                    Text(
-                      'Rs. ${t.price.toStringAsFixed(0)}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 14,
-                        color: AppColors.accent,
-                      ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Rs. ${t.price.toStringAsFixed(0)}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 6),
+                  _cartCircle(t),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _spinner() => ListView(
-    physics: const AlwaysScrollableScrollPhysics(),
-    children: const [
-      SizedBox(height: 160),
-      Center(child: CircularProgressIndicator()),
-    ],
-  );
+  Widget _toolImage(Tool t) {
+    Widget fallback() => Container(
+      color: AppColors.surfaceBlue.withValues(alpha: 0.5),
+      child: Center(
+        child: Icon(
+          toolCategoryIcon(t.category),
+          size: 40,
+          color: AppColors.primary,
+        ),
+      ),
+    );
 
-  Widget _message(String msg) => ListView(
-    physics: const AlwaysScrollableScrollPhysics(),
-    padding: const EdgeInsets.all(24),
-    children: [
-      const SizedBox(height: 120),
-      const Icon(
-        Icons.shopping_bag_outlined,
-        color: AppColors.textMuted,
-        size: 44,
+    if (t.imageUrl == null || t.imageUrl!.isEmpty) return fallback();
+    return Container(
+      color: Colors.white,
+      width: double.infinity,
+      child: Image.network(
+        t.imageUrl!,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => fallback(),
+        loadingBuilder: (context, child, progress) => progress == null
+            ? child
+            : Container(
+                color: Colors.white,
+                child: const Center(
+                  child: SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
+              ),
       ),
-      const SizedBox(height: 8),
-      Text(
-        msg,
-        textAlign: TextAlign.center,
-        style: const TextStyle(color: AppColors.textMuted),
+    );
+  }
+
+  Widget _cartCircle(Tool t) {
+    final enabled = t.available;
+    return InkWell(
+      onTap: enabled
+          ? () => context.push('/checkout/${t.slug}')
+          : () => ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('This tool is currently unavailable'),
+              ),
+            ),
+      customBorder: const CircleBorder(),
+      child: Container(
+        height: 38,
+        width: 38,
+        decoration: BoxDecoration(
+          color: AppColors.accent.withValues(alpha: enabled ? 1 : 0.5),
+          shape: BoxShape.circle,
+        ),
+        child: const Icon(
+          Icons.shopping_cart_outlined,
+          color: Colors.white,
+          size: 18,
+        ),
       ),
-    ],
+    );
+  }
+
+  Widget _message(String msg) => Padding(
+    padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(
+          Icons.shopping_bag_outlined,
+          color: AppColors.textMuted,
+          size: 44,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          msg,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: AppColors.textMuted),
+        ),
+      ],
+    ),
   );
 }
