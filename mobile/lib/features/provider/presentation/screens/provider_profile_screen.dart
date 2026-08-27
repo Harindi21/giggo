@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/giggo_wordmark.dart';
+import '../../../../core/widgets/rating_stars.dart';
+import '../../../discovery/data/models/review.dart';
+import '../../../discovery/presentation/providers/discovery_providers.dart';
 import '../../data/models/provider_profile.dart';
 import '../../data/provider_profile_repository.dart';
 import '../providers/provider_profile_providers.dart';
 
-/// Provider-facing editor for the profile customers search and book (P2.1).
-/// Backed by GET/PUT /api/v1/provider/profile.
+/// Provider-facing editor for the profile customers search and book (P2.1),
+/// aligned to the Figma: a navy header over a profile card (avatar, name,
+/// rating, category pills), the editable fields, and a "Reviews About You"
+/// section. Backed by GET/PUT /api/v1/provider/profile.
 class ProviderProfileScreen extends ConsumerStatefulWidget {
   const ProviderProfileScreen({super.key});
 
@@ -126,11 +132,20 @@ class _ProviderProfileScreenState extends ConsumerState<ProviderProfileScreen> {
     final profileAsync = ref.watch(myProviderProfileProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My provider profile')),
       body: profileAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => _errorView(e.toString()),
-        data: (profile) => _form(profile),
+        loading: () => Column(
+          children: [
+            _header(),
+            const Expanded(child: Center(child: CircularProgressIndicator())),
+          ],
+        ),
+        error: (e, _) => Column(
+          children: [
+            _header(),
+            Expanded(child: _errorView(e.toString())),
+          ],
+        ),
+        data: _content,
       ),
       bottomNavigationBar: profileAsync.maybeWhen(
         data: (_) => _saveBar(),
@@ -139,190 +154,332 @@ class _ProviderProfileScreenState extends ConsumerState<ProviderProfileScreen> {
     );
   }
 
-  Widget _form(ProviderProfile profile) {
+  Widget _content(ProviderProfile profile) {
     return Form(
       key: _formKey,
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+        padding: EdgeInsets.zero,
         children: [
-          _statsCard(profile),
-          const SizedBox(height: 20),
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            value: _available,
-            onChanged: (v) => setState(() => _available = v),
-            title: const Text(
-              'Available for new bookings',
-              style: TextStyle(fontWeight: FontWeight.w700),
+          _header(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _profileCard(profile),
+                const SizedBox(height: 20),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  value: _available,
+                  onChanged: (v) => setState(() => _available = v),
+                  title: const Text(
+                    'Available for new bookings',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  subtitle: const Text(
+                    'Turn off to hide yourself from search while you are busy.',
+                  ),
+                  activeThumbColor: AppColors.accent,
+                ),
+                const Divider(height: 24),
+                _label('Headline'),
+                TextFormField(
+                  controller: _headlineCtrl,
+                  maxLength: 150,
+                  decoration: const InputDecoration(
+                    hintText: 'e.g. Trusted plumber, 24/7 in Colombo',
+                    counterText: '',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _label('About you'),
+                TextFormField(
+                  controller: _bioCtrl,
+                  maxLength: 1000,
+                  maxLines: 4,
+                  decoration: const InputDecoration(
+                    hintText:
+                        'Tell customers about your experience and what you offer.',
+                  ),
+                ),
+                const SizedBox(height: 8),
+                _label('Years of experience'),
+                TextFormField(
+                  controller: _experienceCtrl,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: const InputDecoration(hintText: 'e.g. 5'),
+                ),
+                const SizedBox(height: 20),
+                _sectionTitle('Where you work'),
+                const SizedBox(height: 10),
+                _label('District'),
+                TextFormField(
+                  controller: _districtCtrl,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: const InputDecoration(hintText: 'e.g. Colombo'),
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? 'Enter your district'
+                      : null,
+                ),
+                const SizedBox(height: 16),
+                _label('Base address (optional)'),
+                TextFormField(
+                  controller: _addressCtrl,
+                  decoration: const InputDecoration(
+                    hintText: 'Street / area',
+                    prefixIcon: Icon(Icons.location_on_outlined),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Your base location is used to estimate travel fees for customers.',
+                  style: TextStyle(fontSize: 11.5, color: AppColors.textMuted),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(child: _coordField(_latCtrl, 'Latitude')),
+                    const SizedBox(width: 12),
+                    Expanded(child: _coordField(_lngCtrl, 'Longitude')),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                _sectionTitle('Your rates (LKR)'),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _priceField(
+                        _baseCtrl,
+                        'Call-out / base',
+                        'Base fee',
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _priceField(
+                        _hourlyCtrl,
+                        'Hourly rate',
+                        'Hourly rate',
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                _sectionTitle('Skills'),
+                const SizedBox(height: 6),
+                const Text(
+                  'Select every service you offer — these power search and matching.',
+                  style: TextStyle(fontSize: 11.5, color: AppColors.textMuted),
+                ),
+                const SizedBox(height: 10),
+                _skillPicker(),
+                if (_error != null) ...[
+                  const SizedBox(height: 16),
+                  Text(_error!, style: const TextStyle(color: AppColors.error)),
+                ],
+                const SizedBox(height: 28),
+                _reviewsSection(profile.id),
+              ],
             ),
-            subtitle: const Text(
-              'Turn off to hide yourself from search while you are busy.',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _header() {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      child: SafeArea(
+        bottom: false,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const GiggoWordmark(fontSize: 26, onDark: true),
+            IconButton(
+              onPressed: () => context.push('/notifications'),
+              icon: const Icon(
+                Icons.notifications_none,
+                color: Colors.white,
+                size: 26,
+              ),
             ),
-            activeThumbColor: AppColors.accent,
-          ),
-          const Divider(height: 24),
-          _label('Headline'),
-          TextFormField(
-            controller: _headlineCtrl,
-            maxLength: 150,
-            decoration: const InputDecoration(
-              hintText: 'e.g. Trusted plumber, 24/7 in Colombo',
-              counterText: '',
-            ),
-          ),
-          const SizedBox(height: 16),
-          _label('About you'),
-          TextFormField(
-            controller: _bioCtrl,
-            maxLength: 1000,
-            maxLines: 4,
-            decoration: const InputDecoration(
-              hintText:
-                  'Tell customers about your experience and what you offer.',
-            ),
-          ),
-          const SizedBox(height: 8),
-          _label('Years of experience'),
-          TextFormField(
-            controller: _experienceCtrl,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            decoration: const InputDecoration(hintText: 'e.g. 5'),
-          ),
-          const SizedBox(height: 20),
-          _sectionTitle('Where you work'),
-          const SizedBox(height: 10),
-          _label('District'),
-          TextFormField(
-            controller: _districtCtrl,
-            textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(hintText: 'e.g. Colombo'),
-            validator: (v) =>
-                (v == null || v.trim().isEmpty) ? 'Enter your district' : null,
-          ),
-          const SizedBox(height: 16),
-          _label('Base address (optional)'),
-          TextFormField(
-            controller: _addressCtrl,
-            decoration: const InputDecoration(
-              hintText: 'Street / area',
-              prefixIcon: Icon(Icons.location_on_outlined),
-            ),
-          ),
-          const SizedBox(height: 10),
-          const Text(
-            'Your base location is used to estimate travel fees for customers.',
-            style: TextStyle(fontSize: 11.5, color: AppColors.textMuted),
-          ),
-          const SizedBox(height: 8),
-          Row(
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _profileCard(ProviderProfile p) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CircleAvatar(
+          radius: 44,
+          backgroundColor: AppColors.surfaceBlue,
+          backgroundImage: (p.avatarUrl != null && p.avatarUrl!.isNotEmpty)
+              ? NetworkImage(p.avatarUrl!)
+              : null,
+          child: (p.avatarUrl == null || p.avatarUrl!.isEmpty)
+              ? Text(
+                  p.fullName.isNotEmpty ? p.fullName[0].toUpperCase() : '?',
+                  style: const TextStyle(
+                    fontSize: 34,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primary,
+                  ),
+                )
+              : null,
+        ),
+        const SizedBox(width: 18),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: _coordField(_latCtrl, 'Latitude')),
-              const SizedBox(width: 12),
-              Expanded(child: _coordField(_lngCtrl, 'Longitude')),
+              const SizedBox(height: 4),
+              Text(
+                p.fullName,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 6),
+              RatingStars(rating: p.avgRating, count: p.ratingCount, size: 15),
+              if (p.skills.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    for (final s in p.skills.take(3)) _categoryPill(s.name),
+                  ],
+                ),
+              ],
             ],
           ),
-          const SizedBox(height: 20),
-          _sectionTitle('Your rates (LKR)'),
-          const SizedBox(height: 10),
+        ),
+      ],
+    );
+  }
+
+  Widget _categoryPill(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 12.5,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
+  Widget _reviewsSection(String profileId) {
+    final async = ref.watch(providerReviewsProvider(profileId));
+    return async.maybeWhen(
+      data: (list) {
+        if (list.isEmpty) return const SizedBox.shrink();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Reviews About You',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            for (final r in list) _reviewCard(r),
+          ],
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+
+  Widget _reviewCard(Review r) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceBlue,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Row(
             children: [
               Expanded(
-                child: _priceField(_baseCtrl, 'Call-out / base', 'Base fee'),
+                child: Text(
+                  r.reviewerName ?? 'Customer',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _priceField(_hourlyCtrl, 'Hourly rate', 'Hourly rate'),
-              ),
+              if (r.createdAt != null) ...[
+                Text(
+                  _fmtDate(r.createdAt!.toLocal()),
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    color: AppColors.textMuted,
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
+              _stars(r.stars),
             ],
           ),
-          const SizedBox(height: 20),
-          _sectionTitle('Skills'),
-          const SizedBox(height: 6),
-          const Text(
-            'Select every service you offer — these power search and matching.',
-            style: TextStyle(fontSize: 11.5, color: AppColors.textMuted),
-          ),
-          const SizedBox(height: 10),
-          _skillPicker(),
-          if (_error != null) ...[
-            const SizedBox(height: 16),
-            Text(_error!, style: const TextStyle(color: AppColors.error)),
+          if (r.body != null && r.body!.trim().isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              r.body!,
+              style: const TextStyle(fontSize: 13, color: AppColors.textBody),
+            ),
           ],
         ],
       ),
     );
   }
 
-  Widget _statsCard(ProviderProfile p) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(AppTheme.radiusCard),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  p.fullName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(
-                      p.verified ? Icons.verified : Icons.verified_outlined,
-                      size: 14,
-                      color: p.verified ? AppColors.accent : Colors.white70,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      p.verified ? 'KYC verified' : 'Not yet verified',
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+  Widget _stars(int count) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < 5; i++)
+          Icon(
+            Icons.star_rounded,
+            size: 16,
+            color: i < count ? AppColors.accent : AppColors.border,
           ),
-          _stat(
-            '${p.avgRating.toStringAsFixed(1)}★',
-            '${p.ratingCount} reviews',
-          ),
-          const SizedBox(width: 16),
-          _stat('${p.jobsCompleted}', 'jobs done'),
-        ],
-      ),
+      ],
     );
   }
 
-  Widget _stat(String value, String label) => Column(
-    children: [
-      Text(
-        value,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w900,
-          fontSize: 16,
-        ),
-      ),
-      Text(
-        label,
-        style: const TextStyle(color: Colors.white70, fontSize: 10.5),
-      ),
-    ],
-  );
+  String _fmtDate(DateTime d) {
+    final m = d.month.toString().padLeft(2, '0');
+    final day = d.day.toString().padLeft(2, '0');
+    return '${d.year}/$m/$day';
+  }
 
   Widget _skillPicker() {
     final async = ref.watch(catalogSkillsProvider);
@@ -432,7 +589,7 @@ class _ProviderProfileScreenState extends ConsumerState<ProviderProfileScreen> {
     child: Text(
       text,
       style: const TextStyle(
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
       ),
     ),
