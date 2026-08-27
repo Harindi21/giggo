@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/onboarding_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
+import '../../features/auth/presentation/screens/reset_code_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
+import '../../features/auth/presentation/screens/set_new_password_screen.dart';
+import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/admin/presentation/screens/admin_dashboard_screen.dart';
 import '../../features/admin/presentation/screens/admin_screen.dart';
 import '../../features/admin/presentation/screens/audit_log_screen.dart';
@@ -41,9 +46,19 @@ final _rootKey = GlobalKey<NavigatorState>();
 
 final appRouter = GoRouter(
   navigatorKey: _rootKey,
-  initialLocation: '/login',
+  initialLocation: '/splash',
   routes: [
     // ---- Auth (outside the shell) ----
+    GoRoute(
+      path: '/splash',
+      name: 'splash',
+      builder: (c, s) => const SplashScreen(),
+    ),
+    GoRoute(
+      path: '/onboarding',
+      name: 'onboarding',
+      builder: (c, s) => const OnboardingScreen(),
+    ),
     GoRoute(
       path: '/login',
       name: 'login',
@@ -65,6 +80,23 @@ final appRouter = GoRouter(
       name: 'verify-email',
       builder: (c, s) =>
           VerifyEmailScreen(email: s.uri.queryParameters['email'] ?? ''),
+    ),
+    GoRoute(
+      path: '/forgot-password',
+      name: 'forgot-password',
+      builder: (c, s) => const ForgotPasswordScreen(),
+    ),
+    GoRoute(
+      path: '/reset-code',
+      name: 'reset-code',
+      builder: (c, s) =>
+          ResetCodeScreen(email: s.uri.queryParameters['email'] ?? ''),
+    ),
+    GoRoute(
+      path: '/set-new-password',
+      name: 'set-new-password',
+      builder: (c, s) =>
+          SetNewPasswordScreen(email: s.uri.queryParameters['email'] ?? ''),
     ),
     GoRoute(
       path: '/track/:jobId',
