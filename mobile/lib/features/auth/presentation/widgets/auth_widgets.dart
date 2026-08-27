@@ -16,6 +16,115 @@ class AuthAssets {
   static const String facebook = 'assets/images/social_facebook.png';
 }
 
+/// Navy header (logo top-left) over a white large-radius sheet whose content is
+/// vertically centred — used by the forgot-password / reset flow (Figma).
+class AuthCenteredScaffold extends StatelessWidget {
+  final List<Widget> children;
+  const AuthCenteredScaffold({super.key, required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    return Scaffold(
+      backgroundColor: AppColors.primary,
+      body: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.fromLTRB(28, media.padding.top + 24, 28, 56),
+            child: Image.asset(
+              AuthAssets.logo,
+              height: 40,
+              alignment: Alignment.centerLeft,
+            ),
+          ),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40),
+                  topRight: Radius.circular(40),
+                ),
+              ),
+              child: LayoutBuilder(
+                builder: (context, constraints) => SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(
+                    28,
+                    24,
+                    28,
+                    24 + media.viewInsets.bottom,
+                  ),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight - 48,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: children,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Big navy title used on the forgot-password / reset screens.
+class AuthTitle extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  const AuthTitle({super.key, required this.title, required this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.w800,
+            color: AppColors.primary,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          subtitle,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 14, color: AppColors.textMuted),
+        ),
+      ],
+    );
+  }
+}
+
+/// "‹ Back to Login" link shared by the reset screens.
+class BackToLogin extends StatelessWidget {
+  final VoidCallback onTap;
+  const BackToLogin({super.key, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: TextButton(
+        onPressed: onTap,
+        child: const Text(
+          '‹ Back to Login',
+          style: TextStyle(color: AppColors.textMuted, fontSize: 14),
+        ),
+      ),
+    );
+  }
+}
+
 /// Shared chrome for the auth screens: a navy header carrying the GIGGO logo
 /// (top-left) and an optional 3D hero (top-right), with a white, large-radius
 /// sheet curving up over it — matching the GIGGO auth mockups.

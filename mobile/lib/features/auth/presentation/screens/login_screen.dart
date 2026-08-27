@@ -35,12 +35,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (ok && mounted) context.go('/home');
   }
 
-  void _comingSoon(String what) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('$what is coming soon')));
-  }
-
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(authControllerProvider);
@@ -81,7 +75,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             Align(
               alignment: Alignment.centerRight,
               child: GestureDetector(
-                onTap: () => _comingSoon('Password reset'),
+                onTap: () => context.push('/forgot-password'),
                 child: const Text(
                   'Forgot password',
                   style: TextStyle(color: AppColors.textMuted, fontSize: 12),
