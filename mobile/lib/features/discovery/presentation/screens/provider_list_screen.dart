@@ -9,7 +9,9 @@ import '../../data/models/provider_models.dart';
 import '../providers/discovery_providers.dart';
 import '../widgets/provider_card_tile.dart';
 
-/// Provider list for a category (with skill filter chips) or a free-text search.
+/// Provider list for a category (with skill filter chips) or a free-text
+/// search, aligned to the Figma: a navy breadcrumb header + search toolbar over
+/// light-blue provider cards. A map toggle keeps the nearby-providers view.
 class ProviderListScreen extends ConsumerStatefulWidget {
   const ProviderListScreen({
     super.key,
@@ -29,37 +31,40 @@ class ProviderListScreen extends ConsumerStatefulWidget {
 class _ProviderListScreenState extends ConsumerState<ProviderListScreen> {
   String? _skillId;
   bool _mapView = false;
+  String _query = '';
+  final _searchCtrl = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _query = widget.initialQuery ?? '';
+    _searchCtrl.text = _query;
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  String? _effectiveQuery() {
+    final q = _query.trim();
+    return q.isEmpty ? null : q;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final title =
-        widget.categoryName ??
-        (widget.initialQuery != null
-            ? 'Results for "${widget.initialQuery}"'
-            : 'Providers');
-
     final query = ProviderQuery(
       categoryId: widget.categoryId,
       skillId: _skillId,
-      query: widget.initialQuery,
+      query: _effectiveQuery(),
     );
     final results = ref.watch(providerSearchProvider(query));
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        actions: [
-          IconButton(
-            tooltip: _mapView ? 'List view' : 'Map view',
-            onPressed: () => setState(() => _mapView = !_mapView),
-            icon: Icon(
-              _mapView ? Icons.view_list_outlined : Icons.map_outlined,
-            ),
-          ),
-        ],
-      ),
       body: Column(
         children: [
+          _header(),
           if (widget.categoryId != null) _skillChips(widget.categoryId!),
           Expanded(
             child: results.when(
@@ -69,9 +74,7 @@ class _ProviderListScreenState extends ConsumerState<ProviderListScreen> {
                 () => ref.invalidate(providerSearchProvider(query)),
               ),
               data: (list) {
-                if (list.isEmpty) {
-                  return _empty();
-                }
+                if (list.isEmpty) return _empty();
                 if (_mapView) {
                   return _ProvidersMap(
                     providers: list,
@@ -82,14 +85,15 @@ class _ProviderListScreenState extends ConsumerState<ProviderListScreen> {
                   onRefresh: () async =>
                       ref.invalidate(providerSearchProvider(query)),
                   child: ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
                     itemCount: list.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 10),
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
                     itemBuilder: (context, i) {
                       final p = list[i];
                       return ProviderCardTile(
                         provider: p,
                         onTap: () => context.push('/home/provider/${p.id}'),
+                        onBook: () => context.push('/book/${p.id}'),
                       );
                     },
                   ),
@@ -98,6 +102,148 @@ class _ProviderListScreenState extends ConsumerState<ProviderListScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _header() {
+    final crumb = widget.categoryName != null
+        ? 'Service Categories › ${widget.categoryName}'
+        : (widget.initialQuery != null
+              ? 'Results for “${widget.initialQuery}”'
+              : 'Providers');
+
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 8, 20, 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (context.canPop())
+                    IconButton(
+                      onPressed: () => context.pop(),
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    )
+                  else
+                    const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      crumb,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        height: 1.25,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  InkWell(
+                    onTap: () => context.go('/profile'),
+                    borderRadius: BorderRadius.circular(24),
+                    child: const CircleAvatar(
+                      radius: 22,
+                      backgroundColor: Colors.white24,
+                      child: Icon(Icons.person, color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: Row(
+                  children: [
+                    _circleBtn(
+                      Icons.search,
+                      () => setState(() => _query = _searchCtrl.text.trim()),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(child: _searchField()),
+                    const SizedBox(width: 10),
+                    _squareBtn(
+                      _mapView ? Icons.view_list_rounded : Icons.map_outlined,
+                      () => setState(() => _mapView = !_mapView),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _searchField() {
+    return TextField(
+      controller: _searchCtrl,
+      textInputAction: TextInputAction.search,
+      onSubmitted: (v) => setState(() => _query = v.trim()),
+      decoration: InputDecoration(
+        fillColor: Colors.white,
+        filled: true,
+        hintText: 'Search services',
+        hintStyle: const TextStyle(color: AppColors.textMuted),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+
+  Widget _circleBtn(IconData icon, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      customBorder: const CircleBorder(),
+      child: Container(
+        height: 46,
+        width: 46,
+        decoration: const BoxDecoration(
+          color: AppColors.accent,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: Colors.white, size: 20),
+      ),
+    );
+  }
+
+  Widget _squareBtn(IconData icon, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        height: 46,
+        width: 46,
+        decoration: BoxDecoration(
+          color: AppColors.surfaceBlue,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, color: AppColors.primary, size: 22),
       ),
     );
   }
@@ -211,7 +357,6 @@ class _ProvidersMap extends StatelessWidget {
       );
     }
 
-    // Centre on the average of the located providers (Colombo as a fallback).
     final avgLat =
         located.map((p) => p.latitude!).reduce((a, b) => a + b) /
         located.length;

@@ -297,6 +297,27 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                           ],
                         ),
                       ),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        onPressed: () =>
+                            context.push('/home/provider/${widget.providerId}'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.accent,
+                          backgroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          textStyle: const TextStyle(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        child: const Text('View Profile'),
+                      ),
                     ],
                   ),
                 ),

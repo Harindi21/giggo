@@ -19,14 +19,14 @@ ProviderCard _card({bool verified = true}) => ProviderCard(
 );
 
 void main() {
-  testWidgets('shows name, price and a Book Now action', (tester) async {
+  testWidgets('shows name, location and a Book Now action', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(body: ProviderCardTile(provider: _card())),
       ),
     );
     expect(find.text('Kamal Silva'), findsOneWidget);
-    expect(find.textContaining('Rs. 1500'), findsOneWidget);
+    expect(find.text('Colombo'), findsOneWidget);
     expect(find.text('Book Now'), findsOneWidget);
     expect(find.byIcon(Icons.verified), findsOneWidget);
   });
