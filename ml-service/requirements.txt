@@ -30,3 +30,8 @@ vaderSentiment==3.3.2
 uvicorn==0.51.0
 watchfiles==1.2.0
 websockets==16.1
+
+# --- Optional heavy backends (lazy-imported; the service falls back without them) ---
+# RAG assistant real semantic embeddings (ADR-0013). Not installed in CI, where the
+# deterministic hashed embedder is used instead:
+#   pip install sentence-transformers
