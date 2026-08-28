@@ -28,5 +28,9 @@ class Settings(BaseSettings):
     # Retrieval: number of chunks returned per question (top-k).
     retrieval_top_k: int = 4
 
+    # Postgres DSN for the RAG retrieval store (ADR-0012, scoped read/write access).
+    # Defaults to the local dev database; in prod set DATABASE_URL in the environment.
+    database_url: str = "postgresql://giggo:giggo_local_dev@127.0.0.1:5433/giggo"
+
 
 settings = Settings()

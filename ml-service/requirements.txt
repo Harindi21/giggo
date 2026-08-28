@@ -35,3 +35,6 @@ websockets==16.1
 # RAG assistant real semantic embeddings (ADR-0013). Not installed in CI, where the
 # deterministic hashed embedder is used instead:
 #   pip install sentence-transformers
+# RAG ingestion/retrieval Postgres client (ADR-0012). Only needed to actually run
+# the ingestion job against pgvector; the row-building logic is tested without it:
+#   pip install "psycopg[binary]" pgvector
