@@ -22,6 +22,8 @@ Decision · Consequences**. Template: [`0000-template.md`](0000-template.md).
 | [0009](0009-rule-based-fraud-guards-at-write-points.md) | Rule-based fraud/abuse guards at write points (not an ML model) | Accepted |
 | [0010](0010-earnings-as-derived-read-model.md) | Provider earnings as a derived read-model over payments + payout ledger | Accepted |
 | [0011](0011-demand-forecasting-linear-trend.md) | Demand forecasting as a stateless linear-trend service (AI #4) | Accepted |
+| [0012](0012-retrieval-store-for-knowledge-hub.md) | Retrieval store for the Knowledge Hub (pgvector) | Accepted |
+| [0013](0013-llm-provider-seam.md) | LLM provider seam for the assistant (keyless local default) | Accepted |
 
 ## When to add one
 Add an ADR in the same PR as a decision that a future maintainer would ask "why?"
