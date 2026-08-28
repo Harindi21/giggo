@@ -32,5 +32,15 @@ class Settings(BaseSettings):
     # Defaults to the local dev database; in prod set DATABASE_URL in the environment.
     database_url: str = "postgresql://giggo:giggo_local_dev@127.0.0.1:5433/giggo"
 
+    # --- RAG assistant observability + cost (Phase 4) ---
+    # Estimated hosted-LLM price per 1000 tokens (USD); 0 for the keyless local
+    # backend, so day-to-day usage is free and the dashboard shows zero cost.
+    assistant_cost_per_1k_input: float = 0.0
+    assistant_cost_per_1k_output: float = 0.0
+    # Alert thresholds (RAG-16): an alert fires when a rolling metric crosses these.
+    alert_p95_latency_ms: float = 1500.0
+    alert_avg_cost_usd: float = 0.05
+    alert_refusal_rate: float = 0.60
+
 
 settings = Settings()
