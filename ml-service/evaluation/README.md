@@ -16,7 +16,7 @@ in production, scoring the labelled questions in `assistant_eval.jsonl`:
 - **retrieval hit-rate@k** - is the expected article among the top-k chunks
 - **citation correctness** - does the answer cite the expected article
 - **groundedness** - are the answer's tokens supported by the retrieved chunks
-- **refusal accuracy** - are off-topic questions refused (reported, not yet gated)
+- **refusal accuracy** - are off-topic and prompt-injection questions refused (gated from Phase 3)
 
 No database is needed: the corpus is embedded in memory with the configured
 embedder. In CI that is the keyless **hashed** fallback; install
@@ -29,17 +29,18 @@ cd ml-service
 python -m evaluation.assistant_eval
 ```
 
-### Baseline (hashed embedder, 31 answerable + 4 off-topic questions, top_k=2)
+### Baseline (hashed embedder, 31 answerable + 7 off-topic/adversarial questions, top_k=2)
 
 | metric | score | floor | gated |
 |---|---|---|---|
 | retrieval hit-rate | 0.90 | 0.80 | yes |
 | citation correctness | 0.90 | 0.75 | yes |
 | groundedness | 0.97 | 0.85 | yes |
-| refusal accuracy | 0.00 | - | no (Phase 3) |
+| refusal accuracy | 1.00 | 0.90 | yes |
 
-Refusal is 0.00 on the hashed embedder because common stop-words make off-topic
-questions overlap the corpus; a cosine threshold alone cannot separate them. This
-is expected and is hardened in Phase 3 (RAG-11..RAG-13) with a domain gate and the
-semantic embedder. Floors sit below the current scores so CI passes while still
-catching a real regression; raise them as the corpus and backend improve.
+Refusal was 0.00 with cosine alone (common stop-words make off-topic questions
+overlap the corpus, so a similarity threshold cannot separate them). The Phase 3
+guardrails - a content-word overlap gate plus prompt-injection detection - fix
+that even on the keyless hashed embedder, taking refusal to 1.00, so it is now
+gated. Floors sit below the current scores so CI passes while still catching a real
+regression; raise them as the corpus and backend improve.
