@@ -6,6 +6,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 /**
  * Full-context smoke test (P12). Boots the entire Spring context against a real
@@ -19,8 +20,11 @@ class BackendApplicationTests {
 
     @Container
     @ServiceConnection
-    static final PostgreSQLContainer<?> POSTGRES =
-            new PostgreSQLContainer<>("postgres:17");
+    // pgvector image (Postgres 17 + the vector extension) as a compatible
+    // substitute, so V33's CREATE EXTENSION vector runs under Testcontainers.
+    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>(
+            DockerImageName.parse("pgvector/pgvector:pg17")
+                    .asCompatibleSubstituteFor("postgres"));
 
     @Test
     void contextLoads() {

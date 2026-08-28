@@ -1,6 +1,8 @@
 services:
   postgres:
-    image: postgres:17
+    # Postgres 17 + the pgvector extension (for the RAG retrieval store, ADR-0012).
+    # Drop-in for postgres:17 — same PG major, so the existing data volume is kept.
+    image: pgvector/pgvector:pg17
     container_name: giggo-postgres
     restart: unless-stopped
     environment:

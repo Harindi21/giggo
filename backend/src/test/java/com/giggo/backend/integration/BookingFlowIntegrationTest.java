@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.giggo.backend.provider.domain.ProviderProfile;
@@ -51,8 +52,11 @@ class BookingFlowIntegrationTest {
 
     @Container
     @ServiceConnection
-    static final PostgreSQLContainer<?> POSTGRES =
-            new PostgreSQLContainer<>("postgres:17");
+    // pgvector image (Postgres 17 + the vector extension) as a compatible
+    // substitute, so V33's CREATE EXTENSION vector runs under Testcontainers.
+    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>(
+            DockerImageName.parse("pgvector/pgvector:pg17")
+                    .asCompatibleSubstituteFor("postgres"));
 
     @Autowired MockMvc mvc;
     @Autowired JwtService jwtService;
