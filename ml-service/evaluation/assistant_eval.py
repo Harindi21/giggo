@@ -40,11 +40,10 @@ EVAL_MIN_SCORE = 0.02
 RETRIEVAL_FLOOR = 0.80
 CITATION_FLOOR = 0.75
 GROUNDEDNESS_FLOOR = 0.85
-# Refusal of off-topic questions is reported but NOT gated here: the keyless
-# hashed fallback embedder cannot separate off-topic from on-topic by cosine
-# similarity alone (common words overlap). Hardening refusal - and gating on it -
-# is Phase 3 (RAG-11..RAG-13), where sentence-transformers plus a domain gate
-# make it discriminative.
+# Off-topic and prompt-injection questions must be refused. Phase 3 guardrails
+# (a content-word overlap gate plus injection detection) make this work even on
+# the keyless hashed embedder, so refusal is now gated. Baseline 1.00.
+REFUSAL_FLOOR = 0.90
 
 
 def _here() -> str:
@@ -193,6 +192,7 @@ def main() -> int:
         ("retrieval hit-rate", metrics["retrieval_hit_rate"], RETRIEVAL_FLOOR),
         ("citation correctness", metrics["citation_correctness"], CITATION_FLOOR),
         ("groundedness", metrics["groundedness"], GROUNDEDNESS_FLOOR),
+        ("refusal accuracy", metrics["refusal_accuracy"], REFUSAL_FLOOR),
     ]
     ok = True
     print(f"{'metric':<22}{'score':>8}{'floor':>8}  status")
@@ -200,11 +200,7 @@ def main() -> int:
         passed = score >= floor
         ok = ok and passed
         print(f"{name:<22}{score:>8.2f}{floor:>8.2f}  {'PASS' if passed else 'FAIL'}")
-    print(
-        f"{'refusal accuracy':<22}{metrics['refusal_accuracy']:>8.2f}{'-':>8}"
-        "  info (gated in Phase 3)"
-    )
-    print("\n" + ("All gated checks passed." if ok else "Quality below floor."))
+    print("\n" + ("All checks passed." if ok else "Quality below floor."))
     return 0 if ok else 1
 
 

@@ -1,8 +1,8 @@
-"""Guards RAG assistant quality against regressions (RAG-10, Phase-2 gate).
+"""Guards RAG assistant quality against regressions (RAG-10, quality gate).
 
 Runs the golden set through the same retrieval + answer pipeline (in-memory, no
-DB) and fails if retrieval, citation or groundedness drop below their floors.
-Refusal is reported by the runner but not gated here - see Phase 3.
+DB) and fails if retrieval, citation, groundedness or refusal drop below their
+floors. Refusal is gated from Phase 3 on (the guardrails make it discriminative).
 """
 
 from app.services.assistant.answer.extractive import LocalExtractiveAnswerer
@@ -10,6 +10,7 @@ from app.services.assistant.embeddings import get_embedder
 from evaluation.assistant_eval import (
     CITATION_FLOOR,
     GROUNDEDNESS_FLOOR,
+    REFUSAL_FLOOR,
     RETRIEVAL_FLOOR,
     InMemoryRetriever,
     default_corpus,
@@ -32,3 +33,4 @@ def test_assistant_quality_meets_floors():
     assert metrics["retrieval_hit_rate"] >= RETRIEVAL_FLOOR, metrics
     assert metrics["citation_correctness"] >= CITATION_FLOOR, metrics
     assert metrics["groundedness"] >= GROUNDEDNESS_FLOOR, metrics
+    assert metrics["refusal_accuracy"] >= REFUSAL_FLOOR, metrics
