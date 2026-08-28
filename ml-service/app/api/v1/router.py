@@ -1,8 +1,9 @@
 from fastapi import APIRouter
 
-from app.api.v1 import forecast, recommendations, sentiment
+from app.api.v1 import assistant, forecast, recommendations, sentiment
 
 api_router = APIRouter()
 api_router.include_router(sentiment.router)
 api_router.include_router(recommendations.router)
 api_router.include_router(forecast.router)
+api_router.include_router(assistant.router)
