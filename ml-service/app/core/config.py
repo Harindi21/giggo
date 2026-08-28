@@ -14,5 +14,19 @@ class Settings(BaseSettings):
     # Recommender backend: "hybrid" (pure-Python, default) or "lightfm" (future).
     recommender_backend: str = "hybrid"
 
+    # --- RAG assistant (Knowledge Hub) — keyless local defaults, hosted swap-in.
+    # See ADR-0012 (retrieval store) and ADR-0013 (LLM provider seam).
+    # Answer generation: "local" (grounded/extractive default) or a hosted LLM.
+    assistant_backend: str = "local"
+    # Embeddings: "local" (sentence-transformers default) or a hosted embeddings API.
+    embedding_backend: str = "local"
+    # Local sentence-embedding model used when embedding_backend == "local".
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    # Hosted model id, used when assistant_backend names a hosted provider.
+    # The API key itself comes from the environment, never from code.
+    assistant_model: str = ""
+    # Retrieval: number of chunks returned per question (top-k).
+    retrieval_top_k: int = 4
+
 
 settings = Settings()
