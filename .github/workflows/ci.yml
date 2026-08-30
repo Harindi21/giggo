@@ -36,6 +36,9 @@ jobs:
       - name: Run tests
         working-directory: ml-service
         run: python -m pytest -q
+      - name: RAG assistant quality gate
+        working-directory: ml-service
+        run: python -m evaluation.assistant_eval
 
   mobile:
     name: Mobile (Flutter)

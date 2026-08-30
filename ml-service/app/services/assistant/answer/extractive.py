@@ -9,13 +9,9 @@ instruct model is the swap-in behind ``assistant_backend``.
 
 from __future__ import annotations
 
+from ..prompts import ANSWER_PREAMBLE, REFUSAL_MESSAGE
 from ..retrieval import RetrievedChunk
 from .base import Answer, Citation
-
-_REFUSAL = (
-    "I don't have anything about that in the GIGGO Knowledge Hub yet. "
-    "Try rephrasing, or ask about bookings, payments, safety or getting verified."
-)
 
 
 class LocalExtractiveAnswerer:
@@ -26,7 +22,7 @@ class LocalExtractiveAnswerer:
 
     def answer(self, question: str, chunks: list[RetrievedChunk]) -> Answer:
         if not chunks:
-            return Answer(text=_REFUSAL, grounded=False, backend=self.name)
+            return Answer(text=REFUSAL_MESSAGE, grounded=False, backend=self.name)
 
         used = chunks[: self.max_chunks]
         body = " ".join(c.content.strip() for c in used if c.content.strip())
@@ -38,7 +34,7 @@ class LocalExtractiveAnswerer:
         citations = [Citation(slug=s, title=t) for s, t in titles_by_slug.items()]
 
         return Answer(
-            text=f"Based on the GIGGO Knowledge Hub: {body}",
+            text=f"{ANSWER_PREAMBLE} {body}",
             grounded=True,
             citations=citations,
             backend=self.name,

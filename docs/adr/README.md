@@ -24,6 +24,7 @@ Decision · Consequences**. Template: [`0000-template.md`](0000-template.md).
 | [0011](0011-demand-forecasting-linear-trend.md) | Demand forecasting as a stateless linear-trend service (AI #4) | Accepted |
 | [0012](0012-retrieval-store-for-knowledge-hub.md) | Retrieval store for the Knowledge Hub (pgvector) | Accepted |
 | [0013](0013-llm-provider-seam.md) | LLM provider seam for the assistant (keyless local default) | Accepted |
+| [0014](0014-rag-rollout-and-rollback.md) | Rollout and rollback for assistant prompt/model changes | Accepted |
 
 ## When to add one
 Add an ADR in the same PR as a decision that a future maintainer would ask "why?"
