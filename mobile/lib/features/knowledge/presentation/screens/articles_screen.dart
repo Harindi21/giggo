@@ -47,6 +47,10 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
               child: _searchBar(),
             ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+              child: _assistantBanner(),
+            ),
             async.when(
               loading: _spinner,
               error: (e, _) => _message(e.toString()),
@@ -109,6 +113,59 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Entry point to the retrieval-augmented Knowledge assistant (RAG-05).
+  Widget _assistantBanner() {
+    return Material(
+      color: AppColors.primary,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => context.push('/assistant'),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.accent.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.auto_awesome, color: AppColors.accent),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Ask the Knowledge Assistant',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    SizedBox(height: 3),
+                    Text(
+                      'Instant answers with sources',
+                      style: TextStyle(color: Colors.white70, fontSize: 12.5),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.white54,
+                size: 15,
+              ),
+            ],
+          ),
         ),
       ),
     );
