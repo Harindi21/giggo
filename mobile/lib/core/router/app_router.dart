@@ -25,6 +25,7 @@ import '../../features/discovery/presentation/screens/provider_detail_screen.dar
 import '../../features/discovery/presentation/screens/provider_list_screen.dart';
 import '../../features/knowledge/presentation/screens/article_detail_screen.dart';
 import '../../features/knowledge/presentation/screens/articles_screen.dart';
+import '../../features/knowledge/presentation/screens/assistant_screen.dart';
 import '../../features/kyc/presentation/screens/kyc_screen.dart';
 import '../../features/marketplace/presentation/screens/checkout_screen.dart';
 import '../../features/marketplace/presentation/screens/orders_screen.dart';
@@ -204,6 +205,11 @@ final appRouter = GoRouter(
       path: '/articles/:slug',
       name: 'article',
       builder: (c, s) => ArticleDetailScreen(slug: s.pathParameters['slug']!),
+    ),
+    GoRoute(
+      path: '/assistant',
+      name: 'assistant',
+      builder: (c, s) => const AssistantScreen(),
     ),
     GoRoute(
       path: '/tools/:slug',
