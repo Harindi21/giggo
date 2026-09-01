@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/giggo_wordmark.dart';
@@ -35,6 +36,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final categories = ref.watch(categoriesProvider);
 
     return Scaffold(
@@ -49,12 +51,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             SliverToBoxAdapter(child: _header()),
             SliverToBoxAdapter(child: _exploreCard()),
             SliverToBoxAdapter(child: _recommendedSection()),
-            const SliverToBoxAdapter(
+            SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 24, 20, 8),
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
                 child: Text(
-                  'Service Categories',
-                  style: TextStyle(
+                  l.serviceCategories,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
                     color: AppColors.textPrimary,
@@ -130,6 +132,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   /// Orange square search button + white field, per the Figma home header.
   Widget _searchBar() {
+    final l = AppLocalizations.of(context);
     return Row(
       children: [
         InkWell(
@@ -154,7 +157,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             decoration: InputDecoration(
               fillColor: Colors.white,
               filled: true,
-              hintText: 'Search services',
+              hintText: l.searchHint,
               hintStyle: const TextStyle(color: AppColors.textMuted),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 18,
@@ -193,6 +196,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _exploreCard() {
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: Container(
@@ -203,21 +207,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         child: Row(
           children: [
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Explore your tasks',
-                    style: TextStyle(
+                    l.homeExploreTitle,
+                    style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
-                    'Track requested, ongoing and completed tasks in one place.',
-                    style: TextStyle(fontSize: 12.5, color: AppColors.textBody),
+                    l.homeExploreSubtitle,
+                    style: const TextStyle(
+                      fontSize: 12.5,
+                      color: AppColors.textBody,
+                    ),
                   ),
                 ],
               ),
@@ -231,7 +238,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   vertical: 10,
                 ),
               ),
-              child: const Text('View Tasks'),
+              child: Text(l.viewTasks),
             ),
           ],
         ),
@@ -240,6 +247,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _knowledgeCard() {
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
       child: Material(
@@ -258,21 +266,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   size: 32,
                 ),
                 const SizedBox(width: 14),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Tips & Guides',
-                        style: TextStyle(
+                        l.homeTipsTitle,
+                        style: const TextStyle(
                           fontWeight: FontWeight.w800,
                           color: AppColors.textPrimary,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
-                        'Get the most out of GIGGO — booking, payments and safety.',
-                        style: TextStyle(
+                        l.homeTipsSubtitle,
+                        style: const TextStyle(
                           fontSize: 12.5,
                           color: AppColors.textBody,
                         ),
@@ -290,6 +298,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _promoCard() {
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Container(
@@ -300,27 +309,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         child: Row(
           children: [
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Book a trusted professional',
-                    style: TextStyle(
+                    l.homePromoTitle,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 15,
                     ),
                   ),
-                  SizedBox(height: 6),
+                  const SizedBox(height: 6),
                   Text(
-                    'For any of your needs, without hesitation.',
-                    style: TextStyle(color: Colors.white70, fontSize: 12.5),
+                    l.homePromoSubtitle,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12.5,
+                    ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.handyman, color: AppColors.accent, size: 40),
+            const Icon(Icons.handyman, color: AppColors.accent, size: 40),
           ],
         ),
       ),
@@ -330,6 +342,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   /// "Recommended for you" carousel (P3.4). Hidden while loading, on error, or
   /// when empty — so providers (who get a 403 here) simply don't see it.
   Widget _recommendedSection() {
+    final l = AppLocalizations.of(context);
     final rec = ref.watch(recommendedProvidersProvider);
     return rec.maybeWhen(
       data: (list) {
@@ -337,11 +350,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 20, 20, 8),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
               child: Text(
-                'Recommended for you',
-                style: TextStyle(
+                l.commonRecommendedForYou,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
@@ -366,6 +379,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _recCard(ProviderCard p) {
+    final l = AppLocalizations.of(context);
     return SizedBox(
       width: 158,
       child: Card(
@@ -415,16 +429,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 const Spacer(),
                 Text(
-                  'Rs. ${p.basePrice.toStringAsFixed(0)}',
+                  '${l.pricePrefix} ${p.basePrice.toStringAsFixed(0)}',
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 13,
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const Text(
-                  'from',
-                  style: TextStyle(fontSize: 10, color: AppColors.textMuted),
+                Text(
+                  l.priceFrom,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: AppColors.textMuted,
+                  ),
                 ),
               ],
             ),
@@ -434,25 +451,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _error(String msg) => Padding(
-    padding: const EdgeInsets.all(24),
-    child: Column(
-      children: [
-        const Icon(Icons.cloud_off, color: AppColors.textMuted, size: 40),
-        const SizedBox(height: 8),
-        Text(
-          msg,
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: AppColors.textMuted),
-        ),
-        const SizedBox(height: 12),
-        OutlinedButton(
-          onPressed: () => ref.invalidate(categoriesProvider),
-          child: const Text('Retry'),
-        ),
-      ],
-    ),
-  );
+  Widget _error(String msg) {
+    final l = AppLocalizations.of(context);
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        children: [
+          const Icon(Icons.cloud_off, color: AppColors.textMuted, size: 40),
+          const SizedBox(height: 8),
+          Text(
+            msg,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: AppColors.textMuted),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton(
+            onPressed: () => ref.invalidate(categoriesProvider),
+            child: Text(l.commonRetry),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 /// An expandable service-category group. Collapsed it shows just the name and a
@@ -529,6 +549,7 @@ class _CategoryGroupState extends ConsumerState<_CategoryGroup> {
   }
 
   Widget _skills() {
+    final l = AppLocalizations.of(context);
     final skills = ref.watch(skillsProvider(widget.category.id));
     return skills.when(
       loading: () => const Align(
@@ -546,16 +567,16 @@ class _CategoryGroupState extends ConsumerState<_CategoryGroup> {
         alignment: Alignment.centerLeft,
         child: TextButton(
           onPressed: () => ref.invalidate(skillsProvider(widget.category.id)),
-          child: const Text("Couldn't load services — tap to retry"),
+          child: Text(l.homeSkillsLoadError),
         ),
       ),
       data: (list) {
         if (list.isEmpty) {
           return GestureDetector(
             onTap: _openCategory,
-            child: const Text(
-              'See providers in this category',
-              style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+            child: Text(
+              l.homeSeeProviders,
+              style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
             ),
           );
         }

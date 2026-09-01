@@ -325,6 +325,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Review provider verifications'**
   String get profileAdminConsoleSub;
+
+  /// Home explore-tasks card title
+  ///
+  /// In en, this message translates to:
+  /// **'Explore your tasks'**
+  String get homeExploreTitle;
+
+  /// Home explore-tasks card subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Track requested, ongoing and completed tasks in one place.'**
+  String get homeExploreSubtitle;
+
+  /// Home knowledge card title
+  ///
+  /// In en, this message translates to:
+  /// **'Tips & Guides'**
+  String get homeTipsTitle;
+
+  /// Home knowledge card subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Everything you need for booking, payments and safety.'**
+  String get homeTipsSubtitle;
+
+  /// Home promo card title
+  ///
+  /// In en, this message translates to:
+  /// **'Book a trusted professional'**
+  String get homePromoTitle;
+
+  /// Home promo card subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'For any of your needs, without hesitation.'**
+  String get homePromoSubtitle;
+
+  /// Recommendation section heading
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended for you'**
+  String get commonRecommendedForYou;
+
+  /// Label under a starting price
+  ///
+  /// In en, this message translates to:
+  /// **'from'**
+  String get priceFrom;
+
+  /// Currency prefix for Sri Lankan Rupees
+  ///
+  /// In en, this message translates to:
+  /// **'Rs.'**
+  String get pricePrefix;
+
+  /// Retry button
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get commonRetry;
+
+  /// Shown when a category's skills fail to load
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load services. Tap to retry'**
+  String get homeSkillsLoadError;
+
+  /// Shown when a category has no listed skills
+  ///
+  /// In en, this message translates to:
+  /// **'See providers in this category'**
+  String get homeSeeProviders;
 }
 
 class _AppLocalizationsDelegate
