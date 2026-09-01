@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 /// App shell with the dark bottom navigation bar (Home / Shop / Tasks / Profile).
 /// The active icon shows in orange via the app theme.
@@ -10,6 +11,7 @@ class MainScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: BottomNavigationBar(
@@ -18,22 +20,22 @@ class MainScaffold extends StatelessWidget {
           index,
           initialLocation: index == navigationShell.currentIndex,
         ),
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
-            label: 'Home',
+            icon: const Icon(Icons.home_rounded),
+            label: l.navHome,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag_outlined),
-            label: 'Shop',
+            icon: const Icon(Icons.shopping_bag_outlined),
+            label: l.navShop,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.list_alt_rounded),
-            label: 'Tasks',
+            icon: const Icon(Icons.list_alt_rounded),
+            label: l.navTasks,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
-            label: 'Profile',
+            icon: const Icon(Icons.person_rounded),
+            label: l.navProfile,
           ),
         ],
       ),
