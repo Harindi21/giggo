@@ -149,5 +149,77 @@
   "@homeSkillsLoadError": { "description": "Shown when a category's skills fail to load" },
 
   "homeSeeProviders": "See providers in this category",
-  "@homeSeeProviders": { "description": "Shown when a category has no listed skills" }
+  "@homeSeeProviders": { "description": "Shown when a category has no listed skills" },
+
+  "discoveryProviders": "Providers",
+  "@discoveryProviders": { "description": "Fallback header for the provider list" },
+
+  "discoveryResultsFor": "Results for \"{query}\"",
+  "@discoveryResultsFor": {
+    "description": "Search results breadcrumb",
+    "placeholders": { "query": { "type": "String" } }
+  },
+
+  "commonAll": "All",
+  "@commonAll": { "description": "Filter chip that clears the current filter" },
+
+  "discoveryNoProviders": "No providers found here yet.",
+  "@discoveryNoProviders": { "description": "Empty state for the provider list" },
+
+  "discoveryNoLocations": "None of these providers have shared a location yet.",
+  "@discoveryNoLocations": { "description": "Empty state for the providers map" },
+
+  "detailAbout": "About",
+  "@detailAbout": { "description": "Provider detail section title" },
+
+  "detailServicesOffered": "Services offered",
+  "@detailServicesOffered": { "description": "Provider detail section title" },
+
+  "detailPricing": "Pricing",
+  "@detailPricing": { "description": "Provider detail section title" },
+
+  "detailJobsDone": "Jobs done",
+  "@detailJobsDone": { "description": "Provider stat label" },
+
+  "detailExperience": "Experience",
+  "@detailExperience": { "description": "Provider stat label" },
+
+  "detailExperienceValue": "{years} yr",
+  "@detailExperienceValue": {
+    "description": "Years of experience value",
+    "placeholders": { "years": { "type": "int" } }
+  },
+
+  "detailAvailable": "Available",
+  "@detailAvailable": { "description": "Provider availability status" },
+
+  "detailBusy": "Busy",
+  "@detailBusy": { "description": "Provider availability status" },
+
+  "detailStatus": "Status",
+  "@detailStatus": { "description": "Provider stat label" },
+
+  "detailBaseFee": "Base fee",
+  "@detailBaseFee": { "description": "Pricing row label" },
+
+  "detailWorkFee": "Work fee",
+  "@detailWorkFee": { "description": "Pricing row label" },
+
+  "detailPerHourSuffix": "/ hour",
+  "@detailPerHourSuffix": { "description": "Suffix for an hourly rate" },
+
+  "detailTravel": "Travel",
+  "@detailTravel": { "description": "Pricing row label" },
+
+  "detailPerKmSuffix": "/ km",
+  "@detailPerKmSuffix": { "description": "Suffix for a per-kilometre travel fee" },
+
+  "detailPriceNote": "Final price is confirmed with a full breakdown before you book.",
+  "@detailPriceNote": { "description": "Note under the pricing card" },
+
+  "detailStartingFrom": "Starting from",
+  "@detailStartingFrom": { "description": "Label above the starting price in the book bar" },
+
+  "commonGoBack": "Go back",
+  "@commonGoBack": { "description": "Button to return to the previous screen" }
 }

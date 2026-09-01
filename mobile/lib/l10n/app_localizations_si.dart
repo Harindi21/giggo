@@ -164,4 +164,76 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get homeSeeProviders => 'මෙම කාණ්ඩයේ සේවා සපයන්නන් බලන්න';
+
+  @override
+  String get discoveryProviders => 'සේවා සපයන්නන්';
+
+  @override
+  String discoveryResultsFor(String query) {
+    return '\"$query\" සඳහා ප්‍රතිඵල';
+  }
+
+  @override
+  String get commonAll => 'සියල්ල';
+
+  @override
+  String get discoveryNoProviders => 'මෙහි තවම සේවා සපයන්නන් හමු නොවීය.';
+
+  @override
+  String get discoveryNoLocations =>
+      'මෙම සේවා සපයන්නන් කිසිවෙක් තවම ස්ථානයක් බෙදාගෙන නැත.';
+
+  @override
+  String get detailAbout => 'පිළිබඳව';
+
+  @override
+  String get detailServicesOffered => 'සපයන සේවා';
+
+  @override
+  String get detailPricing => 'මිල ගණන්';
+
+  @override
+  String get detailJobsDone => 'නිම කළ කාර්යයන්';
+
+  @override
+  String get detailExperience => 'පළපුරුද්ද';
+
+  @override
+  String detailExperienceValue(int years) {
+    return 'වසර $years';
+  }
+
+  @override
+  String get detailAvailable => 'ලබා ගත හැකි';
+
+  @override
+  String get detailBusy => 'කාර්යබහුලයි';
+
+  @override
+  String get detailStatus => 'තත්ත්වය';
+
+  @override
+  String get detailBaseFee => 'මූලික ගාස්තුව';
+
+  @override
+  String get detailWorkFee => 'වැඩ ගාස්තුව';
+
+  @override
+  String get detailPerHourSuffix => '/ පැයකට';
+
+  @override
+  String get detailTravel => 'ගමන්';
+
+  @override
+  String get detailPerKmSuffix => '/ කි.මී.';
+
+  @override
+  String get detailPriceNote =>
+      'වෙන්කරවා ගැනීමට පෙර සම්පූර්ණ විස්තරයක් සමඟ අවසාන මිල තහවුරු කෙරේ.';
+
+  @override
+  String get detailStartingFrom => 'ආරම්භක මිල';
+
+  @override
+  String get commonGoBack => 'ආපසු යන්න';
 }
