@@ -124,4 +124,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileAdminConsoleSub => 'Review provider verifications';
+
+  @override
+  String get homeExploreTitle => 'Explore your tasks';
+
+  @override
+  String get homeExploreSubtitle =>
+      'Track requested, ongoing and completed tasks in one place.';
+
+  @override
+  String get homeTipsTitle => 'Tips & Guides';
+
+  @override
+  String get homeTipsSubtitle =>
+      'Everything you need for booking, payments and safety.';
+
+  @override
+  String get homePromoTitle => 'Book a trusted professional';
+
+  @override
+  String get homePromoSubtitle => 'For any of your needs, without hesitation.';
+
+  @override
+  String get commonRecommendedForYou => 'Recommended for you';
+
+  @override
+  String get priceFrom => 'from';
+
+  @override
+  String get pricePrefix => 'Rs.';
+
+  @override
+  String get commonRetry => 'Retry';
+
+  @override
+  String get homeSkillsLoadError => 'Couldn\'t load services. Tap to retry';
+
+  @override
+  String get homeSeeProviders => 'See providers in this category';
 }

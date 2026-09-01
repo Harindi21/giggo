@@ -113,5 +113,41 @@
   "@profileAdminConsole": { "description": "Admin tile title" },
 
   "profileAdminConsoleSub": "Review provider verifications",
-  "@profileAdminConsoleSub": { "description": "Admin tile subtitle" }
+  "@profileAdminConsoleSub": { "description": "Admin tile subtitle" },
+
+  "homeExploreTitle": "Explore your tasks",
+  "@homeExploreTitle": { "description": "Home explore-tasks card title" },
+
+  "homeExploreSubtitle": "Track requested, ongoing and completed tasks in one place.",
+  "@homeExploreSubtitle": { "description": "Home explore-tasks card subtitle" },
+
+  "homeTipsTitle": "Tips & Guides",
+  "@homeTipsTitle": { "description": "Home knowledge card title" },
+
+  "homeTipsSubtitle": "Everything you need for booking, payments and safety.",
+  "@homeTipsSubtitle": { "description": "Home knowledge card subtitle" },
+
+  "homePromoTitle": "Book a trusted professional",
+  "@homePromoTitle": { "description": "Home promo card title" },
+
+  "homePromoSubtitle": "For any of your needs, without hesitation.",
+  "@homePromoSubtitle": { "description": "Home promo card subtitle" },
+
+  "commonRecommendedForYou": "Recommended for you",
+  "@commonRecommendedForYou": { "description": "Recommendation section heading" },
+
+  "priceFrom": "from",
+  "@priceFrom": { "description": "Label under a starting price" },
+
+  "pricePrefix": "Rs.",
+  "@pricePrefix": { "description": "Currency prefix for Sri Lankan Rupees" },
+
+  "commonRetry": "Retry",
+  "@commonRetry": { "description": "Retry button" },
+
+  "homeSkillsLoadError": "Couldn't load services. Tap to retry",
+  "@homeSkillsLoadError": { "description": "Shown when a category's skills fail to load" },
+
+  "homeSeeProviders": "See providers in this category",
+  "@homeSeeProviders": { "description": "Shown when a category has no listed skills" }
 }

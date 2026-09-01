@@ -42,5 +42,18 @@
   "profileActionNeeded": "ක්‍රියාමාර්ගයක් අවශ්‍යයි",
   "profileNotVerified": "සත්‍යාපනය කර නැත",
   "profileAdminConsole": "පරිපාලක කොන්සෝලය",
-  "profileAdminConsoleSub": "සේවා සපයන්නන්ගේ සත්‍යාපන සමාලෝචනය කරන්න"
+  "profileAdminConsoleSub": "සේවා සපයන්නන්ගේ සත්‍යාපන සමාලෝචනය කරන්න",
+
+  "homeExploreTitle": "ඔබේ කාර්යයන් ගවේෂණය කරන්න",
+  "homeExploreSubtitle": "ඉල්ලූ, ක්‍රියාත්මක සහ සම්පූර්ණ කළ කාර්යයන් එකම තැනක නිරීක්ෂණය කරන්න.",
+  "homeTipsTitle": "උපදෙස් සහ මාර්ගෝපදේශ",
+  "homeTipsSubtitle": "වෙන්කරවා ගැනීම්, ගෙවීම් සහ ආරක්ෂාව සඳහා ඔබට අවශ්‍ය සියල්ල.",
+  "homePromoTitle": "විශ්වාසනීය වෘත්තිකයෙකු වෙන්කරවා ගන්න",
+  "homePromoSubtitle": "ඔබේ ඕනෑම අවශ්‍යතාවයක් සඳහා, පසුබට නොවී.",
+  "commonRecommendedForYou": "ඔබ සඳහා නිර්දේශිත",
+  "priceFrom": "සිට",
+  "pricePrefix": "රු.",
+  "commonRetry": "නැවත උත්සාහ කරන්න",
+  "homeSkillsLoadError": "සේවා පූරණය කළ නොහැකි විය. නැවත උත්සාහ කිරීමට තට්ටු කරන්න",
+  "homeSeeProviders": "මෙම කාණ්ඩයේ සේවා සපයන්නන් බලන්න"
 }

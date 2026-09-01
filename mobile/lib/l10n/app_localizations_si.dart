@@ -125,4 +125,43 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get profileAdminConsoleSub =>
       'සේවා සපයන්නන්ගේ සත්‍යාපන සමාලෝචනය කරන්න';
+
+  @override
+  String get homeExploreTitle => 'ඔබේ කාර්යයන් ගවේෂණය කරන්න';
+
+  @override
+  String get homeExploreSubtitle =>
+      'ඉල්ලූ, ක්‍රියාත්මක සහ සම්පූර්ණ කළ කාර්යයන් එකම තැනක නිරීක්ෂණය කරන්න.';
+
+  @override
+  String get homeTipsTitle => 'උපදෙස් සහ මාර්ගෝපදේශ';
+
+  @override
+  String get homeTipsSubtitle =>
+      'වෙන්කරවා ගැනීම්, ගෙවීම් සහ ආරක්ෂාව සඳහා ඔබට අවශ්‍ය සියල්ල.';
+
+  @override
+  String get homePromoTitle => 'විශ්වාසනීය වෘත්තිකයෙකු වෙන්කරවා ගන්න';
+
+  @override
+  String get homePromoSubtitle => 'ඔබේ ඕනෑම අවශ්‍යතාවයක් සඳහා, පසුබට නොවී.';
+
+  @override
+  String get commonRecommendedForYou => 'ඔබ සඳහා නිර්දේශිත';
+
+  @override
+  String get priceFrom => 'සිට';
+
+  @override
+  String get pricePrefix => 'රු.';
+
+  @override
+  String get commonRetry => 'නැවත උත්සාහ කරන්න';
+
+  @override
+  String get homeSkillsLoadError =>
+      'සේවා පූරණය කළ නොහැකි විය. නැවත උත්සාහ කිරීමට තට්ටු කරන්න';
+
+  @override
+  String get homeSeeProviders => 'මෙම කාණ්ඩයේ සේවා සපයන්නන් බලන්න';
 }
