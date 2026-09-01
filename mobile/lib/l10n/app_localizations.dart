@@ -133,6 +133,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View Tasks'**
   String get viewTasks;
+
+  /// Bottom navigation label
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get navHome;
+
+  /// Bottom navigation label
+  ///
+  /// In en, this message translates to:
+  /// **'Shop'**
+  String get navShop;
+
+  /// Bottom navigation label
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks'**
+  String get navTasks;
+
+  /// Bottom navigation label
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get navProfile;
+
+  /// Language setting row title
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguage;
+
+  /// Language chooser sheet title
+  ///
+  /// In en, this message translates to:
+  /// **'Choose language'**
+  String get settingsChooseLanguage;
+
+  /// English language option label
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// Sinhala language option label (shown in Sinhala in both locales)
+  ///
+  /// In en, this message translates to:
+  /// **'සිංහල'**
+  String get languageSinhala;
+
+  /// Profile field label
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get profileName;
+
+  /// Profile field label
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get profileEmail;
+
+  /// Profile field label
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get profilePhone;
+
+  /// Shown when a profile field is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get profileNotSet;
+
+  /// Dialog cancel button
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get commonCancel;
+
+  /// Dialog save button
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get commonSave;
+
+  /// Edit-name dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit name'**
+  String get profileEditName;
+
+  /// Full-name text field label
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get profileFullName;
+
+  /// Snackbar after saving a new name
+  ///
+  /// In en, this message translates to:
+  /// **'Name updated'**
+  String get profileNameUpdated;
+
+  /// Provider profile tile title
+  ///
+  /// In en, this message translates to:
+  /// **'My provider profile'**
+  String get profileMyProviderProfile;
+
+  /// Provider profile tile subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Bio, rates, service area, skills & availability'**
+  String get profileMyProviderProfileSub;
+
+  /// Earnings tile title
+  ///
+  /// In en, this message translates to:
+  /// **'Earnings'**
+  String get profileEarnings;
+
+  /// Earnings tile subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Balance, withdrawals & payment history'**
+  String get profileEarningsSub;
+
+  /// Demand insights tile title
+  ///
+  /// In en, this message translates to:
+  /// **'Demand insights'**
+  String get profileDemandInsights;
+
+  /// Demand insights tile subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly demand & next-week forecast for your services'**
+  String get profileDemandInsightsSub;
+
+  /// Working hours tile title
+  ///
+  /// In en, this message translates to:
+  /// **'Working hours'**
+  String get profileWorkingHours;
+
+  /// Working hours tile subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Set the days & times you accept bookings'**
+  String get profileWorkingHoursSub;
+
+  /// Verification tile title
+  ///
+  /// In en, this message translates to:
+  /// **'Verification'**
+  String get profileVerification;
+
+  /// KYC status
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get profileVerified;
+
+  /// KYC status
+  ///
+  /// In en, this message translates to:
+  /// **'Under review'**
+  String get profileUnderReview;
+
+  /// KYC status
+  ///
+  /// In en, this message translates to:
+  /// **'Action needed'**
+  String get profileActionNeeded;
+
+  /// KYC status
+  ///
+  /// In en, this message translates to:
+  /// **'Not verified'**
+  String get profileNotVerified;
+
+  /// Admin tile title
+  ///
+  /// In en, this message translates to:
+  /// **'Admin console'**
+  String get profileAdminConsole;
+
+  /// Admin tile subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Review provider verifications'**
+  String get profileAdminConsoleSub;
 }
 
 class _AppLocalizationsDelegate

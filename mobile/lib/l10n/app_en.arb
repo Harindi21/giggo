@@ -2,32 +2,116 @@
   "@@locale": "en",
 
   "appTitle": "GIGGO",
-  "@appTitle": {
-    "description": "Application name"
-  },
+  "@appTitle": { "description": "Application name" },
 
   "homeGreeting": "Find trusted professionals near you",
-  "@homeGreeting": {
-    "description": "Subtitle shown on the home screen"
-  },
+  "@homeGreeting": { "description": "Subtitle shown on the home screen" },
 
   "searchHint": "Search services",
-  "@searchHint": {
-    "description": "Placeholder in the search box"
-  },
+  "@searchHint": { "description": "Placeholder in the search box" },
 
   "serviceCategories": "Service Categories",
-  "@serviceCategories": {
-    "description": "Section heading on home"
-  },
+  "@serviceCategories": { "description": "Section heading on home" },
 
   "bookNow": "Book Now",
-  "@bookNow": {
-    "description": "Primary call-to-action button"
-  },
+  "@bookNow": { "description": "Primary call-to-action button" },
 
   "viewTasks": "View Tasks",
-  "@viewTasks": {
-    "description": "Button to open the task list"
-  }
+  "@viewTasks": { "description": "Button to open the task list" },
+
+  "navHome": "Home",
+  "@navHome": { "description": "Bottom navigation label" },
+
+  "navShop": "Shop",
+  "@navShop": { "description": "Bottom navigation label" },
+
+  "navTasks": "Tasks",
+  "@navTasks": { "description": "Bottom navigation label" },
+
+  "navProfile": "Profile",
+  "@navProfile": { "description": "Bottom navigation label" },
+
+  "settingsLanguage": "Language",
+  "@settingsLanguage": { "description": "Language setting row title" },
+
+  "settingsChooseLanguage": "Choose language",
+  "@settingsChooseLanguage": { "description": "Language chooser sheet title" },
+
+  "languageEnglish": "English",
+  "@languageEnglish": { "description": "English language option label" },
+
+  "languageSinhala": "සිංහල",
+  "@languageSinhala": { "description": "Sinhala language option label (shown in Sinhala in both locales)" },
+
+  "profileName": "Name",
+  "@profileName": { "description": "Profile field label" },
+
+  "profileEmail": "Email",
+  "@profileEmail": { "description": "Profile field label" },
+
+  "profilePhone": "Phone",
+  "@profilePhone": { "description": "Profile field label" },
+
+  "profileNotSet": "Not set",
+  "@profileNotSet": { "description": "Shown when a profile field is empty" },
+
+  "commonCancel": "Cancel",
+  "@commonCancel": { "description": "Dialog cancel button" },
+
+  "commonSave": "Save",
+  "@commonSave": { "description": "Dialog save button" },
+
+  "profileEditName": "Edit name",
+  "@profileEditName": { "description": "Edit-name dialog title" },
+
+  "profileFullName": "Full name",
+  "@profileFullName": { "description": "Full-name text field label" },
+
+  "profileNameUpdated": "Name updated",
+  "@profileNameUpdated": { "description": "Snackbar after saving a new name" },
+
+  "profileMyProviderProfile": "My provider profile",
+  "@profileMyProviderProfile": { "description": "Provider profile tile title" },
+
+  "profileMyProviderProfileSub": "Bio, rates, service area, skills & availability",
+  "@profileMyProviderProfileSub": { "description": "Provider profile tile subtitle" },
+
+  "profileEarnings": "Earnings",
+  "@profileEarnings": { "description": "Earnings tile title" },
+
+  "profileEarningsSub": "Balance, withdrawals & payment history",
+  "@profileEarningsSub": { "description": "Earnings tile subtitle" },
+
+  "profileDemandInsights": "Demand insights",
+  "@profileDemandInsights": { "description": "Demand insights tile title" },
+
+  "profileDemandInsightsSub": "Weekly demand & next-week forecast for your services",
+  "@profileDemandInsightsSub": { "description": "Demand insights tile subtitle" },
+
+  "profileWorkingHours": "Working hours",
+  "@profileWorkingHours": { "description": "Working hours tile title" },
+
+  "profileWorkingHoursSub": "Set the days & times you accept bookings",
+  "@profileWorkingHoursSub": { "description": "Working hours tile subtitle" },
+
+  "profileVerification": "Verification",
+  "@profileVerification": { "description": "Verification tile title" },
+
+  "profileVerified": "Verified",
+  "@profileVerified": { "description": "KYC status" },
+
+  "profileUnderReview": "Under review",
+  "@profileUnderReview": { "description": "KYC status" },
+
+  "profileActionNeeded": "Action needed",
+  "@profileActionNeeded": { "description": "KYC status" },
+
+  "profileNotVerified": "Not verified",
+  "@profileNotVerified": { "description": "KYC status" },
+
+  "profileAdminConsole": "Admin console",
+  "@profileAdminConsole": { "description": "Admin tile title" },
+
+  "profileAdminConsoleSub": "Review provider verifications",
+  "@profileAdminConsoleSub": { "description": "Admin tile subtitle" }
 }

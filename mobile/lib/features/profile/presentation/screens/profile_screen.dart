@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
+import '../../../../core/l10n/locale_controller.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/giggo_wordmark.dart';
@@ -18,6 +20,7 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(profileProvider);
+    final l = AppLocalizations.of(context);
 
     return Scaffold(
       body: profileAsync.when(
@@ -62,12 +65,15 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 28),
                   _field(
-                    'Name',
+                    l.profileName,
                     user.fullName,
                     onEdit: () => _editName(context, ref, user.fullName),
                   ),
-                  _field('Email', user.email),
-                  _field('Phone', user.phone.isEmpty ? 'Not set' : user.phone),
+                  _field(l.profileEmail, user.email),
+                  _field(
+                    l.profilePhone,
+                    user.phone.isEmpty ? l.profileNotSet : user.phone,
+                  ),
                   if (user.role == 'PROVIDER') ...[
                     const SizedBox(height: 12),
                     _providerProfileTile(context),
@@ -84,6 +90,8 @@ class ProfileScreen extends ConsumerWidget {
                     const SizedBox(height: 12),
                     _adminTile(context),
                   ],
+                  const SizedBox(height: 12),
+                  _languageTile(context, ref),
                 ],
               ),
             ),
@@ -208,51 +216,56 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _demandTile(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return _navTile(
       context,
       Icons.insights_outlined,
-      'Demand insights',
-      'Weekly demand & next-week forecast for your services',
+      l.profileDemandInsights,
+      l.profileDemandInsightsSub,
       '/demand',
     );
   }
 
   Widget _availabilityTile(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return _navTile(
       context,
       Icons.schedule_outlined,
-      'Working hours',
-      'Set the days & times you accept bookings',
+      l.profileWorkingHours,
+      l.profileWorkingHoursSub,
       '/availability',
     );
   }
 
   Widget _earningsTile(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return _navTile(
       context,
       Icons.account_balance_wallet_outlined,
-      'Earnings',
-      'Balance, withdrawals & payment history',
+      l.profileEarnings,
+      l.profileEarningsSub,
       '/earnings',
     );
   }
 
   Widget _providerProfileTile(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return _navTile(
       context,
       Icons.badge_outlined,
-      'My provider profile',
-      'Bio, rates, service area, skills & availability',
+      l.profileMyProviderProfile,
+      l.profileMyProviderProfileSub,
       '/provider-profile',
     );
   }
 
   Widget _adminTile(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return _navTile(
       context,
       Icons.admin_panel_settings_outlined,
-      'Admin console',
-      'Review provider verifications',
+      l.profileAdminConsole,
+      l.profileAdminConsoleSub,
       '/admin',
     );
   }
@@ -289,12 +302,21 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _verificationTile(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final kyc = ref.watch(myKycProvider).value;
     final (String hint, Color color, IconData icon) = switch (kyc?.status) {
-      'APPROVED' => ('Verified', AppColors.success, Icons.verified),
-      'PENDING' => ('Under review', AppColors.warning, Icons.hourglass_top),
-      'REJECTED' => ('Action needed', AppColors.error, Icons.error_outline),
-      _ => ('Not verified', AppColors.textMuted, Icons.verified_outlined),
+      'APPROVED' => (l.profileVerified, AppColors.success, Icons.verified),
+      'PENDING' => (
+        l.profileUnderReview,
+        AppColors.warning,
+        Icons.hourglass_top,
+      ),
+      'REJECTED' => (
+        l.profileActionNeeded,
+        AppColors.error,
+        Icons.error_outline,
+      ),
+      _ => (l.profileNotVerified, AppColors.textMuted, Icons.verified_outlined),
     };
     return Card(
       child: ListTile(
@@ -303,9 +325,9 @@ class ProfileScreen extends ConsumerWidget {
           backgroundColor: color.withValues(alpha: 0.12),
           child: Icon(icon, color: color),
         ),
-        title: const Text(
-          'Verification',
-          style: TextStyle(
+        title: Text(
+          l.profileVerification,
+          style: const TextStyle(
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
           ),
@@ -317,30 +339,117 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
+  /// Language switcher (English / සිංහල), persisted across launches.
+  Widget _languageTile(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
+    final current =
+        ref.watch(localeControllerProvider)?.languageCode ??
+        Localizations.localeOf(context).languageCode;
+    final currentLabel = current == 'si'
+        ? l.languageSinhala
+        : l.languageEnglish;
+    return Card(
+      child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        leading: const CircleAvatar(
+          backgroundColor: AppColors.primary,
+          child: Icon(Icons.translate, color: Colors.white),
+        ),
+        title: Text(
+          l.settingsLanguage,
+          style: const TextStyle(
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        subtitle: Text(
+          currentLabel,
+          style: const TextStyle(color: AppColors.textMuted),
+        ),
+        trailing: const Icon(Icons.chevron_right, color: AppColors.textMuted),
+        onTap: () => _showLanguagePicker(context, ref),
+      ),
+    );
+  }
+
+  Future<void> _showLanguagePicker(BuildContext context, WidgetRef ref) async {
+    final l = AppLocalizations.of(context);
+    final current =
+        ref.read(localeControllerProvider)?.languageCode ??
+        Localizations.localeOf(context).languageCode;
+    await showModalBottomSheet<void>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 6),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  l.settingsChooseLanguage,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+            ),
+            _languageOption(ctx, ref, 'en', l.languageEnglish, current == 'en'),
+            _languageOption(ctx, ref, 'si', l.languageSinhala, current == 'si'),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _languageOption(
+    BuildContext sheetContext,
+    WidgetRef ref,
+    String code,
+    String label,
+    bool selected,
+  ) {
+    return ListTile(
+      title: Text(label),
+      trailing: selected
+          ? const Icon(Icons.check, color: AppColors.accent)
+          : null,
+      onTap: () {
+        ref.read(localeControllerProvider.notifier).setLocale(Locale(code));
+        Navigator.pop(sheetContext);
+      },
+    );
+  }
+
   Future<void> _editName(
     BuildContext context,
     WidgetRef ref,
     String current,
   ) async {
+    final l = AppLocalizations.of(context);
     final controller = TextEditingController(text: current);
     final newName = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Edit name'),
+        title: Text(l.profileEditName),
         content: TextField(
           controller: controller,
           autofocus: true,
           textCapitalization: TextCapitalization.words,
-          decoration: const InputDecoration(labelText: 'Full name'),
+          decoration: InputDecoration(labelText: l.profileFullName),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(l.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: const Text('Save'),
+            child: Text(l.commonSave),
           ),
         ],
       ),
@@ -354,7 +463,7 @@ class ProfileScreen extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Name updated')));
+        ).showSnackBar(SnackBar(content: Text(l.profileNameUpdated)));
       }
     } on ApiException catch (e) {
       if (context.mounted) {
