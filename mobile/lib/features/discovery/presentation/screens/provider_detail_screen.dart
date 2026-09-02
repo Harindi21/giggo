@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/provider_avatar.dart';
@@ -33,6 +34,7 @@ class ProviderDetailScreen extends ConsumerWidget {
   }
 
   Widget _content(BuildContext context, ProviderDetail p) {
+    final l = AppLocalizations.of(context);
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(child: _header(context, p)),
@@ -42,10 +44,10 @@ class ProviderDetailScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _statsRow(p),
+                _statsRow(l, p),
                 const SizedBox(height: 20),
                 if (p.bio != null && p.bio!.isNotEmpty) ...[
-                  _sectionTitle('About'),
+                  _sectionTitle(l.detailAbout),
                   const SizedBox(height: 6),
                   Text(
                     p.bio!,
@@ -57,7 +59,7 @@ class ProviderDetailScreen extends ConsumerWidget {
                   const SizedBox(height: 20),
                 ],
                 if (p.skills.isNotEmpty) ...[
-                  _sectionTitle('Services offered'),
+                  _sectionTitle(l.detailServicesOffered),
                   const SizedBox(height: 10),
                   Wrap(
                     spacing: 8,
@@ -68,9 +70,9 @@ class ProviderDetailScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 20),
                 ],
-                _sectionTitle('Pricing'),
+                _sectionTitle(l.detailPricing),
                 const SizedBox(height: 10),
-                _pricingCard(p),
+                _pricingCard(l, p),
                 const SizedBox(height: 20),
                 RatingBreakdownSection(providerId: p.id),
                 ProviderReviewsSection(providerId: p.id),
@@ -191,14 +193,14 @@ class ProviderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _statsRow(ProviderDetail p) {
+  Widget _statsRow(AppLocalizations l, ProviderDetail p) {
     return Row(
       children: [
-        _stat('${p.jobsCompleted}', 'Jobs done'),
-        _stat('${p.yearsExperience} yr', 'Experience'),
+        _stat('${p.jobsCompleted}', l.detailJobsDone),
+        _stat(l.detailExperienceValue(p.yearsExperience), l.detailExperience),
         _stat(
-          p.available ? 'Available' : 'Busy',
-          'Status',
+          p.available ? l.detailAvailable : l.detailBusy,
+          l.detailStatus,
           color: p.available ? AppColors.success : AppColors.warning,
         ),
       ],
@@ -227,7 +229,7 @@ class ProviderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _pricingCard(ProviderDetail p) {
+  Widget _pricingCard(AppLocalizations l, ProviderDetail p) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -236,18 +238,25 @@ class ProviderDetailScreen extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          _priceRow('Base fee', 'Rs. ${p.basePrice.toStringAsFixed(0)}'),
-          const SizedBox(height: 8),
           _priceRow(
-            'Work fee',
-            'Rs. ${p.hourlyRate.toStringAsFixed(0)} / hour',
+            l.detailBaseFee,
+            '${l.pricePrefix} ${p.basePrice.toStringAsFixed(0)}',
           ),
           const SizedBox(height: 8),
-          _priceRow('Travel', 'Rs. 50 / km', muted: true),
+          _priceRow(
+            l.detailWorkFee,
+            '${l.pricePrefix} ${p.hourlyRate.toStringAsFixed(0)} ${l.detailPerHourSuffix}',
+          ),
+          const SizedBox(height: 8),
+          _priceRow(
+            l.detailTravel,
+            '${l.pricePrefix} 50 ${l.detailPerKmSuffix}',
+            muted: true,
+          ),
           const Divider(height: 20),
-          const Text(
-            'Final price is confirmed with a full breakdown before you book.',
-            style: TextStyle(fontSize: 11.5, color: AppColors.textMuted),
+          Text(
+            l.detailPriceNote,
+            style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted),
           ),
         ],
       ),
@@ -276,6 +285,7 @@ class ProviderDetailScreen extends ConsumerWidget {
   }
 
   Widget _bookBar(BuildContext context, ProviderDetail p) {
+    final l = AppLocalizations.of(context);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -286,12 +296,15 @@ class ProviderDetailScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Starting from',
-                    style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+                  Text(
+                    l.detailStartingFrom,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textMuted,
+                    ),
                   ),
                   Text(
-                    'Rs. ${p.basePrice.toStringAsFixed(0)}',
+                    '${l.pricePrefix} ${p.basePrice.toStringAsFixed(0)}',
                     style: const TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 18,
@@ -306,7 +319,7 @@ class ProviderDetailScreen extends ConsumerWidget {
                 onPressed: p.available
                     ? () => context.push('/book/${p.id}')
                     : null,
-                child: const Text('Book Now'),
+                child: Text(l.bookNow),
               ),
             ),
           ],
@@ -324,26 +337,33 @@ class ProviderDetailScreen extends ConsumerWidget {
     ),
   );
 
-  Widget _error(BuildContext context, String msg) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.error_outline, color: AppColors.textMuted, size: 40),
-          const SizedBox(height: 8),
-          Text(
-            msg,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.textMuted),
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton(
-            onPressed: () => Navigator.of(context).maybePop(),
-            child: const Text('Go back'),
-          ),
-        ],
+  Widget _error(BuildContext context, String msg) {
+    final l = AppLocalizations.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.error_outline,
+              color: AppColors.textMuted,
+              size: 40,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              msg,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: () => Navigator.of(context).maybePop(),
+              child: Text(l.commonGoBack),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../data/models/provider_models.dart';
@@ -107,11 +108,12 @@ class _ProviderListScreenState extends ConsumerState<ProviderListScreen> {
   }
 
   Widget _header() {
+    final l = AppLocalizations.of(context);
     final crumb = widget.categoryName != null
-        ? 'Service Categories › ${widget.categoryName}'
+        ? '${l.serviceCategories} › ${widget.categoryName}'
         : (widget.initialQuery != null
-              ? 'Results for “${widget.initialQuery}”'
-              : 'Providers');
+              ? l.discoveryResultsFor(widget.initialQuery!)
+              : l.discoveryProviders);
 
     return Container(
       decoration: const BoxDecoration(
@@ -194,7 +196,7 @@ class _ProviderListScreenState extends ConsumerState<ProviderListScreen> {
       decoration: InputDecoration(
         fillColor: Colors.white,
         filled: true,
-        hintText: 'Search services',
+        hintText: AppLocalizations.of(context).searchHint,
         hintStyle: const TextStyle(color: AppColors.textMuted),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -260,7 +262,7 @@ class _ProviderListScreenState extends ConsumerState<ProviderListScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             children: [
               _chip(
-                'All',
+                AppLocalizations.of(context).commonAll,
                 _skillId == null,
                 () => setState(() => _skillId = null),
               ),
@@ -299,14 +301,14 @@ class _ProviderListScreenState extends ConsumerState<ProviderListScreen> {
   }
 
   Widget _empty() => ListView(
-    children: const [
-      SizedBox(height: 80),
-      Icon(Icons.search_off, size: 48, color: AppColors.textMuted),
-      SizedBox(height: 12),
+    children: [
+      const SizedBox(height: 80),
+      const Icon(Icons.search_off, size: 48, color: AppColors.textMuted),
+      const SizedBox(height: 12),
       Center(
         child: Text(
-          'No providers found here yet.',
-          style: TextStyle(color: AppColors.textMuted),
+          AppLocalizations.of(context).discoveryNoProviders,
+          style: const TextStyle(color: AppColors.textMuted),
         ),
       ),
     ],
@@ -326,7 +328,10 @@ class _ProviderListScreenState extends ConsumerState<ProviderListScreen> {
             style: const TextStyle(color: AppColors.textMuted),
           ),
           const SizedBox(height: 12),
-          OutlinedButton(onPressed: onRetry, child: const Text('Retry')),
+          OutlinedButton(
+            onPressed: onRetry,
+            child: Text(AppLocalizations.of(context).commonRetry),
+          ),
         ],
       ),
     ),
@@ -345,13 +350,13 @@ class _ProvidersMap extends StatelessWidget {
   Widget build(BuildContext context) {
     final located = providers.where((p) => p.hasLocation).toList();
     if (located.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           child: Text(
-            'None of these providers have shared a location yet.',
+            AppLocalizations.of(context).discoveryNoLocations,
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.textMuted),
+            style: const TextStyle(color: AppColors.textMuted),
           ),
         ),
       );

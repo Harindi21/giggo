@@ -397,6 +397,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'See providers in this category'**
   String get homeSeeProviders;
+
+  /// Fallback header for the provider list
+  ///
+  /// In en, this message translates to:
+  /// **'Providers'**
+  String get discoveryProviders;
+
+  /// Search results breadcrumb
+  ///
+  /// In en, this message translates to:
+  /// **'Results for \"{query}\"'**
+  String discoveryResultsFor(String query);
+
+  /// Filter chip that clears the current filter
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get commonAll;
+
+  /// Empty state for the provider list
+  ///
+  /// In en, this message translates to:
+  /// **'No providers found here yet.'**
+  String get discoveryNoProviders;
+
+  /// Empty state for the providers map
+  ///
+  /// In en, this message translates to:
+  /// **'None of these providers have shared a location yet.'**
+  String get discoveryNoLocations;
+
+  /// Provider detail section title
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get detailAbout;
+
+  /// Provider detail section title
+  ///
+  /// In en, this message translates to:
+  /// **'Services offered'**
+  String get detailServicesOffered;
+
+  /// Provider detail section title
+  ///
+  /// In en, this message translates to:
+  /// **'Pricing'**
+  String get detailPricing;
+
+  /// Provider stat label
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs done'**
+  String get detailJobsDone;
+
+  /// Provider stat label
+  ///
+  /// In en, this message translates to:
+  /// **'Experience'**
+  String get detailExperience;
+
+  /// Years of experience value
+  ///
+  /// In en, this message translates to:
+  /// **'{years} yr'**
+  String detailExperienceValue(int years);
+
+  /// Provider availability status
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get detailAvailable;
+
+  /// Provider availability status
+  ///
+  /// In en, this message translates to:
+  /// **'Busy'**
+  String get detailBusy;
+
+  /// Provider stat label
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get detailStatus;
+
+  /// Pricing row label
+  ///
+  /// In en, this message translates to:
+  /// **'Base fee'**
+  String get detailBaseFee;
+
+  /// Pricing row label
+  ///
+  /// In en, this message translates to:
+  /// **'Work fee'**
+  String get detailWorkFee;
+
+  /// Suffix for an hourly rate
+  ///
+  /// In en, this message translates to:
+  /// **'/ hour'**
+  String get detailPerHourSuffix;
+
+  /// Pricing row label
+  ///
+  /// In en, this message translates to:
+  /// **'Travel'**
+  String get detailTravel;
+
+  /// Suffix for a per-kilometre travel fee
+  ///
+  /// In en, this message translates to:
+  /// **'/ km'**
+  String get detailPerKmSuffix;
+
+  /// Note under the pricing card
+  ///
+  /// In en, this message translates to:
+  /// **'Final price is confirmed with a full breakdown before you book.'**
+  String get detailPriceNote;
+
+  /// Label above the starting price in the book bar
+  ///
+  /// In en, this message translates to:
+  /// **'Starting from'**
+  String get detailStartingFrom;
+
+  /// Button to return to the previous screen
+  ///
+  /// In en, this message translates to:
+  /// **'Go back'**
+  String get commonGoBack;
 }
 
 class _AppLocalizationsDelegate

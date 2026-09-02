@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/provider_avatar.dart';
@@ -20,6 +21,7 @@ class ProviderCardTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final subtitle = [
       provider.district,
       provider.headline,
@@ -107,7 +109,7 @@ class ProviderCardTile extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      child: const Text('Book Now'),
+                      child: Text(l.bookNow),
                     ),
                   ),
                 ],

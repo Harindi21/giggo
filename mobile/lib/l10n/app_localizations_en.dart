@@ -162,4 +162,76 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeSeeProviders => 'See providers in this category';
+
+  @override
+  String get discoveryProviders => 'Providers';
+
+  @override
+  String discoveryResultsFor(String query) {
+    return 'Results for \"$query\"';
+  }
+
+  @override
+  String get commonAll => 'All';
+
+  @override
+  String get discoveryNoProviders => 'No providers found here yet.';
+
+  @override
+  String get discoveryNoLocations =>
+      'None of these providers have shared a location yet.';
+
+  @override
+  String get detailAbout => 'About';
+
+  @override
+  String get detailServicesOffered => 'Services offered';
+
+  @override
+  String get detailPricing => 'Pricing';
+
+  @override
+  String get detailJobsDone => 'Jobs done';
+
+  @override
+  String get detailExperience => 'Experience';
+
+  @override
+  String detailExperienceValue(int years) {
+    return '$years yr';
+  }
+
+  @override
+  String get detailAvailable => 'Available';
+
+  @override
+  String get detailBusy => 'Busy';
+
+  @override
+  String get detailStatus => 'Status';
+
+  @override
+  String get detailBaseFee => 'Base fee';
+
+  @override
+  String get detailWorkFee => 'Work fee';
+
+  @override
+  String get detailPerHourSuffix => '/ hour';
+
+  @override
+  String get detailTravel => 'Travel';
+
+  @override
+  String get detailPerKmSuffix => '/ km';
+
+  @override
+  String get detailPriceNote =>
+      'Final price is confirmed with a full breakdown before you book.';
+
+  @override
+  String get detailStartingFrom => 'Starting from';
+
+  @override
+  String get commonGoBack => 'Go back';
 }
