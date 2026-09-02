@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile/features/discovery/data/models/provider_models.dart';
 import 'package:mobile/features/discovery/presentation/widgets/provider_card_tile.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 ProviderCard _card({bool verified = true}) => ProviderCard(
   id: 'pp1',
@@ -18,13 +19,15 @@ ProviderCard _card({bool verified = true}) => ProviderCard(
   verified: verified,
 );
 
+Widget _wrap(Widget child) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  supportedLocales: AppLocalizations.supportedLocales,
+  home: Scaffold(body: child),
+);
+
 void main() {
   testWidgets('shows name, location and a Book Now action', (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(body: ProviderCardTile(provider: _card())),
-      ),
-    );
+    await tester.pumpWidget(_wrap(ProviderCardTile(provider: _card())));
     expect(find.text('Kamal Silva'), findsOneWidget);
     expect(find.text('Colombo'), findsOneWidget);
     expect(find.text('Book Now'), findsOneWidget);
@@ -35,11 +38,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: ProviderCardTile(provider: _card(verified: false)),
-        ),
-      ),
+      _wrap(ProviderCardTile(provider: _card(verified: false))),
     );
     expect(find.byIcon(Icons.verified), findsNothing);
   });
