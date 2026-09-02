@@ -341,4 +341,174 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get unitHoursShort => 'පැ';
+
+  @override
+  String get commonPayment => 'ගෙවීම';
+
+  @override
+  String get bdYourBooking => 'ඔබේ වෙන්කරවා ගැනීම';
+
+  @override
+  String bdWithProvider(String name) {
+    return '$name සමඟ';
+  }
+
+  @override
+  String get bdProgress => 'ප්‍රගතිය';
+
+  @override
+  String get bdBookingDetails => 'වෙන්කරවා ගැනීමේ විස්තර';
+
+  @override
+  String get bdPrice => 'මිල';
+
+  @override
+  String get bdProblemTitle => 'මෙම කාර්යයේ ගැටලුවක්ද?';
+
+  @override
+  String get statusRequested => 'ඉල්ලා ඇත';
+
+  @override
+  String get statusRequestedSub => 'සේවා සපයන්නා පිළිගැනීමට බලා සිටී';
+
+  @override
+  String get statusAccepted => 'පිළිගත්තා';
+
+  @override
+  String get statusAcceptedSub => 'සේවා සපයන්නා ඔබේ ඉල්ලීම පිළිගත්තා';
+
+  @override
+  String get statusEnRoute => 'පැමිණෙමින්';
+
+  @override
+  String get statusEnRouteSub => 'සේවා සපයන්නා ඔබ වෙත පැමිණෙමින් සිටී';
+
+  @override
+  String get statusStarted => 'ක්‍රියාත්මකයි';
+
+  @override
+  String get statusStartedSub => 'වැඩ ආරම්භ විය';
+
+  @override
+  String get statusCompleted => 'සම්පූර්ණයි';
+
+  @override
+  String get statusCompletedSub => 'වැඩ අවසන් විය';
+
+  @override
+  String get statusRated => 'සමාලෝචනය කළා';
+
+  @override
+  String get statusRatedSub => 'ඔබ සමාලෝචනයක් තැබුවා';
+
+  @override
+  String get statusPaid => 'ගෙවා ඇත';
+
+  @override
+  String get statusPaidSub => 'ගෙවීම නිරාකරණය විය';
+
+  @override
+  String get statusCancelled => 'අවලංගු කළා';
+
+  @override
+  String get statusCancelledSub => 'මෙම වෙන්කරවා ගැනීම අවලංගු කරන ලදී';
+
+  @override
+  String get statusDeclined => 'ප්‍රතික්ෂේප කළා';
+
+  @override
+  String get statusDeclinedSub => 'සේවා සපයන්නා ඉල්ලීම ප්‍රතික්ෂේප කළා';
+
+  @override
+  String get statusExpired => 'කල් ඉකුත් විය';
+
+  @override
+  String get statusExpiredSub =>
+      'සේවා සපයන්නා නියමිත වේලාවට ප්‍රතිචාර දැක්වූයේ නැත';
+
+  @override
+  String get bdRowEstimated => 'ඇස්තමේන්තුව';
+
+  @override
+  String get bdRowTask => 'කාර්යය';
+
+  @override
+  String get bdRowAddress => 'ලිපිනය';
+
+  @override
+  String get bdRowNotes => 'සටහන්';
+
+  @override
+  String get bdPaidReleased => 'ගෙවා ඇත, සේවා සපයන්නාට මුදා හැරියා';
+
+  @override
+  String get bdHeldEscrow => 'සුරක්ෂිතව එස්ක්‍රෝ තුළ රඳවා ඇත';
+
+  @override
+  String get bdPaymentDue => 'ගෙවීම හිඟයි';
+
+  @override
+  String get bdRelease => 'මුදා හරින්න';
+
+  @override
+  String get bdPayNow => 'දැන් ගෙවන්න';
+
+  @override
+  String get bdReportProblem => 'ගැටලුවක් වාර්තා කරන්න';
+
+  @override
+  String get bdResolvedRefunded => 'විසඳා ඇත, ආපසු ගෙවා ඇත';
+
+  @override
+  String get bdReviewedDismissed => 'සමාලෝචනය කළා, ඉවත දැමුවා';
+
+  @override
+  String bdDisputeLabel(String label) {
+    return 'ආරවුල · $label';
+  }
+
+  @override
+  String bdAdminNote(String note) {
+    return 'පරිපාලක: $note';
+  }
+
+  @override
+  String get bdDisputePrompt =>
+      'වැරදුණේ කුමක්දැයි අපට කියන්න. අපගේ කණ්ඩායම එය සමාලෝචනය කරයි.';
+
+  @override
+  String get bdWhatHappened => 'සිදු වූයේ කුමක්ද?';
+
+  @override
+  String get bdSubmit => 'යොමු කරන්න';
+
+  @override
+  String get bdDisputeSubmitted => 'ආරවුල සමාලෝචනය සඳහා යොමු කරන ලදී.';
+
+  @override
+  String get bdTrackLive => 'සජීවීව නිරීක්ෂණය කරන්න';
+
+  @override
+  String get bdLeaveReview => 'සමාලෝචනයක් තබන්න';
+
+  @override
+  String get bdBookAgain => 'නැවත වෙන්කරවා ගන්න';
+
+  @override
+  String get bdCancelTitle => 'මෙම වෙන්කරවා ගැනීම අවලංගු කරන්නද?';
+
+  @override
+  String get bdCancelPrompt => 'සේවා සපයන්නාට දැනුම් දෙනු ලැබේ.';
+
+  @override
+  String get bdReasonOptional => 'හේතුව (විකල්ප)';
+
+  @override
+  String get bdKeepBooking => 'වෙන්කරවා ගැනීම තබා ගන්න';
+
+  @override
+  String get bdCancelBooking => 'වෙන්කරවා ගැනීම අවලංගු කරන්න';
+
+  @override
+  String get bdBookingCancelled => 'වෙන්කරවා ගැනීම අවලංගු කරන ලදී.';
 }

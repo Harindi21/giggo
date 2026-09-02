@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -69,6 +70,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
   }
 
   Widget _content(Booking b) {
+    final l = AppLocalizations.of(context);
     final events = ref.watch(bookingTimelineProvider(_id)).value ?? const [];
     final providerName = ref
         .watch(providerDetailProvider(b.providerId))
@@ -85,26 +87,26 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _sectionTitle('Progress'),
+                _sectionTitle(l.bdProgress),
                 const SizedBox(height: 14),
                 _timeline(b, events),
                 const SizedBox(height: 20),
-                _sectionTitle('Booking details'),
+                _sectionTitle(l.bdBookingDetails),
                 const SizedBox(height: 10),
                 _detailsCard(b),
                 const SizedBox(height: 20),
-                _sectionTitle('Price'),
+                _sectionTitle(l.bdPrice),
                 const SizedBox(height: 10),
                 _priceCard(b),
                 if (_showsPayment(b.status)) ...[
                   const SizedBox(height: 20),
-                  _sectionTitle('Payment'),
+                  _sectionTitle(l.commonPayment),
                   const SizedBox(height: 10),
                   _paymentCard(b),
                 ],
                 if (_showsDispute(b.status)) ...[
                   const SizedBox(height: 20),
-                  _sectionTitle('Problem with this job?'),
+                  _sectionTitle(l.bdProblemTitle),
                   const SizedBox(height: 10),
                   _disputeSection(b),
                 ],
@@ -119,6 +121,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
 
   // ---- Header ----
   Widget _header(Booking b, String? providerName) {
+    final l = AppLocalizations.of(context);
     final color = _statusColor(b.status);
     final (label, _, _) = _meta(b.status);
     return Container(
@@ -139,10 +142,10 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
                     onPressed: () => Navigator.of(context).maybePop(),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Your booking',
-                      style: TextStyle(
+                      l.bdYourBooking,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
@@ -174,7 +177,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                 child: Text(
                   [
                     b.skillName,
-                    if (providerName != null) 'with $providerName',
+                    if (providerName != null) l.bdWithProvider(providerName),
                   ].whereType<String>().join(' '),
                   style: const TextStyle(color: Colors.white70, fontSize: 13.5),
                 ),
@@ -375,6 +378,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
 
   // ---- Details ----
   Widget _detailsCard(Booking b) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -384,20 +388,22 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       ),
       child: Column(
         children: [
-          _row('Service', b.skillName ?? '—'),
-          _row('When', _fmtDateTime(b.scheduledAt.toLocal())),
-          _row('Estimated', _fmtHours(b.estimatedHours)),
-          if (_notBlank(b.taskTitle)) _row('Task', b.taskTitle!),
-          if (_notBlank(b.addressLine)) _row('Address', b.addressLine!),
-          if (_notBlank(b.description)) _row('Notes', b.description!),
-          if (_notBlank(b.contactName)) _row('Contact', b.contactName!),
-          if (_notBlank(b.contactPhone)) _row('Phone', b.contactPhone!),
+          _row(l.bookingSectionService, b.skillName ?? '—'),
+          _row(l.bookingSectionWhen, _fmtDateTime(b.scheduledAt.toLocal())),
+          _row(l.bdRowEstimated, _fmtHours(b.estimatedHours)),
+          if (_notBlank(b.taskTitle)) _row(l.bdRowTask, b.taskTitle!),
+          if (_notBlank(b.addressLine)) _row(l.bdRowAddress, b.addressLine!),
+          if (_notBlank(b.description)) _row(l.bdRowNotes, b.description!),
+          if (_notBlank(b.contactName))
+            _row(l.bookingSectionContact, b.contactName!),
+          if (_notBlank(b.contactPhone)) _row(l.profilePhone, b.contactPhone!),
         ],
       ),
     );
   }
 
   Widget _priceCard(Booking b) {
+    final l = AppLocalizations.of(context);
     final hours = b.workingHours ?? b.estimatedHours;
     return Container(
       padding: const EdgeInsets.all(16),
@@ -407,17 +413,20 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       ),
       child: Column(
         children: [
-          _priceRow('Base fee', _rs(b.basePrice ?? 0)),
+          _priceRow(l.detailBaseFee, _rs(b.basePrice ?? 0)),
           const SizedBox(height: 8),
           _priceRow(
-            'Work fee (${_fmtHours(hours)}${b.hourlyRate != null ? ' × ${_rs(b.hourlyRate!)}' : ''})',
+            l.bookingWorkFeeLabel(
+              _fmtHours(hours),
+              b.hourlyRate != null ? _rs(b.hourlyRate!) : '—',
+            ),
             _rs(b.workingFee ?? 0),
           ),
           const SizedBox(height: 8),
           _priceRow(
             (b.travelDistanceKm ?? 0) > 0
-                ? 'Travel (${b.travelDistanceKm!.toStringAsFixed(1)} km)'
-                : 'Travel',
+                ? l.bookingTravelLabel(b.travelDistanceKm!.toStringAsFixed(1))
+                : l.detailTravel,
             _rs(b.travelFee ?? 0),
             muted: (b.travelFee ?? 0) == 0,
           ),
@@ -425,9 +434,9 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Total',
-                style: TextStyle(
+              Text(
+                l.bookingTotal,
+                style: const TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 16,
                   color: AppColors.textPrimary,
@@ -452,14 +461,15 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       status == 'COMPLETED' || status == 'RATED' || status == 'PAID';
 
   Widget _paymentCard(Booking b) {
+    final l = AppLocalizations.of(context);
     final Payment? payment = ref.watch(bookingPaymentProvider(b.id)).value;
     final released = b.status == 'PAID' || (payment?.isReleased ?? false);
     final held = payment?.isHeld ?? false;
     final (String text, Color color) = released
-        ? ('Paid — released to provider', AppColors.success)
+        ? (l.bdPaidReleased, AppColors.success)
         : held
-        ? ('Held securely in escrow', AppColors.info)
-        : ('Payment due', AppColors.accent);
+        ? (l.bdHeldEscrow, AppColors.info)
+        : (l.bdPaymentDue, AppColors.accent);
     final amount = payment?.amount ?? b.totalPrice;
 
     return Container(
@@ -481,7 +491,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
               children: [
                 Text(
                   text,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
                   ),
@@ -503,7 +513,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
               ),
-              child: Text(held ? 'Release' : 'Pay now'),
+              child: Text(held ? l.bdRelease : l.bdPayNow),
             ),
         ],
       ),
@@ -517,6 +527,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       status == 'PAID';
 
   Widget _disputeSection(Booking b) {
+    final l = AppLocalizations.of(context);
     final Dispute? dispute = ref.watch(bookingDisputeProvider(b.id)).value;
     if (dispute == null) {
       return Align(
@@ -524,15 +535,15 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         child: OutlinedButton.icon(
           onPressed: () => _raiseDispute(b),
           icon: const Icon(Icons.report_gmailerrorred_outlined, size: 18),
-          label: const Text('Report a problem'),
+          label: Text(l.bdReportProblem),
         ),
       );
     }
     final (String label, Color color) = dispute.isRefunded
-        ? ('Resolved — refunded', AppColors.success)
+        ? (l.bdResolvedRefunded, AppColors.success)
         : dispute.isDismissed
-        ? ('Reviewed — dismissed', AppColors.textMuted)
-        : ('Under review', AppColors.warning);
+        ? (l.bdReviewedDismissed, AppColors.textMuted)
+        : (l.profileUnderReview, AppColors.warning);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -549,7 +560,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Dispute · $label',
+                  l.bdDisputeLabel(label),
                   style: TextStyle(fontWeight: FontWeight.w800, color: color),
                 ),
                 const SizedBox(height: 4),
@@ -563,7 +574,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                 if (dispute.resolutionNote?.isNotEmpty == true) ...[
                   const SizedBox(height: 4),
                   Text(
-                    'Admin: ${dispute.resolutionNote}',
+                    l.bdAdminNote(dispute.resolutionNote!),
                     style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textMuted,
@@ -579,24 +590,25 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
   }
 
   Future<void> _raiseDispute(Booking b) async {
+    final l = AppLocalizations.of(context);
     final reasonCtrl = TextEditingController();
     try {
       final ok = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('Report a problem'),
+          title: Text(l.bdReportProblem),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Tell us what went wrong. Our team will review it.'),
+              Text(l.bdDisputePrompt),
               const SizedBox(height: 12),
               TextField(
                 controller: reasonCtrl,
                 maxLines: 3,
                 maxLength: 1000,
-                decoration: const InputDecoration(
-                  hintText: 'What happened?',
+                decoration: InputDecoration(
+                  hintText: l.bdWhatHappened,
                   counterText: '',
                 ),
               ),
@@ -605,11 +617,11 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(false),
-              child: const Text('Cancel'),
+              child: Text(l.commonCancel),
             ),
             ElevatedButton(
               onPressed: () => Navigator.of(ctx).pop(true),
-              child: const Text('Submit'),
+              child: Text(l.bdSubmit),
             ),
           ],
         ),
@@ -620,9 +632,9 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           .raise(b.id, reasonCtrl.text.trim());
       ref.invalidate(bookingDisputeProvider(b.id));
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Dispute submitted for review.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.bdDisputeSubmitted)));
       }
     } catch (e) {
       if (mounted) {
@@ -637,6 +649,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
 
   // ---- Actions ----
   Widget? _actionBar(Booking b) {
+    final l = AppLocalizations.of(context);
     final s = b.status;
     final List<Widget> buttons;
     if (_active.contains(s)) {
@@ -650,7 +663,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                     width: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Cancel'),
+                : Text(l.commonCancel),
           ),
         ),
         const SizedBox(width: 12),
@@ -658,7 +671,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           child: ElevatedButton.icon(
             onPressed: () => _trackLive(b),
             icon: const Icon(Icons.my_location, size: 18),
-            label: const Text('Track live'),
+            label: Text(l.bdTrackLive),
           ),
         ),
       ];
@@ -674,7 +687,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
               }
             },
             icon: const Icon(Icons.rate_review_outlined, size: 18),
-            label: const Text('Leave a review'),
+            label: Text(l.bdLeaveReview),
           ),
         ),
       ];
@@ -684,7 +697,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           child: ElevatedButton.icon(
             onPressed: () => context.push('/book/${b.providerId}'),
             icon: const Icon(Icons.refresh, size: 18),
-            label: const Text('Book again'),
+            label: Text(l.bdBookAgain),
           ),
         ),
       ];
@@ -710,23 +723,24 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
   }
 
   Future<void> _confirmCancel() async {
+    final l = AppLocalizations.of(context);
     final reasonCtrl = TextEditingController();
     try {
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('Cancel this booking?'),
+          title: Text(l.bdCancelTitle),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('The provider will be notified.'),
+              Text(l.bdCancelPrompt),
               const SizedBox(height: 12),
               TextField(
                 controller: reasonCtrl,
                 maxLength: 500,
-                decoration: const InputDecoration(
-                  hintText: 'Reason (optional)',
+                decoration: InputDecoration(
+                  hintText: l.bdReasonOptional,
                   counterText: '',
                 ),
               ),
@@ -735,11 +749,11 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(false),
-              child: const Text('Keep booking'),
+              child: Text(l.bdKeepBooking),
             ),
             ElevatedButton(
               onPressed: () => Navigator.of(ctx).pop(true),
-              child: const Text('Cancel booking'),
+              child: Text(l.bdCancelBooking),
             ),
           ],
         ),
@@ -754,7 +768,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Booking cancelled.')));
+        ).showSnackBar(SnackBar(content: Text(l.bdBookingCancelled)));
       }
     } catch (e) {
       if (mounted) {
@@ -777,31 +791,30 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
     return AppColors.accent;
   }
 
-  (String, String?, IconData) _meta(String s) => switch (s) {
-    'REQUESTED' => (
-      'Requested',
-      'Waiting for the provider to accept',
-      Icons.hourglass_bottom,
-    ),
-    'ACCEPTED' => ('Accepted', 'Provider accepted your request', Icons.check),
-    'EN_ROUTE' => (
-      'On the way',
-      'Provider is heading to you',
-      Icons.directions_car_filled,
-    ),
-    'STARTED' => ('In progress', 'Work has started', Icons.build),
-    'COMPLETED' => ('Completed', 'Work finished', Icons.task_alt),
-    'RATED' => ('Reviewed', 'You left a review', Icons.reviews),
-    'PAID' => ('Paid', 'Payment settled', Icons.payments),
-    'CANCELLED' => ('Cancelled', 'This booking was cancelled', Icons.close),
-    'DECLINED' => ('Declined', 'Provider declined the request', Icons.block),
-    'EXPIRED' => (
-      'Expired',
-      'Provider did not respond in time',
-      Icons.timer_off,
-    ),
-    _ => (s, null, Icons.circle),
-  };
+  (String, String?, IconData) _meta(String s) {
+    final l = AppLocalizations.of(context);
+    return switch (s) {
+      'REQUESTED' => (
+        l.statusRequested,
+        l.statusRequestedSub,
+        Icons.hourglass_bottom,
+      ),
+      'ACCEPTED' => (l.statusAccepted, l.statusAcceptedSub, Icons.check),
+      'EN_ROUTE' => (
+        l.statusEnRoute,
+        l.statusEnRouteSub,
+        Icons.directions_car_filled,
+      ),
+      'STARTED' => (l.statusStarted, l.statusStartedSub, Icons.build),
+      'COMPLETED' => (l.statusCompleted, l.statusCompletedSub, Icons.task_alt),
+      'RATED' => (l.statusRated, l.statusRatedSub, Icons.reviews),
+      'PAID' => (l.statusPaid, l.statusPaidSub, Icons.payments),
+      'CANCELLED' => (l.statusCancelled, l.statusCancelledSub, Icons.close),
+      'DECLINED' => (l.statusDeclined, l.statusDeclinedSub, Icons.block),
+      'EXPIRED' => (l.statusExpired, l.statusExpiredSub, Icons.timer_off),
+      _ => (s, null, Icons.circle),
+    };
+  }
 
   bool _notBlank(String? v) => v != null && v.trim().isNotEmpty;
 
@@ -865,38 +878,50 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
     ),
   );
 
-  Widget _error(String msg) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.error_outline, color: AppColors.textMuted, size: 40),
-          const SizedBox(height: 8),
-          Text(
-            msg,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.textMuted),
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton(
-            onPressed: () => Navigator.of(context).maybePop(),
-            child: const Text('Go back'),
-          ),
-        ],
+  Widget _error(String msg) {
+    final l = AppLocalizations.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.error_outline,
+              color: AppColors.textMuted,
+              size: 40,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              msg,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: () => Navigator.of(context).maybePop(),
+              child: Text(l.commonGoBack),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 
   static const _months = [
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', //
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
   ];
 
-  String _rs(double v) => 'Rs. ${v.toStringAsFixed(0)}';
+  String _rs(double v) =>
+      '${AppLocalizations.of(context).pricePrefix} ${v.toStringAsFixed(0)}';
 
-  String _fmtHours(double h) =>
-      h == h.roundToDouble() ? '${h.toInt()} h' : '${h.toStringAsFixed(1)} h';
+  String _fmtHours(double h) {
+    final unit = AppLocalizations.of(context).unitHoursShort;
+    return h == h.roundToDouble()
+        ? '${h.toInt()} $unit'
+        : '${h.toStringAsFixed(1)} $unit';
+  }
 
   String _fmtDateTime(DateTime dt) {
     final h12 = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
