@@ -221,5 +221,107 @@
   "@detailStartingFrom": { "description": "Label above the starting price in the book bar" },
 
   "commonGoBack": "Go back",
-  "@commonGoBack": { "description": "Button to return to the previous screen" }
+  "@commonGoBack": { "description": "Button to return to the previous screen" },
+
+  "bookingRequestTitle": "Request a booking",
+  "@bookingRequestTitle": { "description": "Booking form header" },
+
+  "bookingViewProfile": "View Profile",
+  "@bookingViewProfile": { "description": "Link to the provider profile" },
+
+  "bookingSectionService": "Service",
+  "@bookingSectionService": { "description": "Booking form section title" },
+
+  "bookingSectionWhen": "When",
+  "@bookingSectionWhen": { "description": "Booking form section title" },
+
+  "bookingSectionWhere": "Where",
+  "@bookingSectionWhere": { "description": "Booking form section title" },
+
+  "bookingSectionTaskDetails": "Task details",
+  "@bookingSectionTaskDetails": { "description": "Booking form section title" },
+
+  "bookingSectionContact": "Contact",
+  "@bookingSectionContact": { "description": "Booking form section title" },
+
+  "bookingSectionPriceEstimate": "Price estimate",
+  "@bookingSectionPriceEstimate": { "description": "Booking form section title" },
+
+  "bookingNoServices": "This provider has no bookable services yet.",
+  "@bookingNoServices": { "description": "Shown when the provider has no bookable services" },
+
+  "bookingChooseService": "Choose a service",
+  "@bookingChooseService": { "description": "Service dropdown hint" },
+
+  "bookingSelectDateTime": "Select date & time",
+  "@bookingSelectDateTime": { "description": "Schedule picker placeholder" },
+
+  "bookingEstimatedHours": "Estimated hours",
+  "@bookingEstimatedHours": { "description": "Hours stepper label" },
+
+  "bookingAddressHint": "Address / landmark (optional)",
+  "@bookingAddressHint": { "description": "Address field hint" },
+
+  "bookingLocationNote": "Add your location to include an accurate travel fee.",
+  "@bookingLocationNote": { "description": "Note under the address field" },
+
+  "bookingLatitude": "Latitude",
+  "@bookingLatitude": { "description": "Coordinate field label" },
+
+  "bookingLongitude": "Longitude",
+  "@bookingLongitude": { "description": "Coordinate field label" },
+
+  "bookingTitleHint": "Short title (e.g. Fix kitchen sink)",
+  "@bookingTitleHint": { "description": "Task title field hint" },
+
+  "bookingDescriptionHint": "Describe what you need (optional)",
+  "@bookingDescriptionHint": { "description": "Task description field hint" },
+
+  "bookingContactName": "Contact name",
+  "@bookingContactName": { "description": "Contact name field hint" },
+
+  "bookingContactPhone": "Contact phone",
+  "@bookingContactPhone": { "description": "Contact phone field hint" },
+
+  "bookingCalculating": "Calculating estimate…",
+  "@bookingCalculating": { "description": "Shown while a price quote loads" },
+
+  "bookingEstimateUnavailable": "Estimate unavailable. Final price is confirmed on booking.",
+  "@bookingEstimateUnavailable": { "description": "Shown when a price quote could not be computed" },
+
+  "bookingWorkFeeLabel": "Work fee ({hours} × {rate})",
+  "@bookingWorkFeeLabel": {
+    "description": "Work fee price row with hours and hourly rate",
+    "placeholders": { "hours": { "type": "String" }, "rate": { "type": "String" } }
+  },
+
+  "bookingTravelLabel": "Travel ({km} km)",
+  "@bookingTravelLabel": {
+    "description": "Travel price row with distance",
+    "placeholders": { "km": { "type": "String" } }
+  },
+
+  "bookingTotal": "Total",
+  "@bookingTotal": { "description": "Price breakdown total label" },
+
+  "bookingEstimatedTotal": "Estimated total",
+  "@bookingEstimatedTotal": { "description": "Confirm bar total label" },
+
+  "bookingConfirm": "Confirm booking",
+  "@bookingConfirm": { "description": "Confirm booking button" },
+
+  "bookingErrChooseService": "Please choose a service.",
+  "@bookingErrChooseService": { "description": "Validation error" },
+
+  "bookingErrPickDateTime": "Please pick a date and time.",
+  "@bookingErrPickDateTime": { "description": "Validation error" },
+
+  "bookingErrFutureTime": "Choose a time in the future.",
+  "@bookingErrFutureTime": { "description": "Validation error" },
+
+  "bookingRequestSent": "Booking request sent to the provider.",
+  "@bookingRequestSent": { "description": "Snackbar after creating a booking" },
+
+  "unitHoursShort": "h",
+  "@unitHoursShort": { "description": "Short suffix for a number of hours" }
 }

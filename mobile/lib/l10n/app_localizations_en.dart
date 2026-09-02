@@ -234,4 +234,106 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonGoBack => 'Go back';
+
+  @override
+  String get bookingRequestTitle => 'Request a booking';
+
+  @override
+  String get bookingViewProfile => 'View Profile';
+
+  @override
+  String get bookingSectionService => 'Service';
+
+  @override
+  String get bookingSectionWhen => 'When';
+
+  @override
+  String get bookingSectionWhere => 'Where';
+
+  @override
+  String get bookingSectionTaskDetails => 'Task details';
+
+  @override
+  String get bookingSectionContact => 'Contact';
+
+  @override
+  String get bookingSectionPriceEstimate => 'Price estimate';
+
+  @override
+  String get bookingNoServices => 'This provider has no bookable services yet.';
+
+  @override
+  String get bookingChooseService => 'Choose a service';
+
+  @override
+  String get bookingSelectDateTime => 'Select date & time';
+
+  @override
+  String get bookingEstimatedHours => 'Estimated hours';
+
+  @override
+  String get bookingAddressHint => 'Address / landmark (optional)';
+
+  @override
+  String get bookingLocationNote =>
+      'Add your location to include an accurate travel fee.';
+
+  @override
+  String get bookingLatitude => 'Latitude';
+
+  @override
+  String get bookingLongitude => 'Longitude';
+
+  @override
+  String get bookingTitleHint => 'Short title (e.g. Fix kitchen sink)';
+
+  @override
+  String get bookingDescriptionHint => 'Describe what you need (optional)';
+
+  @override
+  String get bookingContactName => 'Contact name';
+
+  @override
+  String get bookingContactPhone => 'Contact phone';
+
+  @override
+  String get bookingCalculating => 'Calculating estimate…';
+
+  @override
+  String get bookingEstimateUnavailable =>
+      'Estimate unavailable. Final price is confirmed on booking.';
+
+  @override
+  String bookingWorkFeeLabel(String hours, String rate) {
+    return 'Work fee ($hours × $rate)';
+  }
+
+  @override
+  String bookingTravelLabel(String km) {
+    return 'Travel ($km km)';
+  }
+
+  @override
+  String get bookingTotal => 'Total';
+
+  @override
+  String get bookingEstimatedTotal => 'Estimated total';
+
+  @override
+  String get bookingConfirm => 'Confirm booking';
+
+  @override
+  String get bookingErrChooseService => 'Please choose a service.';
+
+  @override
+  String get bookingErrPickDateTime => 'Please pick a date and time.';
+
+  @override
+  String get bookingErrFutureTime => 'Choose a time in the future.';
+
+  @override
+  String get bookingRequestSent => 'Booking request sent to the provider.';
+
+  @override
+  String get unitHoursShort => 'h';
 }

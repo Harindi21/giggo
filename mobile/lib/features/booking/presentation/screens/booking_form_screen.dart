@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -17,7 +18,7 @@ import '../../data/booking_repository.dart';
 import '../../data/models/booking_models.dart';
 
 /// Booking form (P4.8, mockup image32): choose the service, schedule, describe
-/// the task and confirm — with a live, transparent price breakdown that updates
+/// the task and confirm, with a live, transparent price breakdown that updates
 /// as you change the hours or add your location.
 class BookingFormScreen extends ConsumerStatefulWidget {
   const BookingFormScreen({super.key, required this.providerId, this.skillId});
@@ -146,17 +147,18 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   }
 
   Future<void> _submit(List<Skill> skills) async {
+    final l = AppLocalizations.of(context);
     final skillId = _effectiveSkillId(skills);
     if (skillId == null) {
-      setState(() => _formError = 'Please choose a service.');
+      setState(() => _formError = l.bookingErrChooseService);
       return;
     }
     if (_scheduledAt == null) {
-      setState(() => _formError = 'Please pick a date and time.');
+      setState(() => _formError = l.bookingErrPickDateTime);
       return;
     }
     if (_scheduledAt!.isBefore(DateTime.now())) {
-      setState(() => _formError = 'Choose a time in the future.');
+      setState(() => _formError = l.bookingErrFutureTime);
       return;
     }
     setState(() {
@@ -180,9 +182,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             contactPhone: _phoneCtrl.text,
           );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Booking request sent to the provider.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.bookingRequestSent)));
       // Land on the booking detail / status timeline for the new job.
       context.pushReplacement('/booking/${booking.id}');
     } catch (e) {
@@ -236,6 +238,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   }
 
   Widget _header(ProviderDetail? p) {
+    final l = AppLocalizations.of(context);
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.primary,
@@ -254,9 +257,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
                     onPressed: () => Navigator.of(context).maybePop(),
                   ),
-                  const Text(
-                    'Request a booking',
-                    style: TextStyle(
+                  Text(
+                    l.bookingRequestTitle,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
@@ -316,7 +319,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        child: const Text('View Profile'),
+                        child: Text(l.bookingViewProfile),
                       ),
                     ],
                   ),
@@ -329,16 +332,17 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   }
 
   Widget _form(ProviderDetail p) {
+    final l = AppLocalizations.of(context);
     final skills = p.skills;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _sectionTitle('Service'),
+          _sectionTitle(l.bookingSectionService),
           const SizedBox(height: 10),
           if (skills.isEmpty)
-            _note('This provider has no bookable services yet.')
+            _note(l.bookingNoServices)
           else
             DropdownButtonFormField<String>(
               initialValue: _effectiveSkillId(skills),
@@ -347,48 +351,48 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                   DropdownMenuItem(value: s.id, child: Text(s.name)),
               ],
               onChanged: (v) => setState(() => _selectedSkillId = v),
-              decoration: const InputDecoration(hintText: 'Choose a service'),
+              decoration: InputDecoration(hintText: l.bookingChooseService),
             ),
           const SizedBox(height: 20),
 
-          _sectionTitle('When'),
+          _sectionTitle(l.bookingSectionWhen),
           const SizedBox(height: 10),
           _scheduleField(),
           const SizedBox(height: 12),
           _hoursStepper(),
           const SizedBox(height: 20),
 
-          _sectionTitle('Where'),
+          _sectionTitle(l.bookingSectionWhere),
           const SizedBox(height: 10),
           TextField(
             controller: _addressCtrl,
-            decoration: const InputDecoration(
-              hintText: 'Address / landmark (optional)',
-              prefixIcon: Icon(Icons.location_on_outlined),
+            decoration: InputDecoration(
+              hintText: l.bookingAddressHint,
+              prefixIcon: const Icon(Icons.location_on_outlined),
             ),
           ),
           const SizedBox(height: 10),
           Text(
-            'Add your location to include an accurate travel fee.',
+            l.bookingLocationNote,
             style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted),
           ),
           const SizedBox(height: 8),
           Row(
             children: [
-              Expanded(child: _coordField(_latCtrl, 'Latitude')),
+              Expanded(child: _coordField(_latCtrl, l.bookingLatitude)),
               const SizedBox(width: 12),
-              Expanded(child: _coordField(_lngCtrl, 'Longitude')),
+              Expanded(child: _coordField(_lngCtrl, l.bookingLongitude)),
             ],
           ),
           const SizedBox(height: 20),
 
-          _sectionTitle('Task details'),
+          _sectionTitle(l.bookingSectionTaskDetails),
           const SizedBox(height: 10),
           TextField(
             controller: _titleCtrl,
             maxLength: 150,
-            decoration: const InputDecoration(
-              hintText: 'Short title (e.g. Fix kitchen sink)',
+            decoration: InputDecoration(
+              hintText: l.bookingTitleHint,
               counterText: '',
             ),
           ),
@@ -397,21 +401,21 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             controller: _descCtrl,
             maxLines: 4,
             maxLength: 1000,
-            decoration: const InputDecoration(
-              hintText: 'Describe what you need (optional)…',
+            decoration: InputDecoration(
+              hintText: l.bookingDescriptionHint,
               alignLabelWithHint: true,
             ),
           ),
           const SizedBox(height: 12),
 
-          _sectionTitle('Contact'),
+          _sectionTitle(l.bookingSectionContact),
           const SizedBox(height: 10),
           TextField(
             controller: _nameCtrl,
             maxLength: 120,
-            decoration: const InputDecoration(
-              hintText: 'Contact name',
-              prefixIcon: Icon(Icons.person_outline),
+            decoration: InputDecoration(
+              hintText: l.bookingContactName,
+              prefixIcon: const Icon(Icons.person_outline),
               counterText: '',
             ),
           ),
@@ -420,15 +424,15 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             controller: _phoneCtrl,
             keyboardType: TextInputType.phone,
             maxLength: 30,
-            decoration: const InputDecoration(
-              hintText: 'Contact phone',
-              prefixIcon: Icon(Icons.phone_outlined),
+            decoration: InputDecoration(
+              hintText: l.bookingContactPhone,
+              prefixIcon: const Icon(Icons.phone_outlined),
               counterText: '',
             ),
           ),
           const SizedBox(height: 20),
 
-          _sectionTitle('Price estimate'),
+          _sectionTitle(l.bookingSectionPriceEstimate),
           const SizedBox(height: 10),
           _priceCard(),
           if (_formError != null) ...[
@@ -442,6 +446,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   }
 
   Widget _scheduleField() {
+    final l = AppLocalizations.of(context);
     final has = _scheduledAt != null;
     return InkWell(
       borderRadius: BorderRadius.circular(AppTheme.radiusField),
@@ -451,7 +456,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
           prefixIcon: Icon(Icons.event_outlined),
         ),
         child: Text(
-          has ? _fmtDateTime(_scheduledAt!) : 'Select date & time',
+          has ? _fmtDateTime(_scheduledAt!) : l.bookingSelectDateTime,
           style: TextStyle(
             color: has ? AppColors.textBody : AppColors.textMuted,
             fontWeight: has ? FontWeight.w600 : FontWeight.w400,
@@ -462,6 +467,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   }
 
   Widget _hoursStepper() {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
@@ -472,10 +478,10 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
         children: [
           const Icon(Icons.timelapse_outlined, color: AppColors.textMuted),
           const SizedBox(width: 10),
-          const Expanded(
+          Expanded(
             child: Text(
-              'Estimated hours',
-              style: TextStyle(color: AppColors.textBody),
+              l.bookingEstimatedHours,
+              style: const TextStyle(color: AppColors.textBody),
             ),
           ),
           _roundBtn(Icons.remove, () => _setHours(_hours - _step)),
@@ -525,6 +531,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   }
 
   Widget _priceCard() {
+    final l = AppLocalizations.of(context);
     final q = _quote;
     return Container(
       padding: const EdgeInsets.all(16),
@@ -551,8 +558,8 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                 Expanded(
                   child: Text(
                     _quoting
-                        ? 'Calculating estimate…'
-                        : 'Estimate unavailable — final price is confirmed on booking.',
+                        ? l.bookingCalculating
+                        : l.bookingEstimateUnavailable,
                     style: const TextStyle(color: AppColors.textMuted),
                   ),
                 ),
@@ -560,17 +567,22 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             )
           : Column(
               children: [
-                _priceRow('Base fee', _rs(q.basePrice)),
+                _priceRow(l.detailBaseFee, _rs(q.basePrice)),
                 const SizedBox(height: 8),
                 _priceRow(
-                  'Work fee (${_fmtHours(q.workingHours)} × ${_rs(q.hourlyRate)})',
+                  l.bookingWorkFeeLabel(
+                    _fmtHours(q.workingHours),
+                    _rs(q.hourlyRate),
+                  ),
                   _rs(q.workingFee),
                 ),
                 const SizedBox(height: 8),
                 _priceRow(
                   q.travelDistanceKm > 0
-                      ? 'Travel (${q.travelDistanceKm.toStringAsFixed(1)} km)'
-                      : 'Travel',
+                      ? l.bookingTravelLabel(
+                          q.travelDistanceKm.toStringAsFixed(1),
+                        )
+                      : l.detailTravel,
                   _rs(q.travelFee),
                   muted: q.travelFee == 0,
                 ),
@@ -578,9 +590,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Total',
-                      style: TextStyle(
+                    Text(
+                      l.bookingTotal,
+                      style: const TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 16,
                         color: AppColors.textPrimary,
@@ -638,6 +650,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   }
 
   Widget _confirmBar(ProviderDetail p) {
+    final l = AppLocalizations.of(context);
     final total = _quote?.totalPrice;
     return SafeArea(
       child: Padding(
@@ -649,9 +662,12 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Estimated total',
-                    style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+                  Text(
+                    l.bookingEstimatedTotal,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textMuted,
+                    ),
                   ),
                   Text(
                     total == null ? '—' : _rs(total),
@@ -678,7 +694,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text('Confirm booking'),
+                    : Text(l.bookingConfirm),
               ),
             ),
           ],
@@ -705,25 +721,28 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
     child: Text(text, style: const TextStyle(color: AppColors.textBody)),
   );
 
-  Widget _error(String msg) => Padding(
-    padding: const EdgeInsets.all(24),
-    child: Column(
-      children: [
-        const Icon(Icons.error_outline, color: AppColors.textMuted, size: 40),
-        const SizedBox(height: 8),
-        Text(
-          msg,
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: AppColors.textMuted),
-        ),
-        const SizedBox(height: 12),
-        OutlinedButton(
-          onPressed: () => Navigator.of(context).maybePop(),
-          child: const Text('Go back'),
-        ),
-      ],
-    ),
-  );
+  Widget _error(String msg) {
+    final l = AppLocalizations.of(context);
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        children: [
+          const Icon(Icons.error_outline, color: AppColors.textMuted, size: 40),
+          const SizedBox(height: 8),
+          Text(
+            msg,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: AppColors.textMuted),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton(
+            onPressed: () => Navigator.of(context).maybePop(),
+            child: Text(l.commonGoBack),
+          ),
+        ],
+      ),
+    );
+  }
 
   // --- formatting helpers (no intl dependency) ---
   static const _months = [
@@ -731,10 +750,15 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
   ];
 
-  String _rs(double v) => 'Rs. ${v.toStringAsFixed(0)}';
+  String _rs(double v) =>
+      '${AppLocalizations.of(context).pricePrefix} ${v.toStringAsFixed(0)}';
 
-  String _fmtHours(double h) =>
-      h == h.roundToDouble() ? '${h.toInt()} h' : '${h.toStringAsFixed(1)} h';
+  String _fmtHours(double h) {
+    final unit = AppLocalizations.of(context).unitHoursShort;
+    return h == h.roundToDouble()
+        ? '${h.toInt()} $unit'
+        : '${h.toStringAsFixed(1)} $unit';
+  }
 
   String _fmtDateTime(DateTime dt) {
     final h12 = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
