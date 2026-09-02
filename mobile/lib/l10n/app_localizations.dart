@@ -529,6 +529,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Go back'**
   String get commonGoBack;
+
+  /// Booking form header
+  ///
+  /// In en, this message translates to:
+  /// **'Request a booking'**
+  String get bookingRequestTitle;
+
+  /// Link to the provider profile
+  ///
+  /// In en, this message translates to:
+  /// **'View Profile'**
+  String get bookingViewProfile;
+
+  /// Booking form section title
+  ///
+  /// In en, this message translates to:
+  /// **'Service'**
+  String get bookingSectionService;
+
+  /// Booking form section title
+  ///
+  /// In en, this message translates to:
+  /// **'When'**
+  String get bookingSectionWhen;
+
+  /// Booking form section title
+  ///
+  /// In en, this message translates to:
+  /// **'Where'**
+  String get bookingSectionWhere;
+
+  /// Booking form section title
+  ///
+  /// In en, this message translates to:
+  /// **'Task details'**
+  String get bookingSectionTaskDetails;
+
+  /// Booking form section title
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get bookingSectionContact;
+
+  /// Booking form section title
+  ///
+  /// In en, this message translates to:
+  /// **'Price estimate'**
+  String get bookingSectionPriceEstimate;
+
+  /// Shown when the provider has no bookable services
+  ///
+  /// In en, this message translates to:
+  /// **'This provider has no bookable services yet.'**
+  String get bookingNoServices;
+
+  /// Service dropdown hint
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a service'**
+  String get bookingChooseService;
+
+  /// Schedule picker placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Select date & time'**
+  String get bookingSelectDateTime;
+
+  /// Hours stepper label
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated hours'**
+  String get bookingEstimatedHours;
+
+  /// Address field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Address / landmark (optional)'**
+  String get bookingAddressHint;
+
+  /// Note under the address field
+  ///
+  /// In en, this message translates to:
+  /// **'Add your location to include an accurate travel fee.'**
+  String get bookingLocationNote;
+
+  /// Coordinate field label
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get bookingLatitude;
+
+  /// Coordinate field label
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude'**
+  String get bookingLongitude;
+
+  /// Task title field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Short title (e.g. Fix kitchen sink)'**
+  String get bookingTitleHint;
+
+  /// Task description field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what you need (optional)'**
+  String get bookingDescriptionHint;
+
+  /// Contact name field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Contact name'**
+  String get bookingContactName;
+
+  /// Contact phone field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Contact phone'**
+  String get bookingContactPhone;
+
+  /// Shown while a price quote loads
+  ///
+  /// In en, this message translates to:
+  /// **'Calculating estimate…'**
+  String get bookingCalculating;
+
+  /// Shown when a price quote could not be computed
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate unavailable. Final price is confirmed on booking.'**
+  String get bookingEstimateUnavailable;
+
+  /// Work fee price row with hours and hourly rate
+  ///
+  /// In en, this message translates to:
+  /// **'Work fee ({hours} × {rate})'**
+  String bookingWorkFeeLabel(String hours, String rate);
+
+  /// Travel price row with distance
+  ///
+  /// In en, this message translates to:
+  /// **'Travel ({km} km)'**
+  String bookingTravelLabel(String km);
+
+  /// Price breakdown total label
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get bookingTotal;
+
+  /// Confirm bar total label
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated total'**
+  String get bookingEstimatedTotal;
+
+  /// Confirm booking button
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm booking'**
+  String get bookingConfirm;
+
+  /// Validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Please choose a service.'**
+  String get bookingErrChooseService;
+
+  /// Validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Please pick a date and time.'**
+  String get bookingErrPickDateTime;
+
+  /// Validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a time in the future.'**
+  String get bookingErrFutureTime;
+
+  /// Snackbar after creating a booking
+  ///
+  /// In en, this message translates to:
+  /// **'Booking request sent to the provider.'**
+  String get bookingRequestSent;
+
+  /// Short suffix for a number of hours
+  ///
+  /// In en, this message translates to:
+  /// **'h'**
+  String get unitHoursShort;
 }
 
 class _AppLocalizationsDelegate

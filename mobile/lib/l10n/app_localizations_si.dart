@@ -236,4 +236,109 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get commonGoBack => 'ආපසු යන්න';
+
+  @override
+  String get bookingRequestTitle => 'වෙන්කරවා ගැනීමක් ඉල්ලන්න';
+
+  @override
+  String get bookingViewProfile => 'පැතිකඩ බලන්න';
+
+  @override
+  String get bookingSectionService => 'සේවාව';
+
+  @override
+  String get bookingSectionWhen => 'කවදාද';
+
+  @override
+  String get bookingSectionWhere => 'කොහෙද';
+
+  @override
+  String get bookingSectionTaskDetails => 'කාර්ය විස්තර';
+
+  @override
+  String get bookingSectionContact => 'සම්බන්ධතා';
+
+  @override
+  String get bookingSectionPriceEstimate => 'මිල ඇස්තමේන්තුව';
+
+  @override
+  String get bookingNoServices =>
+      'මෙම සේවා සපයන්නාට තවම වෙන්කරවා ගත හැකි සේවා නැත.';
+
+  @override
+  String get bookingChooseService => 'සේවාවක් තෝරන්න';
+
+  @override
+  String get bookingSelectDateTime => 'දිනය සහ වේලාව තෝරන්න';
+
+  @override
+  String get bookingEstimatedHours => 'ඇස්තමේන්තුගත පැය';
+
+  @override
+  String get bookingAddressHint => 'ලිපිනය / සලකුණ (විකල්ප)';
+
+  @override
+  String get bookingLocationNote =>
+      'නිවැරදි ගමන් ගාස්තුවක් ඇතුළත් කිරීමට ඔබේ ස්ථානය එක් කරන්න.';
+
+  @override
+  String get bookingLatitude => 'අක්ෂාංශ';
+
+  @override
+  String get bookingLongitude => 'දේශාංශ';
+
+  @override
+  String get bookingTitleHint =>
+      'කෙටි මාතෘකාව (උදා. මුළුතැන්ගෙයි සින්ක් අලුත්වැඩියාව)';
+
+  @override
+  String get bookingDescriptionHint => 'ඔබට අවශ්‍ය දේ විස්තර කරන්න (විකල්ප)';
+
+  @override
+  String get bookingContactName => 'සම්බන්ධතා නම';
+
+  @override
+  String get bookingContactPhone => 'සම්බන්ධතා දුරකථනය';
+
+  @override
+  String get bookingCalculating => 'ඇස්තමේන්තුව ගණනය කරමින්…';
+
+  @override
+  String get bookingEstimateUnavailable =>
+      'ඇස්තමේන්තුව නොමැත. අවසාන මිල වෙන්කරවා ගැනීමේදී තහවුරු කෙරේ.';
+
+  @override
+  String bookingWorkFeeLabel(String hours, String rate) {
+    return 'වැඩ ගාස්තුව ($hours × $rate)';
+  }
+
+  @override
+  String bookingTravelLabel(String km) {
+    return 'ගමන් ($km කි.මී.)';
+  }
+
+  @override
+  String get bookingTotal => 'එකතුව';
+
+  @override
+  String get bookingEstimatedTotal => 'ඇස්තමේන්තුගත එකතුව';
+
+  @override
+  String get bookingConfirm => 'වෙන්කරවා ගැනීම තහවුරු කරන්න';
+
+  @override
+  String get bookingErrChooseService => 'කරුණාකර සේවාවක් තෝරන්න.';
+
+  @override
+  String get bookingErrPickDateTime => 'කරුණාකර දිනයක් සහ වේලාවක් තෝරන්න.';
+
+  @override
+  String get bookingErrFutureTime => 'අනාගත වේලාවක් තෝරන්න.';
+
+  @override
+  String get bookingRequestSent =>
+      'වෙන්කරවා ගැනීමේ ඉල්ලීම සේවා සපයන්නාට යවන ලදී.';
+
+  @override
+  String get unitHoursShort => 'පැ';
 }
