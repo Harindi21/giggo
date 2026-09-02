@@ -336,4 +336,173 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unitHoursShort => 'h';
+
+  @override
+  String get commonPayment => 'Payment';
+
+  @override
+  String get bdYourBooking => 'Your booking';
+
+  @override
+  String bdWithProvider(String name) {
+    return 'with $name';
+  }
+
+  @override
+  String get bdProgress => 'Progress';
+
+  @override
+  String get bdBookingDetails => 'Booking details';
+
+  @override
+  String get bdPrice => 'Price';
+
+  @override
+  String get bdProblemTitle => 'Problem with this job?';
+
+  @override
+  String get statusRequested => 'Requested';
+
+  @override
+  String get statusRequestedSub => 'Waiting for the provider to accept';
+
+  @override
+  String get statusAccepted => 'Accepted';
+
+  @override
+  String get statusAcceptedSub => 'Provider accepted your request';
+
+  @override
+  String get statusEnRoute => 'On the way';
+
+  @override
+  String get statusEnRouteSub => 'Provider is heading to you';
+
+  @override
+  String get statusStarted => 'In progress';
+
+  @override
+  String get statusStartedSub => 'Work has started';
+
+  @override
+  String get statusCompleted => 'Completed';
+
+  @override
+  String get statusCompletedSub => 'Work finished';
+
+  @override
+  String get statusRated => 'Reviewed';
+
+  @override
+  String get statusRatedSub => 'You left a review';
+
+  @override
+  String get statusPaid => 'Paid';
+
+  @override
+  String get statusPaidSub => 'Payment settled';
+
+  @override
+  String get statusCancelled => 'Cancelled';
+
+  @override
+  String get statusCancelledSub => 'This booking was cancelled';
+
+  @override
+  String get statusDeclined => 'Declined';
+
+  @override
+  String get statusDeclinedSub => 'Provider declined the request';
+
+  @override
+  String get statusExpired => 'Expired';
+
+  @override
+  String get statusExpiredSub => 'Provider did not respond in time';
+
+  @override
+  String get bdRowEstimated => 'Estimated';
+
+  @override
+  String get bdRowTask => 'Task';
+
+  @override
+  String get bdRowAddress => 'Address';
+
+  @override
+  String get bdRowNotes => 'Notes';
+
+  @override
+  String get bdPaidReleased => 'Paid, released to provider';
+
+  @override
+  String get bdHeldEscrow => 'Held securely in escrow';
+
+  @override
+  String get bdPaymentDue => 'Payment due';
+
+  @override
+  String get bdRelease => 'Release';
+
+  @override
+  String get bdPayNow => 'Pay now';
+
+  @override
+  String get bdReportProblem => 'Report a problem';
+
+  @override
+  String get bdResolvedRefunded => 'Resolved, refunded';
+
+  @override
+  String get bdReviewedDismissed => 'Reviewed, dismissed';
+
+  @override
+  String bdDisputeLabel(String label) {
+    return 'Dispute · $label';
+  }
+
+  @override
+  String bdAdminNote(String note) {
+    return 'Admin: $note';
+  }
+
+  @override
+  String get bdDisputePrompt =>
+      'Tell us what went wrong. Our team will review it.';
+
+  @override
+  String get bdWhatHappened => 'What happened?';
+
+  @override
+  String get bdSubmit => 'Submit';
+
+  @override
+  String get bdDisputeSubmitted => 'Dispute submitted for review.';
+
+  @override
+  String get bdTrackLive => 'Track live';
+
+  @override
+  String get bdLeaveReview => 'Leave a review';
+
+  @override
+  String get bdBookAgain => 'Book again';
+
+  @override
+  String get bdCancelTitle => 'Cancel this booking?';
+
+  @override
+  String get bdCancelPrompt => 'The provider will be notified.';
+
+  @override
+  String get bdReasonOptional => 'Reason (optional)';
+
+  @override
+  String get bdKeepBooking => 'Keep booking';
+
+  @override
+  String get bdCancelBooking => 'Cancel booking';
+
+  @override
+  String get bdBookingCancelled => 'Booking cancelled.';
 }

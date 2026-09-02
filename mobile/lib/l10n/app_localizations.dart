@@ -721,6 +721,330 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'h'**
   String get unitHoursShort;
+
+  /// Payment section title / header
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get commonPayment;
+
+  /// Booking detail header
+  ///
+  /// In en, this message translates to:
+  /// **'Your booking'**
+  String get bdYourBooking;
+
+  /// Provider name in the booking subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'with {name}'**
+  String bdWithProvider(String name);
+
+  /// Timeline section title
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get bdProgress;
+
+  /// Details section title
+  ///
+  /// In en, this message translates to:
+  /// **'Booking details'**
+  String get bdBookingDetails;
+
+  /// Price section title
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get bdPrice;
+
+  /// Dispute section title
+  ///
+  /// In en, this message translates to:
+  /// **'Problem with this job?'**
+  String get bdProblemTitle;
+
+  /// Booking status
+  ///
+  /// In en, this message translates to:
+  /// **'Requested'**
+  String get statusRequested;
+
+  /// Booking status subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the provider to accept'**
+  String get statusRequestedSub;
+
+  /// Booking status
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get statusAccepted;
+
+  /// Booking status subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Provider accepted your request'**
+  String get statusAcceptedSub;
+
+  /// Booking status
+  ///
+  /// In en, this message translates to:
+  /// **'On the way'**
+  String get statusEnRoute;
+
+  /// Booking status subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Provider is heading to you'**
+  String get statusEnRouteSub;
+
+  /// Booking status
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get statusStarted;
+
+  /// Booking status subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Work has started'**
+  String get statusStartedSub;
+
+  /// Booking status
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get statusCompleted;
+
+  /// Booking status subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Work finished'**
+  String get statusCompletedSub;
+
+  /// Booking status
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewed'**
+  String get statusRated;
+
+  /// Booking status subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'You left a review'**
+  String get statusRatedSub;
+
+  /// Booking status
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get statusPaid;
+
+  /// Booking status subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Payment settled'**
+  String get statusPaidSub;
+
+  /// Booking status
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get statusCancelled;
+
+  /// Booking status subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'This booking was cancelled'**
+  String get statusCancelledSub;
+
+  /// Booking status
+  ///
+  /// In en, this message translates to:
+  /// **'Declined'**
+  String get statusDeclined;
+
+  /// Booking status subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Provider declined the request'**
+  String get statusDeclinedSub;
+
+  /// Booking status
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get statusExpired;
+
+  /// Booking status subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Provider did not respond in time'**
+  String get statusExpiredSub;
+
+  /// Details row label
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated'**
+  String get bdRowEstimated;
+
+  /// Details row label
+  ///
+  /// In en, this message translates to:
+  /// **'Task'**
+  String get bdRowTask;
+
+  /// Details row label
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get bdRowAddress;
+
+  /// Details row label
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get bdRowNotes;
+
+  /// Payment card status
+  ///
+  /// In en, this message translates to:
+  /// **'Paid, released to provider'**
+  String get bdPaidReleased;
+
+  /// Payment card status
+  ///
+  /// In en, this message translates to:
+  /// **'Held securely in escrow'**
+  String get bdHeldEscrow;
+
+  /// Payment card status
+  ///
+  /// In en, this message translates to:
+  /// **'Payment due'**
+  String get bdPaymentDue;
+
+  /// Payment card action
+  ///
+  /// In en, this message translates to:
+  /// **'Release'**
+  String get bdRelease;
+
+  /// Payment card action
+  ///
+  /// In en, this message translates to:
+  /// **'Pay now'**
+  String get bdPayNow;
+
+  /// Dispute button / dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Report a problem'**
+  String get bdReportProblem;
+
+  /// Dispute status
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved, refunded'**
+  String get bdResolvedRefunded;
+
+  /// Dispute status
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewed, dismissed'**
+  String get bdReviewedDismissed;
+
+  /// Dispute header with status
+  ///
+  /// In en, this message translates to:
+  /// **'Dispute · {label}'**
+  String bdDisputeLabel(String label);
+
+  /// Admin resolution note
+  ///
+  /// In en, this message translates to:
+  /// **'Admin: {note}'**
+  String bdAdminNote(String note);
+
+  /// Dispute dialog prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us what went wrong. Our team will review it.'**
+  String get bdDisputePrompt;
+
+  /// Dispute reason field hint
+  ///
+  /// In en, this message translates to:
+  /// **'What happened?'**
+  String get bdWhatHappened;
+
+  /// Dispute submit button
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get bdSubmit;
+
+  /// Snackbar after raising a dispute
+  ///
+  /// In en, this message translates to:
+  /// **'Dispute submitted for review.'**
+  String get bdDisputeSubmitted;
+
+  /// Action to open live tracking
+  ///
+  /// In en, this message translates to:
+  /// **'Track live'**
+  String get bdTrackLive;
+
+  /// Action to review a completed job
+  ///
+  /// In en, this message translates to:
+  /// **'Leave a review'**
+  String get bdLeaveReview;
+
+  /// Action to rebook after a cancellation
+  ///
+  /// In en, this message translates to:
+  /// **'Book again'**
+  String get bdBookAgain;
+
+  /// Cancel dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this booking?'**
+  String get bdCancelTitle;
+
+  /// Cancel dialog prompt
+  ///
+  /// In en, this message translates to:
+  /// **'The provider will be notified.'**
+  String get bdCancelPrompt;
+
+  /// Cancel reason field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (optional)'**
+  String get bdReasonOptional;
+
+  /// Cancel dialog dismiss button
+  ///
+  /// In en, this message translates to:
+  /// **'Keep booking'**
+  String get bdKeepBooking;
+
+  /// Cancel dialog confirm button
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel booking'**
+  String get bdCancelBooking;
+
+  /// Snackbar after cancelling
+  ///
+  /// In en, this message translates to:
+  /// **'Booking cancelled.'**
+  String get bdBookingCancelled;
 }
 
 class _AppLocalizationsDelegate
