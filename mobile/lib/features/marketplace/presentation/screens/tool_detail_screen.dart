@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../data/models/tool_models.dart';
@@ -31,6 +32,7 @@ class ToolDetailScreen extends ConsumerWidget {
   }
 
   Widget _content(BuildContext context, Tool t) {
+    final l = AppLocalizations.of(context);
     return SingleChildScrollView(
       padding: EdgeInsets.zero,
       child: Column(
@@ -65,7 +67,7 @@ class ToolDetailScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 14),
                 Text(
-                  'Rs. ${t.price.toStringAsFixed(0)}',
+                  '${l.pricePrefix} ${t.price.toStringAsFixed(0)}',
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
@@ -73,9 +75,9 @@ class ToolDetailScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  'About this tool',
-                  style: TextStyle(
+                Text(
+                  l.toolAboutTool,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                     color: AppColors.textPrimary,
@@ -130,6 +132,7 @@ class ToolDetailScreen extends ConsumerWidget {
   }
 
   Widget _buyBar(BuildContext context, Tool t) {
+    final l = AppLocalizations.of(context);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -140,7 +143,9 @@ class ToolDetailScreen extends ConsumerWidget {
                 ? () => context.push('/checkout/${t.slug}')
                 : null,
             icon: const Icon(Icons.shopping_cart_outlined, size: 18),
-            label: Text('Buy · Rs. ${t.price.toStringAsFixed(0)}'),
+            label: Text(
+              l.toolBuyPrice('${l.pricePrefix} ${t.price.toStringAsFixed(0)}'),
+            ),
           ),
         ),
       ),
@@ -163,7 +168,7 @@ class ToolDetailScreen extends ConsumerWidget {
           const SizedBox(height: 12),
           OutlinedButton(
             onPressed: () => Navigator.of(context).maybePop(),
-            child: const Text('Go back'),
+            child: Text(AppLocalizations.of(context).commonGoBack),
           ),
         ],
       ),
@@ -179,9 +184,10 @@ class _WishlistHeart extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final saved = ref.watch(wishlistIdsProvider).contains(toolId);
     return IconButton(
-      tooltip: saved ? 'Saved' : 'Save for later',
+      tooltip: saved ? l.wishlistSaved : l.wishlistSaveForLater,
       icon: Icon(
         saved ? Icons.favorite : Icons.favorite_border,
         color: AppColors.accent,

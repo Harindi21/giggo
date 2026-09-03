@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -50,6 +51,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   }
 
   Future<void> _submit(Tool tool) async {
+    final l = AppLocalizations.of(context);
     setState(() {
       _submitting = true;
       _error = null;
@@ -66,9 +68,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       await repo.pay(order.id); // stubbed gateway capture
       ref.invalidate(myOrdersProvider);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Order placed — thank you!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.checkoutOrderPlaced)));
       context.pushReplacement('/orders');
     } catch (e) {
       if (mounted) setState(() => _error = e.toString());
@@ -95,6 +97,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   }
 
   Widget _form(Tool tool) {
+    final l = AppLocalizations.of(context);
     return SingleChildScrollView(
       padding: EdgeInsets.zero,
       child: Column(
@@ -108,18 +111,18 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               children: [
                 _toolCard(tool),
                 const SizedBox(height: 20),
-                _sectionTitle('Quantity'),
+                _sectionTitle(l.checkoutQuantity),
                 const SizedBox(height: 10),
                 _qtyStepper(),
                 const SizedBox(height: 20),
-                _sectionTitle('Delivery'),
+                _sectionTitle(l.checkoutDelivery),
                 const SizedBox(height: 10),
                 TextField(
                   controller: _nameCtrl,
                   enabled: !_submitting,
                   maxLength: 120,
-                  decoration: const InputDecoration(
-                    labelText: 'Contact name',
+                  decoration: InputDecoration(
+                    labelText: l.bookingContactName,
                     counterText: '',
                   ),
                 ),
@@ -129,8 +132,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   enabled: !_submitting,
                   keyboardType: TextInputType.phone,
                   maxLength: 30,
-                  decoration: const InputDecoration(
-                    labelText: 'Contact phone',
+                  decoration: InputDecoration(
+                    labelText: l.bookingContactPhone,
                     counterText: '',
                   ),
                 ),
@@ -140,8 +143,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   enabled: !_submitting,
                   maxLines: 2,
                   maxLength: 400,
-                  decoration: const InputDecoration(
-                    labelText: 'Shipping address',
+                  decoration: InputDecoration(
+                    labelText: l.checkoutShippingAddress,
                     counterText: '',
                     alignLabelWithHint: true,
                   ),
@@ -160,6 +163,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   }
 
   Widget _header() {
+    final l = AppLocalizations.of(context);
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.primary,
@@ -175,9 +179,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => Navigator.of(context).maybePop(),
               ),
-              const Text(
-                'Checkout',
-                style: TextStyle(
+              Text(
+                l.checkoutTitle,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -191,6 +195,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   }
 
   Widget _toolCard(Tool tool) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -218,7 +223,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Rs. ${tool.price.toStringAsFixed(0)} each',
+                  l.checkoutPriceEach(
+                    '${l.pricePrefix} ${tool.price.toStringAsFixed(0)}',
+                  ),
                   style: const TextStyle(
                     fontSize: 12.5,
                     color: AppColors.textMuted,
@@ -233,6 +240,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   }
 
   Widget _qtyStepper() {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
@@ -241,8 +249,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       ),
       child: Row(
         children: [
-          const Expanded(
-            child: Text('Units', style: TextStyle(color: AppColors.textBody)),
+          Expanded(
+            child: Text(
+              l.checkoutUnits,
+              style: const TextStyle(color: AppColors.textBody),
+            ),
           ),
           _roundBtn(Icons.remove, () {
             if (_qty > 1) setState(() => _qty--);
@@ -282,6 +293,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   }
 
   Widget _payBar(Tool tool) {
+    final l = AppLocalizations.of(context);
     final total = tool.price * _qty;
     return SafeArea(
       child: Padding(
@@ -293,12 +305,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Total',
-                    style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+                  Text(
+                    l.bookingTotal,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textMuted,
+                    ),
                   ),
                   Text(
-                    'Rs. ${total.toStringAsFixed(0)}',
+                    '${l.pricePrefix} ${total.toStringAsFixed(0)}',
                     style: const TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 18,
@@ -320,7 +335,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text('Place & pay'),
+                    : Text(l.checkoutPlacePay),
               ),
             ),
           ],
@@ -354,7 +369,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           const SizedBox(height: 12),
           OutlinedButton(
             onPressed: () => Navigator.of(context).maybePop(),
-            child: const Text('Go back'),
+            child: Text(AppLocalizations.of(context).commonGoBack),
           ),
         ],
       ),

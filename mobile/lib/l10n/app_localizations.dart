@@ -1603,6 +1603,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This tool is currently unavailable'**
   String get shopUnavailable;
+
+  /// Tool detail section title
+  ///
+  /// In en, this message translates to:
+  /// **'About this tool'**
+  String get toolAboutTool;
+
+  /// Buy button with price
+  ///
+  /// In en, this message translates to:
+  /// **'Buy · {amount}'**
+  String toolBuyPrice(String amount);
+
+  /// Wishlist heart tooltip when saved
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get wishlistSaved;
+
+  /// Wishlist heart tooltip when not saved
+  ///
+  /// In en, this message translates to:
+  /// **'Save for later'**
+  String get wishlistSaveForLater;
+
+  /// Checkout header
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout'**
+  String get checkoutTitle;
+
+  /// Checkout section title
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get checkoutQuantity;
+
+  /// Checkout section title
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get checkoutDelivery;
+
+  /// Shipping address field
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping address'**
+  String get checkoutShippingAddress;
+
+  /// Unit price on the checkout tool card
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} each'**
+  String checkoutPriceEach(String amount);
+
+  /// Quantity stepper label
+  ///
+  /// In en, this message translates to:
+  /// **'Units'**
+  String get checkoutUnits;
+
+  /// Place order button
+  ///
+  /// In en, this message translates to:
+  /// **'Place & pay'**
+  String get checkoutPlacePay;
+
+  /// Snackbar after placing an order
+  ///
+  /// In en, this message translates to:
+  /// **'Order placed, thank you!'**
+  String get checkoutOrderPlaced;
 }
 
 class _AppLocalizationsDelegate
