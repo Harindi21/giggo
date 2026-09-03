@@ -1045,6 +1045,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Booking cancelled.'**
   String get bdBookingCancelled;
+
+  /// Platform commission label
+  ///
+  /// In en, this message translates to:
+  /// **'Platform fee'**
+  String get commonPlatformFee;
+
+  /// Payment section title
+  ///
+  /// In en, this message translates to:
+  /// **'Payment summary'**
+  String get paySummary;
+
+  /// Escrow stepper label
+  ///
+  /// In en, this message translates to:
+  /// **'Pay'**
+  String get payStepPay;
+
+  /// Escrow stepper label
+  ///
+  /// In en, this message translates to:
+  /// **'In escrow'**
+  String get payStepEscrow;
+
+  /// Escrow stepper label
+  ///
+  /// In en, this message translates to:
+  /// **'Released'**
+  String get payStepReleased;
+
+  /// Payment summary row label
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get payAmount;
+
+  /// Payment summary row label
+  ///
+  /// In en, this message translates to:
+  /// **'Provider receives'**
+  String get payProviderReceives;
+
+  /// Note shown before a payment is made
+  ///
+  /// In en, this message translates to:
+  /// **'A small platform fee is applied when you pay; the rest goes to your provider.'**
+  String get payFeeNote;
+
+  /// Link to the receipt
+  ///
+  /// In en, this message translates to:
+  /// **'View receipt'**
+  String get payViewReceipt;
+
+  /// Escrow explanation before paying
+  ///
+  /// In en, this message translates to:
+  /// **'Your payment is held securely by GIGGO and only released to the provider when you confirm the job is done.'**
+  String get payEscrowNote0;
+
+  /// Escrow explanation while held
+  ///
+  /// In en, this message translates to:
+  /// **'Funds are held in escrow. Release them once you are happy with the completed work.'**
+  String get payEscrowNote1;
+
+  /// Escrow explanation after release
+  ///
+  /// In en, this message translates to:
+  /// **'Payment released to the provider. This booking is settled.'**
+  String get payEscrowNote2;
+
+  /// Release action button
+  ///
+  /// In en, this message translates to:
+  /// **'Release to provider'**
+  String get payReleaseToProvider;
+
+  /// Pay action button with amount
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {amount}'**
+  String payPayAmount(String amount);
+
+  /// Snackbar after paying
+  ///
+  /// In en, this message translates to:
+  /// **'Payment secured, held safely in escrow.'**
+  String get paySecured;
+
+  /// Snackbar after releasing
+  ///
+  /// In en, this message translates to:
+  /// **'Released to the provider. Thank you!'**
+  String get payReleasedThanks;
+
+  /// Shown before a receipt exists
+  ///
+  /// In en, this message translates to:
+  /// **'Your receipt will be available once the payment is captured.'**
+  String get receiptUnavailable;
+
+  /// Receipt screen header
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt'**
+  String get receiptTitle;
+
+  /// Copy button tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Copy to share'**
+  String get receiptCopyTooltip;
+
+  /// Receipt document subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Payment receipt'**
+  String get receiptPaymentReceipt;
+
+  /// Receipt number label
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt no.'**
+  String get receiptNo;
+
+  /// Issue date label
+  ///
+  /// In en, this message translates to:
+  /// **'Issued'**
+  String get receiptIssued;
+
+  /// Booking reference label
+  ///
+  /// In en, this message translates to:
+  /// **'Booking'**
+  String get receiptBooking;
+
+  /// Customer party label
+  ///
+  /// In en, this message translates to:
+  /// **'Billed to'**
+  String get receiptBilledTo;
+
+  /// Provider party label
+  ///
+  /// In en, this message translates to:
+  /// **'Service by'**
+  String get receiptServiceBy;
+
+  /// Job title party label
+  ///
+  /// In en, this message translates to:
+  /// **'Job'**
+  String get receiptJob;
+
+  /// Completion date party label
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get receiptCompleted;
+
+  /// Receipt line item
+  ///
+  /// In en, this message translates to:
+  /// **'Base call-out'**
+  String get receiptBaseCallout;
+
+  /// Labour line item with hours and rate
+  ///
+  /// In en, this message translates to:
+  /// **'Labour · {hours} h × {rate}'**
+  String receiptLabour(String hours, String rate);
+
+  /// Travel line item with distance
+  ///
+  /// In en, this message translates to:
+  /// **'Travel · {km} km'**
+  String receiptTravelLine(String km);
+
+  /// Receipt total label
+  ///
+  /// In en, this message translates to:
+  /// **'Total paid'**
+  String get receiptTotalPaid;
+
+  /// Receipt status chip
+  ///
+  /// In en, this message translates to:
+  /// **'PAID'**
+  String get receiptStatusPaid;
+
+  /// Receipt status chip
+  ///
+  /// In en, this message translates to:
+  /// **'IN ESCROW'**
+  String get receiptStatusInEscrow;
+
+  /// Escrow split label
+  ///
+  /// In en, this message translates to:
+  /// **'Provider received'**
+  String get receiptProviderReceived;
+
+  /// Payment method label
+  ///
+  /// In en, this message translates to:
+  /// **'Method'**
+  String get receiptMethod;
+
+  /// Receipt footer note
+  ///
+  /// In en, this message translates to:
+  /// **'This is a computer-generated receipt.'**
+  String get receiptComputerGenerated;
+
+  /// Snackbar after copying the receipt
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt copied to clipboard.'**
+  String get receiptCopied;
 }
 
 class _AppLocalizationsDelegate

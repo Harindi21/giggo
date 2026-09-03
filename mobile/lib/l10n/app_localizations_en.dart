@@ -505,4 +505,127 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bdBookingCancelled => 'Booking cancelled.';
+
+  @override
+  String get commonPlatformFee => 'Platform fee';
+
+  @override
+  String get paySummary => 'Payment summary';
+
+  @override
+  String get payStepPay => 'Pay';
+
+  @override
+  String get payStepEscrow => 'In escrow';
+
+  @override
+  String get payStepReleased => 'Released';
+
+  @override
+  String get payAmount => 'Amount';
+
+  @override
+  String get payProviderReceives => 'Provider receives';
+
+  @override
+  String get payFeeNote =>
+      'A small platform fee is applied when you pay; the rest goes to your provider.';
+
+  @override
+  String get payViewReceipt => 'View receipt';
+
+  @override
+  String get payEscrowNote0 =>
+      'Your payment is held securely by GIGGO and only released to the provider when you confirm the job is done.';
+
+  @override
+  String get payEscrowNote1 =>
+      'Funds are held in escrow. Release them once you are happy with the completed work.';
+
+  @override
+  String get payEscrowNote2 =>
+      'Payment released to the provider. This booking is settled.';
+
+  @override
+  String get payReleaseToProvider => 'Release to provider';
+
+  @override
+  String payPayAmount(String amount) {
+    return 'Pay $amount';
+  }
+
+  @override
+  String get paySecured => 'Payment secured, held safely in escrow.';
+
+  @override
+  String get payReleasedThanks => 'Released to the provider. Thank you!';
+
+  @override
+  String get receiptUnavailable =>
+      'Your receipt will be available once the payment is captured.';
+
+  @override
+  String get receiptTitle => 'Receipt';
+
+  @override
+  String get receiptCopyTooltip => 'Copy to share';
+
+  @override
+  String get receiptPaymentReceipt => 'Payment receipt';
+
+  @override
+  String get receiptNo => 'Receipt no.';
+
+  @override
+  String get receiptIssued => 'Issued';
+
+  @override
+  String get receiptBooking => 'Booking';
+
+  @override
+  String get receiptBilledTo => 'Billed to';
+
+  @override
+  String get receiptServiceBy => 'Service by';
+
+  @override
+  String get receiptJob => 'Job';
+
+  @override
+  String get receiptCompleted => 'Completed';
+
+  @override
+  String get receiptBaseCallout => 'Base call-out';
+
+  @override
+  String receiptLabour(String hours, String rate) {
+    return 'Labour · $hours h × $rate';
+  }
+
+  @override
+  String receiptTravelLine(String km) {
+    return 'Travel · $km km';
+  }
+
+  @override
+  String get receiptTotalPaid => 'Total paid';
+
+  @override
+  String get receiptStatusPaid => 'PAID';
+
+  @override
+  String get receiptStatusInEscrow => 'IN ESCROW';
+
+  @override
+  String get receiptProviderReceived => 'Provider received';
+
+  @override
+  String get receiptMethod => 'Method';
+
+  @override
+  String get receiptComputerGenerated =>
+      'This is a computer-generated receipt.';
+
+  @override
+  String get receiptCopied => 'Receipt copied to clipboard.';
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -17,6 +18,7 @@ class ReceiptScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final async = ref.watch(bookingReceiptProvider(bookingId));
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -24,41 +26,41 @@ class ReceiptScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => _message(context, e.toString()),
         data: (receipt) => receipt == null
-            ? _message(
-                context,
-                'Your receipt will be available once the payment is captured.',
-              )
+            ? _message(context, l.receiptUnavailable)
             : _Invoice(receipt: receipt),
       ),
     );
   }
 
-  Widget _message(BuildContext context, String msg) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(
-            Icons.receipt_long_outlined,
-            color: AppColors.textMuted,
-            size: 44,
-          ),
-          const SizedBox(height: 10),
-          Text(
-            msg,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.textMuted),
-          ),
-          const SizedBox(height: 14),
-          OutlinedButton(
-            onPressed: () => Navigator.of(context).maybePop(),
-            child: const Text('Go back'),
-          ),
-        ],
+  Widget _message(BuildContext context, String msg) {
+    final l = AppLocalizations.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.receipt_long_outlined,
+              color: AppColors.textMuted,
+              size: 44,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              msg,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
+            const SizedBox(height: 14),
+            OutlinedButton(
+              onPressed: () => Navigator.of(context).maybePop(),
+              child: Text(l.commonGoBack),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _Invoice extends StatelessWidget {
@@ -68,20 +70,21 @@ class _Invoice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return CustomScrollView(
       slivers: [
-        SliverToBoxAdapter(child: _header(context)),
+        SliverToBoxAdapter(child: _header(context, l)),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
-            child: _card(),
+            child: _card(l),
           ),
         ),
       ],
     );
   }
 
-  Widget _header(BuildContext context) {
+  Widget _header(BuildContext context, AppLocalizations l) {
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.primary,
@@ -97,10 +100,10 @@ class _Invoice extends StatelessWidget {
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => Navigator.of(context).maybePop(),
               ),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Receipt',
-                  style: TextStyle(
+                  l.receiptTitle,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
@@ -108,9 +111,9 @@ class _Invoice extends StatelessWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'Copy to share',
+                tooltip: l.receiptCopyTooltip,
                 icon: const Icon(Icons.ios_share, color: Colors.white),
-                onPressed: () => _copy(context),
+                onPressed: () => _copy(context, l),
               ),
             ],
           ),
@@ -119,7 +122,7 @@ class _Invoice extends StatelessWidget {
     );
   }
 
-  Widget _card() {
+  Widget _card(AppLocalizations l) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -148,8 +151,8 @@ class _Invoice extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Payment receipt',
-                      style: TextStyle(
+                      l.receiptPaymentReceipt,
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textMuted,
                       ),
@@ -157,55 +160,58 @@ class _Invoice extends StatelessWidget {
                   ],
                 ),
               ),
-              _statusChip(),
+              _statusChip(l),
             ],
           ),
           const SizedBox(height: 16),
-          _kv('Receipt no.', receipt.receiptNumber),
+          _kv(l.receiptNo, receipt.receiptNumber),
           if (receipt.issuedAt != null)
-            _kv('Issued', _dateTime(receipt.issuedAt!)),
-          _kv('Booking', _short(receipt.bookingId)),
+            _kv(l.receiptIssued, _dateTime(receipt.issuedAt!)),
+          _kv(l.receiptBooking, _short(receipt.bookingId)),
           const _Rule(),
-          _party('Billed to', receipt.customerName),
+          _party(l.receiptBilledTo, receipt.customerName),
           const SizedBox(height: 10),
-          _party('Service by', receipt.providerName),
+          _party(l.receiptServiceBy, receipt.providerName),
           if (receipt.serviceName != null) ...[
             const SizedBox(height: 10),
-            _party('Service', receipt.serviceName),
+            _party(l.bookingSectionService, receipt.serviceName),
           ],
           if (receipt.taskTitle != null && receipt.taskTitle!.isNotEmpty) ...[
             const SizedBox(height: 10),
-            _party('Job', receipt.taskTitle),
+            _party(l.receiptJob, receipt.taskTitle),
           ],
           if (receipt.completedAt != null) ...[
             const SizedBox(height: 10),
-            _party('Completed', _dateTime(receipt.completedAt!)),
+            _party(l.receiptCompleted, _dateTime(receipt.completedAt!)),
           ],
           const _Rule(),
-          _lineItem('Base call-out', receipt.basePrice),
+          _lineItem(l.receiptBaseCallout, _money(l, receipt.basePrice)),
           _lineItem(
-            'Labour · ${_num(receipt.workingHours)} h × ${_money(receipt.hourlyRate)}',
-            receipt.workingFee,
+            l.receiptLabour(
+              _num(receipt.workingHours),
+              _money(l, receipt.hourlyRate),
+            ),
+            _money(l, receipt.workingFee),
           ),
           _lineItem(
-            'Travel · ${_num(receipt.travelDistanceKm)} km',
-            receipt.travelFee,
+            l.receiptTravelLine(_num(receipt.travelDistanceKm)),
+            _money(l, receipt.travelFee),
           ),
           const SizedBox(height: 8),
           const _Rule(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Total paid',
-                style: TextStyle(
+              Text(
+                l.receiptTotalPaid,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
                 ),
               ),
               Text(
-                _money(receipt.total),
+                _money(l, receipt.total),
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
@@ -215,12 +221,12 @@ class _Invoice extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          _escrowBox(),
+          _escrowBox(l),
           const SizedBox(height: 14),
           Center(
             child: Text(
-              'This is a computer-generated receipt.',
-              style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+              l.receiptComputerGenerated,
+              style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
             ),
           ),
         ],
@@ -228,10 +234,10 @@ class _Invoice extends StatelessWidget {
     );
   }
 
-  Widget _statusChip() {
+  Widget _statusChip(AppLocalizations l) {
     final released = receipt.isReleased;
     final color = released ? AppColors.success : AppColors.info;
-    final label = released ? 'PAID' : 'IN ESCROW';
+    final label = released ? l.receiptStatusPaid : l.receiptStatusInEscrow;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
@@ -261,7 +267,7 @@ class _Invoice extends StatelessWidget {
     );
   }
 
-  Widget _escrowBox() {
+  Widget _escrowBox(AppLocalizations l) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -270,12 +276,16 @@ class _Invoice extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _split('Platform fee', receipt.platformCommission),
+          _split(l.commonPlatformFee, _money(l, receipt.platformCommission)),
           const SizedBox(height: 8),
-          _split('Provider received', receipt.providerPayout, bold: true),
+          _split(
+            l.receiptProviderReceived,
+            _money(l, receipt.providerPayout),
+            bold: true,
+          ),
           const Divider(height: 20),
           _split0(
-            'Method',
+            l.receiptMethod,
             '${_gateway(receipt.gateway)}${receipt.paidAt != null ? ' · ${_date(receipt.paidAt!)}' : ''}',
           ),
         ],
@@ -329,7 +339,7 @@ class _Invoice extends StatelessWidget {
     ],
   );
 
-  Widget _lineItem(String label, double value) => Padding(
+  Widget _lineItem(String label, String value) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 5),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -341,7 +351,7 @@ class _Invoice extends StatelessWidget {
           ),
         ),
         Text(
-          _money(value),
+          value,
           style: const TextStyle(
             fontSize: 13.5,
             fontWeight: FontWeight.w700,
@@ -352,7 +362,7 @@ class _Invoice extends StatelessWidget {
     ),
   );
 
-  Widget _split(String label, double value, {bool bold = false}) => Row(
+  Widget _split(String label, String value, {bool bold = false}) => Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Text(
@@ -364,7 +374,7 @@ class _Invoice extends StatelessWidget {
         ),
       ),
       Text(
-        _money(value),
+        value,
         style: TextStyle(
           fontSize: 13.5,
           fontWeight: FontWeight.w800,
@@ -393,45 +403,52 @@ class _Invoice extends StatelessWidget {
   );
 
   // ---- share ----
-  Future<void> _copy(BuildContext context) async {
-    await Clipboard.setData(ClipboardData(text: _asText()));
+  Future<void> _copy(BuildContext context, AppLocalizations l) async {
+    await Clipboard.setData(ClipboardData(text: _asText(l)));
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Receipt copied to clipboard.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.receiptCopied)));
     }
   }
 
-  String _asText() {
+  String _asText(AppLocalizations l) {
     final b = StringBuffer()
-      ..writeln('GIGGO — Payment receipt')
-      ..writeln('Receipt no. ${receipt.receiptNumber}')
-      ..writeln(receipt.isReleased ? 'Status: PAID' : 'Status: IN ESCROW');
+      ..writeln('GIGGO ${l.receiptPaymentReceipt}')
+      ..writeln('${l.receiptNo} ${receipt.receiptNumber}')
+      ..writeln(
+        receipt.isReleased ? l.receiptStatusPaid : l.receiptStatusInEscrow,
+      );
     if (receipt.issuedAt != null) {
-      b.writeln('Issued: ${_dateTime(receipt.issuedAt!)}');
+      b.writeln('${l.receiptIssued}: ${_dateTime(receipt.issuedAt!)}');
     }
     b
-      ..writeln('Billed to: ${receipt.customerName ?? '—'}')
-      ..writeln('Service by: ${receipt.providerName ?? '—'}')
-      ..writeln('Service: ${receipt.serviceName ?? '—'}')
+      ..writeln('${l.receiptBilledTo}: ${receipt.customerName ?? '—'}')
+      ..writeln('${l.receiptServiceBy}: ${receipt.providerName ?? '—'}')
+      ..writeln('${l.bookingSectionService}: ${receipt.serviceName ?? '—'}')
       ..writeln('---')
-      ..writeln('Base call-out: ${_money(receipt.basePrice)}')
+      ..writeln('${l.receiptBaseCallout}: ${_money(l, receipt.basePrice)}')
       ..writeln(
-        'Labour ${_num(receipt.workingHours)}h x ${_money(receipt.hourlyRate)}: ${_money(receipt.workingFee)}',
+        '${l.receiptLabour(_num(receipt.workingHours), _money(l, receipt.hourlyRate))}: ${_money(l, receipt.workingFee)}',
       )
       ..writeln(
-        'Travel ${_num(receipt.travelDistanceKm)}km: ${_money(receipt.travelFee)}',
+        '${l.receiptTravelLine(_num(receipt.travelDistanceKm))}: ${_money(l, receipt.travelFee)}',
       )
-      ..writeln('Total paid: ${_money(receipt.total)}')
+      ..writeln('${l.receiptTotalPaid}: ${_money(l, receipt.total)}')
       ..writeln('---')
-      ..writeln('Platform fee: ${_money(receipt.platformCommission)}')
-      ..writeln('Provider received: ${_money(receipt.providerPayout)}')
-      ..writeln('Method: ${_gateway(receipt.gateway)}');
+      ..writeln(
+        '${l.commonPlatformFee}: ${_money(l, receipt.platformCommission)}',
+      )
+      ..writeln(
+        '${l.receiptProviderReceived}: ${_money(l, receipt.providerPayout)}',
+      )
+      ..writeln('${l.receiptMethod}: ${_gateway(receipt.gateway)}');
     return b.toString();
   }
 
   // ---- formatting ----
-  String _money(double v) => 'Rs. ${v.toStringAsFixed(2)}';
+  String _money(AppLocalizations l, double v) =>
+      '${l.pricePrefix} ${v.toStringAsFixed(2)}';
   String _num(double v) =>
       v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(1);
   String _short(String id) =>
