@@ -511,4 +511,126 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get bdBookingCancelled => 'වෙන්කරවා ගැනීම අවලංගු කරන ලදී.';
+
+  @override
+  String get commonPlatformFee => 'වේදිකා ගාස්තුව';
+
+  @override
+  String get paySummary => 'ගෙවීම් සාරාංශය';
+
+  @override
+  String get payStepPay => 'ගෙවන්න';
+
+  @override
+  String get payStepEscrow => 'එස්ක්‍රෝ තුළ';
+
+  @override
+  String get payStepReleased => 'මුදා හැරියා';
+
+  @override
+  String get payAmount => 'මුදල';
+
+  @override
+  String get payProviderReceives => 'සේවා සපයන්නාට ලැබෙන්නේ';
+
+  @override
+  String get payFeeNote =>
+      'ඔබ ගෙවන විට කුඩා වේදිකා ගාස්තුවක් අය කෙරේ; ඉතිරිය ඔබේ සේවා සපයන්නාට යයි.';
+
+  @override
+  String get payViewReceipt => 'රිසිට්පත බලන්න';
+
+  @override
+  String get payEscrowNote0 =>
+      'ඔබේ ගෙවීම GIGGO විසින් සුරක්ෂිතව රඳවා තබා ගන්නා අතර, කාර්යය නිම වූ බව ඔබ තහවුරු කළ විට පමණක් සේවා සපයන්නාට මුදා හරිනු ලැබේ.';
+
+  @override
+  String get payEscrowNote1 =>
+      'මුදල් එස්ක්‍රෝ තුළ රඳවා ඇත. නිම වූ වැඩ ගැන ඔබ සතුටු වූ පසු ඒවා මුදා හරින්න.';
+
+  @override
+  String get payEscrowNote2 =>
+      'ගෙවීම සේවා සපයන්නාට මුදා හැරියා. මෙම වෙන්කරවා ගැනීම නිරාකරණය විය.';
+
+  @override
+  String get payReleaseToProvider => 'සේවා සපයන්නාට මුදා හරින්න';
+
+  @override
+  String payPayAmount(String amount) {
+    return '$amount ගෙවන්න';
+  }
+
+  @override
+  String get paySecured => 'ගෙවීම සුරක්ෂිතයි, එස්ක්‍රෝ තුළ ආරක්ෂිතව රඳවා ඇත.';
+
+  @override
+  String get payReleasedThanks => 'සේවා සපයන්නාට මුදා හැරියා. ස්තූතියි!';
+
+  @override
+  String get receiptUnavailable =>
+      'ගෙවීම ලබා ගත් පසු ඔබේ රිසිට්පත ලබා ගත හැකි වේ.';
+
+  @override
+  String get receiptTitle => 'රිසිට්පත';
+
+  @override
+  String get receiptCopyTooltip => 'බෙදාගැනීමට පිටපත් කරන්න';
+
+  @override
+  String get receiptPaymentReceipt => 'ගෙවීම් රිසිට්පත';
+
+  @override
+  String get receiptNo => 'රිසිට් අංකය';
+
+  @override
+  String get receiptIssued => 'නිකුත් කළේ';
+
+  @override
+  String get receiptBooking => 'වෙන්කරවා ගැනීම';
+
+  @override
+  String get receiptBilledTo => 'බිල් කළේ';
+
+  @override
+  String get receiptServiceBy => 'සේවාව සැපයුවේ';
+
+  @override
+  String get receiptJob => 'කාර්යය';
+
+  @override
+  String get receiptCompleted => 'සම්පූර්ණ කළේ';
+
+  @override
+  String get receiptBaseCallout => 'මූලික පැමිණීම';
+
+  @override
+  String receiptLabour(String hours, String rate) {
+    return 'ශ්‍රමය · $hours පැ × $rate';
+  }
+
+  @override
+  String receiptTravelLine(String km) {
+    return 'ගමන් · $km කි.මී.';
+  }
+
+  @override
+  String get receiptTotalPaid => 'ගෙවූ මුළු මුදල';
+
+  @override
+  String get receiptStatusPaid => 'ගෙවා ඇත';
+
+  @override
+  String get receiptStatusInEscrow => 'එස්ක්‍රෝ තුළ';
+
+  @override
+  String get receiptProviderReceived => 'සේවා සපයන්නාට ලැබුණේ';
+
+  @override
+  String get receiptMethod => 'ක්‍රමය';
+
+  @override
+  String get receiptComputerGenerated => 'මෙය පරිගණකයෙන් ජනනය කළ රිසිට්පතකි.';
+
+  @override
+  String get receiptCopied => 'රිසිට්පත පසුරු පුවරුවට පිටපත් කරන ලදී.';
 }

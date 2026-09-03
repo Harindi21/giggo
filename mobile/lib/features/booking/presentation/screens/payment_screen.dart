@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -10,7 +11,7 @@ import '../providers/booking_providers.dart';
 
 /// Payment / escrow checkout (P7.2). Surfaces the escrow lifecycle: the customer
 /// pays (funds held by the platform), then releases them to the provider minus
-/// the platform fee. The gateway redirect is stubbed — in production "Pay" opens
+/// the platform fee. The gateway redirect is stubbed; in production "Pay" opens
 /// the PayHere hosted checkout.
 class PaymentScreen extends ConsumerStatefulWidget {
   const PaymentScreen({super.key, required this.bookingId});
@@ -28,6 +29,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   String get _id => widget.bookingId;
 
   Future<void> _pay(Payment? current) async {
+    final l = AppLocalizations.of(context);
     setState(() {
       _busy = true;
       _error = null;
@@ -41,7 +43,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       }
       ref.invalidate(bookingPaymentProvider(_id));
       ref.invalidate(bookingReceiptProvider(_id));
-      _snack('Payment secured — held safely in escrow.');
+      _snack(l.paySecured);
     } catch (e) {
       setState(() => _error = e.toString());
     } finally {
@@ -50,6 +52,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   }
 
   Future<void> _release(Payment payment) async {
+    final l = AppLocalizations.of(context);
     setState(() {
       _busy = true;
       _error = null;
@@ -60,7 +63,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       ref.invalidate(bookingReceiptProvider(_id));
       ref.invalidate(bookingDetailProvider(_id));
       ref.invalidate(bookingTimelineProvider(_id));
-      _snack('Released to the provider. Thank you!');
+      _snack(l.payReleasedThanks);
     } catch (e) {
       setState(() => _error = e.toString());
     } finally {
@@ -95,6 +98,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   }
 
   Widget _content(Payment? payment, double? bookingTotal) {
+    final l = AppLocalizations.of(context);
     final total = payment?.amount ?? bookingTotal ?? 0;
     final stage = _stage(payment);
     return SingleChildScrollView(
@@ -110,7 +114,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               children: [
                 _stepper(stage),
                 const SizedBox(height: 24),
-                _sectionTitle('Payment summary'),
+                _sectionTitle(l.paySummary),
                 const SizedBox(height: 10),
                 _summaryCard(payment, total),
                 const SizedBox(height: 16),
@@ -133,6 +137,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   }
 
   Widget _header() {
+    final l = AppLocalizations.of(context);
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.primary,
@@ -148,9 +153,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => Navigator.of(context).maybePop(),
               ),
-              const Text(
-                'Payment',
-                style: TextStyle(
+              Text(
+                l.commonPayment,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -165,13 +170,14 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
 
   // ---- escrow stepper ----
   Widget _stepper(int stage) {
+    final l = AppLocalizations.of(context);
     return Row(
       children: [
-        _step(0, stage, 'Pay', Icons.credit_card),
+        _step(0, stage, l.payStepPay, Icons.credit_card),
         _connector(stage >= 1),
-        _step(1, stage, 'In escrow', Icons.lock_outline),
+        _step(1, stage, l.payStepEscrow, Icons.lock_outline),
         _connector(stage >= 2),
-        _step(2, stage, 'Released', Icons.verified_outlined),
+        _step(2, stage, l.payStepReleased, Icons.verified_outlined),
       ],
     );
   }
@@ -219,6 +225,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
 
   // ---- summary ----
   Widget _summaryCard(Payment? payment, double total) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -227,18 +234,28 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       ),
       child: Column(
         children: [
-          _row('Amount', _rs(total)),
+          _row(l.payAmount, _rs(total)),
           if (payment != null) ...[
             const SizedBox(height: 8),
-            _row('Platform fee', '- ${_rs(payment.commission)}', muted: true),
+            _row(
+              l.commonPlatformFee,
+              '- ${_rs(payment.commission)}',
+              muted: true,
+            ),
             const Divider(height: 20),
-            _row('Provider receives', _rs(payment.providerPayout), bold: true),
+            _row(
+              l.payProviderReceives,
+              _rs(payment.providerPayout),
+              bold: true,
+            ),
           ] else ...[
             const SizedBox(height: 8),
-            const Text(
-              'A small platform fee is applied when you pay; the rest goes to '
-              'your provider.',
-              style: TextStyle(fontSize: 11.5, color: AppColors.textMuted),
+            Text(
+              l.payFeeNote,
+              style: const TextStyle(
+                fontSize: 11.5,
+                color: AppColors.textMuted,
+              ),
             ),
           ],
         ],
@@ -247,6 +264,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   }
 
   Widget _receiptLink() {
+    final l = AppLocalizations.of(context);
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -267,10 +285,10 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                 color: AppColors.primary,
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'View receipt',
-                  style: TextStyle(
+                  l.payViewReceipt,
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
@@ -286,21 +304,11 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   }
 
   Widget _escrowNote(int stage) {
+    final l = AppLocalizations.of(context);
     final (icon, text) = switch (stage) {
-      0 => (
-        Icons.shield_outlined,
-        'Your payment is held securely by GIGGO and only released to the '
-            'provider when you confirm the job is done.',
-      ),
-      1 => (
-        Icons.lock_outline,
-        'Funds are held in escrow. Release them once you are happy with the '
-            'completed work.',
-      ),
-      _ => (
-        Icons.verified_outlined,
-        'Payment released to the provider. This booking is settled.',
-      ),
+      0 => (Icons.shield_outlined, l.payEscrowNote0),
+      1 => (Icons.lock_outline, l.payEscrowNote1),
+      _ => (Icons.verified_outlined, l.payEscrowNote2),
     };
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -319,13 +327,14 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
 
   // ---- action bar ----
   Widget? _actionBar(Payment? payment, double? bookingTotal) {
+    final l = AppLocalizations.of(context);
     final stage = _stage(payment);
     if (stage == 2) {
       return null; // settled
     }
     final label = stage == 1
-        ? 'Release to provider'
-        : 'Pay ${_rs(payment?.amount ?? bookingTotal ?? 0)}';
+        ? l.payReleaseToProvider
+        : l.payPayAmount(_rs(payment?.amount ?? bookingTotal ?? 0));
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -404,28 +413,36 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     ),
   );
 
-  Widget _errorView(String msg) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.error_outline, color: AppColors.textMuted, size: 40),
-          const SizedBox(height: 8),
-          Text(
-            msg,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.textMuted),
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton(
-            onPressed: () => Navigator.of(context).maybePop(),
-            child: const Text('Go back'),
-          ),
-        ],
+  Widget _errorView(String msg) {
+    final l = AppLocalizations.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.error_outline,
+              color: AppColors.textMuted,
+              size: 40,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              msg,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.textMuted),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: () => Navigator.of(context).maybePop(),
+              child: Text(l.commonGoBack),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 
-  String _rs(double v) => 'Rs. ${v.toStringAsFixed(0)}';
+  String _rs(double v) =>
+      '${AppLocalizations.of(context).pricePrefix} ${v.toStringAsFixed(0)}';
 }
