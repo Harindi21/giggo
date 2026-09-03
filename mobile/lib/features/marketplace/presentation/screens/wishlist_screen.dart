@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../data/models/tool_models.dart';
@@ -14,10 +15,11 @@ class WishlistScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final async = ref.watch(wishlistProvider);
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Saved tools')),
+      appBar: AppBar(title: Text(l.shopSavedTools)),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(wishlistProvider);
@@ -38,18 +40,18 @@ class WishlistScreen extends ConsumerWidget {
           data: (tools) {
             if (tools.isEmpty) {
               return ListView(
-                children: const [
-                  SizedBox(height: 120),
-                  Icon(
+                children: [
+                  const SizedBox(height: 120),
+                  const Icon(
                     Icons.favorite_border,
                     size: 56,
                     color: AppColors.textMuted,
                   ),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   Text(
-                    'No saved tools yet.\nTap the heart on a tool to save it.',
+                    l.wishlistEmpty,
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: AppColors.textMuted),
+                    style: const TextStyle(color: AppColors.textMuted),
                   ),
                 ],
               );
@@ -67,6 +69,7 @@ class WishlistScreen extends ConsumerWidget {
   }
 
   Widget _tile(BuildContext context, WidgetRef ref, Tool t) {
+    final l = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -87,14 +90,14 @@ class WishlistScreen extends ConsumerWidget {
           ),
         ),
         subtitle: Text(
-          'Rs. ${t.price.toStringAsFixed(0)}',
+          '${l.pricePrefix} ${t.price.toStringAsFixed(0)}',
           style: const TextStyle(
             color: AppColors.accent,
             fontWeight: FontWeight.w700,
           ),
         ),
         trailing: IconButton(
-          tooltip: 'Remove',
+          tooltip: l.wishlistRemove,
           icon: const Icon(Icons.favorite, color: AppColors.accent),
           onPressed: () async {
             try {

@@ -711,5 +711,30 @@
   "checkoutPlacePay": "Place & pay",
   "@checkoutPlacePay": { "description": "Place order button" },
   "checkoutOrderPlaced": "Order placed, thank you!",
-  "@checkoutOrderPlaced": { "description": "Snackbar after placing an order" }
+  "@checkoutOrderPlaced": { "description": "Snackbar after placing an order" },
+
+  "ordersEmpty": "No orders yet",
+  "@ordersEmpty": { "description": "Orders empty state" },
+  "ordersEmptyBody": "Tools you buy from the Shop will appear here.",
+  "@ordersEmptyBody": { "description": "Orders empty state body" },
+  "ordersLine": "{qty} × {unit}  ·  Total {total}",
+  "@ordersLine": {
+    "description": "Order quantity, unit price and total",
+    "placeholders": {
+      "qty": { "type": "int" },
+      "unit": { "type": "String" },
+      "total": { "type": "String" }
+    }
+  },
+  "ordersPending": "Pending",
+  "@ordersPending": { "description": "Order status" },
+  "ordersPaymentComplete": "Payment complete.",
+  "@ordersPaymentComplete": { "description": "Snackbar after paying for an order" },
+  "ordersCancelled": "Order cancelled.",
+  "@ordersCancelled": { "description": "Snackbar after cancelling an order" },
+
+  "wishlistEmpty": "No saved tools yet.\nTap the heart on a tool to save it.",
+  "@wishlistEmpty": { "description": "Wishlist empty state" },
+  "wishlistRemove": "Remove",
+  "@wishlistRemove": { "description": "Remove-from-wishlist tooltip" }
 }

@@ -292,5 +292,15 @@
   "checkoutPriceEach": "{amount} බැගින්",
   "checkoutUnits": "ඒකක",
   "checkoutPlacePay": "ඇණවුම් කර ගෙවන්න",
-  "checkoutOrderPlaced": "ඇණවුම සිදු කරන ලදී, ස්තූතියි!"
+  "checkoutOrderPlaced": "ඇණවුම සිදු කරන ලදී, ස්තූතියි!",
+
+  "ordersEmpty": "තවම ඇණවුම් නැත",
+  "ordersEmptyBody": "ඔබ සාප්පුවෙන් මිලදී ගන්නා මෙවලම් මෙහි දිස්වේ.",
+  "ordersLine": "{qty} × {unit}  ·  එකතුව {total}",
+  "ordersPending": "පොරොත්තුවෙන්",
+  "ordersPaymentComplete": "ගෙවීම සම්පූර්ණයි.",
+  "ordersCancelled": "ඇණවුම අවලංගු කරන ලදී.",
+
+  "wishlistEmpty": "තවම සුරැකි මෙවලම් නැත.\nමෙවලමක් සුරැකීමට හදවත මත තට්ටු කරන්න.",
+  "wishlistRemove": "ඉවත් කරන්න"
 }
