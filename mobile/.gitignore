@@ -33,6 +33,10 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Auto-generated tooling artifacts (Widget Preview scaffold + DevTools config)
+.widget_preview/
+devtools_options.yaml
+
 # Symbolication related
 app.*.symbols
 
