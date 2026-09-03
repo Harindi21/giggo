@@ -1723,6 +1723,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove'**
   String get wishlistRemove;
+
+  /// Rate review screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Rate your provider'**
+  String get reviewTitle;
+
+  /// Star rating prompt
+  ///
+  /// In en, this message translates to:
+  /// **'How was the service?'**
+  String get reviewHowWasService;
+
+  /// Dimension ratings heading
+  ///
+  /// In en, this message translates to:
+  /// **'Rate the details (optional)'**
+  String get reviewRateDetails;
+
+  /// Rating dimension
+  ///
+  /// In en, this message translates to:
+  /// **'Punctuality'**
+  String get reviewPunctuality;
+
+  /// Rating dimension
+  ///
+  /// In en, this message translates to:
+  /// **'Value'**
+  String get reviewValue;
+
+  /// Review text field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Tell others about your experience (optional)'**
+  String get reviewBodyHint;
+
+  /// Submit review button
+  ///
+  /// In en, this message translates to:
+  /// **'Submit review'**
+  String get reviewSubmit;
+
+  /// Validation when no stars selected
+  ///
+  /// In en, this message translates to:
+  /// **'Please tap a star rating first.'**
+  String get reviewErrStars;
+
+  /// Snackbar after submitting a review
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for your review!'**
+  String get reviewThanks;
+
+  /// Snackbar with detected sentiment
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks! We read your review as \"{sentiment}\".'**
+  String reviewThanksSentiment(String sentiment);
+
+  /// Reviews section title
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
+  String get reviewsTitle;
+
+  /// Reviews load error
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load reviews.'**
+  String get reviewsLoadError;
+
+  /// Reviews empty state
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews yet, be the first after your booking.'**
+  String get reviewsEmpty;
+
+  /// Report review dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Report this review?'**
+  String get reviewReportTitle;
+
+  /// Report review dialog body
+  ///
+  /// In en, this message translates to:
+  /// **'Our team will review it for abusive or fake content.'**
+  String get reviewReportBody;
+
+  /// Report review action
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get reviewReport;
+
+  /// Snackbar after reporting a review
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks, reported for review.'**
+  String get reviewReported;
+
+  /// Per-dimension rating section title
+  ///
+  /// In en, this message translates to:
+  /// **'Rating breakdown'**
+  String get reviewBreakdownTitle;
+
+  /// Fallback reviewer name
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get reviewCustomer;
+
+  /// Sentiment badge
+  ///
+  /// In en, this message translates to:
+  /// **'Positive'**
+  String get sentimentPositive;
+
+  /// Sentiment badge
+  ///
+  /// In en, this message translates to:
+  /// **'Negative'**
+  String get sentimentNegative;
+
+  /// Sentiment badge (neutral/mixed)
+  ///
+  /// In en, this message translates to:
+  /// **'Mixed'**
+  String get sentimentMixed;
 }
 
 class _AppLocalizationsDelegate

@@ -879,4 +879,73 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wishlistRemove => 'Remove';
+
+  @override
+  String get reviewTitle => 'Rate your provider';
+
+  @override
+  String get reviewHowWasService => 'How was the service?';
+
+  @override
+  String get reviewRateDetails => 'Rate the details (optional)';
+
+  @override
+  String get reviewPunctuality => 'Punctuality';
+
+  @override
+  String get reviewValue => 'Value';
+
+  @override
+  String get reviewBodyHint => 'Tell others about your experience (optional)';
+
+  @override
+  String get reviewSubmit => 'Submit review';
+
+  @override
+  String get reviewErrStars => 'Please tap a star rating first.';
+
+  @override
+  String get reviewThanks => 'Thanks for your review!';
+
+  @override
+  String reviewThanksSentiment(String sentiment) {
+    return 'Thanks! We read your review as \"$sentiment\".';
+  }
+
+  @override
+  String get reviewsTitle => 'Reviews';
+
+  @override
+  String get reviewsLoadError => 'Could not load reviews.';
+
+  @override
+  String get reviewsEmpty => 'No reviews yet, be the first after your booking.';
+
+  @override
+  String get reviewReportTitle => 'Report this review?';
+
+  @override
+  String get reviewReportBody =>
+      'Our team will review it for abusive or fake content.';
+
+  @override
+  String get reviewReport => 'Report';
+
+  @override
+  String get reviewReported => 'Thanks, reported for review.';
+
+  @override
+  String get reviewBreakdownTitle => 'Rating breakdown';
+
+  @override
+  String get reviewCustomer => 'Customer';
+
+  @override
+  String get sentimentPositive => 'Positive';
+
+  @override
+  String get sentimentNegative => 'Negative';
+
+  @override
+  String get sentimentMixed => 'Mixed';
 }

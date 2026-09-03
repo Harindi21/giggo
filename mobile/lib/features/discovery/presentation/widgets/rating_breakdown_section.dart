@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../providers/discovery_providers.dart';
@@ -17,21 +18,22 @@ class RatingBreakdownSection extends ConsumerWidget {
     return async.maybeWhen(
       data: (b) {
         if (!b.hasRatings) return const SizedBox.shrink();
+        final l = AppLocalizations.of(context);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Rating breakdown',
-              style: TextStyle(
+            Text(
+              l.reviewBreakdownTitle,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 10),
-            _bar('Service', b.service),
-            _bar('Punctuality', b.punctuality),
-            _bar('Value', b.value),
+            _bar(l.bookingSectionService, b.service),
+            _bar(l.reviewPunctuality, b.punctuality),
+            _bar(l.reviewValue, b.value),
             const SizedBox(height: 8),
           ],
         );

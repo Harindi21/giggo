@@ -885,4 +885,74 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get wishlistRemove => 'ඉවත් කරන්න';
+
+  @override
+  String get reviewTitle => 'ඔබේ සේවා සපයන්නා ශ්‍රේණිගත කරන්න';
+
+  @override
+  String get reviewHowWasService => 'සේවාව කෙසේද?';
+
+  @override
+  String get reviewRateDetails => 'විස්තර ශ්‍රේණිගත කරන්න (විකල්ප)';
+
+  @override
+  String get reviewPunctuality => 'නියමිත වේලාව';
+
+  @override
+  String get reviewValue => 'වටිනාකම';
+
+  @override
+  String get reviewBodyHint => 'ඔබේ අත්දැකීම ගැන අන් අයට කියන්න (විකල්ප)';
+
+  @override
+  String get reviewSubmit => 'සමාලෝචනය යොමු කරන්න';
+
+  @override
+  String get reviewErrStars => 'කරුණාකර පළමුව තරු ශ්‍රේණියක් තට්ටු කරන්න.';
+
+  @override
+  String get reviewThanks => 'ඔබේ සමාලෝචනයට ස්තූතියි!';
+
+  @override
+  String reviewThanksSentiment(String sentiment) {
+    return 'ස්තූතියි! ඔබේ සමාලෝචනය \"$sentiment\" ලෙස කියෙව්වා.';
+  }
+
+  @override
+  String get reviewsTitle => 'සමාලෝචන';
+
+  @override
+  String get reviewsLoadError => 'සමාලෝචන පූරණය කළ නොහැකි විය.';
+
+  @override
+  String get reviewsEmpty =>
+      'තවම සමාලෝචන නැත, ඔබේ වෙන්කරවා ගැනීමෙන් පසු පළමුවැන්නා වන්න.';
+
+  @override
+  String get reviewReportTitle => 'මෙම සමාලෝචනය වාර්තා කරන්නද?';
+
+  @override
+  String get reviewReportBody =>
+      'අපගේ කණ්ඩායම එය අපහාසාත්මක හෝ ව්‍යාජ අන්තර්ගතය සඳහා සමාලෝචනය කරයි.';
+
+  @override
+  String get reviewReport => 'වාර්තා කරන්න';
+
+  @override
+  String get reviewReported => 'ස්තූතියි, සමාලෝචනය සඳහා වාර්තා කරන ලදී.';
+
+  @override
+  String get reviewBreakdownTitle => 'ශ්‍රේණිගත විශ්ලේෂණය';
+
+  @override
+  String get reviewCustomer => 'පාරිභෝගිකයා';
+
+  @override
+  String get sentimentPositive => 'ධනාත්මක';
+
+  @override
+  String get sentimentNegative => 'ඍණාත්මක';
+
+  @override
+  String get sentimentMixed => 'මිශ්‍ර';
 }
