@@ -662,5 +662,22 @@
   "tasksNoJobs": "No jobs yet",
   "@tasksNoJobs": { "description": "Provider empty state" },
   "tasksNoJobsBody": "New booking requests will appear here.",
-  "@tasksNoJobsBody": { "description": "Provider empty state body" }
+  "@tasksNoJobsBody": { "description": "Provider empty state body" },
+
+  "shopSearchProducts": "Search Products",
+  "@shopSearchProducts": { "description": "Shop search hint" },
+  "shopSavedTools": "Saved tools",
+  "@shopSavedTools": { "description": "Shop menu: wishlist" },
+  "shopMyOrders": "My orders",
+  "@shopMyOrders": { "description": "Shop menu: orders" },
+  "shopCategories": "Categories",
+  "@shopCategories": { "description": "Shop menu section header" },
+  "shopAllCategories": "All categories",
+  "@shopAllCategories": { "description": "Shop category filter: all" },
+  "shopNoTools": "No tools listed yet, check back soon.",
+  "@shopNoTools": { "description": "Shop empty state" },
+  "shopNoMatch": "No tools match your search.",
+  "@shopNoMatch": { "description": "Shop empty search state" },
+  "shopUnavailable": "This tool is currently unavailable",
+  "@shopUnavailable": { "description": "Snackbar for an out-of-stock tool" }
 }

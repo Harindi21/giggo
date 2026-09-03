@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/giggo_wordmark.dart';
@@ -129,7 +130,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       decoration: InputDecoration(
         fillColor: Colors.white,
         filled: true,
-        hintText: 'Search Products',
+        hintText: AppLocalizations.of(context).shopSearchProducts,
         hintStyle: const TextStyle(color: AppColors.textMuted),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -183,7 +184,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                 Icons.favorite_border,
                 color: AppColors.primary,
               ),
-              title: const Text('Saved tools'),
+              title: Text(AppLocalizations.of(context).shopSavedTools),
               onTap: () {
                 Navigator.pop(sheetCtx);
                 context.push('/wishlist');
@@ -194,24 +195,28 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                 Icons.receipt_long_outlined,
                 color: AppColors.primary,
               ),
-              title: const Text('My orders'),
+              title: Text(AppLocalizations.of(context).shopMyOrders),
               onTap: () {
                 Navigator.pop(sheetCtx);
                 context.push('/orders');
               },
             ),
             const Divider(),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
               child: Text(
-                'Categories',
-                style: TextStyle(
+                AppLocalizations.of(context).shopCategories,
+                style: const TextStyle(
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
                 ),
               ),
             ),
-            _catTile(sheetCtx, 'All categories', null),
+            _catTile(
+              sheetCtx,
+              AppLocalizations.of(context).shopAllCategories,
+              null,
+            ),
             for (final c in categories) _catTile(sheetCtx, c, c),
           ],
         ),
@@ -239,7 +244,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       return [
         SliverFillRemaining(
           hasScrollBody: false,
-          child: _message('No tools listed yet — check back soon.'),
+          child: _message(AppLocalizations.of(context).shopNoTools),
         ),
       ];
     }
@@ -261,7 +266,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       return [
         SliverFillRemaining(
           hasScrollBody: false,
-          child: _message('No tools match your search.'),
+          child: _message(AppLocalizations.of(context).shopNoMatch),
         ),
       ];
     }
@@ -317,7 +322,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Rs. ${t.price.toStringAsFixed(0)}',
+                          '${AppLocalizations.of(context).pricePrefix} ${t.price.toStringAsFixed(0)}',
                           style: const TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 15,
@@ -380,8 +385,8 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
       onTap: enabled
           ? () => context.push('/checkout/${t.slug}')
           : () => ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('This tool is currently unavailable'),
+              SnackBar(
+                content: Text(AppLocalizations.of(context).shopUnavailable),
               ),
             ),
       customBorder: const CircleBorder(),

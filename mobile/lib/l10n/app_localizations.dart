@@ -1555,6 +1555,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New booking requests will appear here.'**
   String get tasksNoJobsBody;
+
+  /// Shop search hint
+  ///
+  /// In en, this message translates to:
+  /// **'Search Products'**
+  String get shopSearchProducts;
+
+  /// Shop menu: wishlist
+  ///
+  /// In en, this message translates to:
+  /// **'Saved tools'**
+  String get shopSavedTools;
+
+  /// Shop menu: orders
+  ///
+  /// In en, this message translates to:
+  /// **'My orders'**
+  String get shopMyOrders;
+
+  /// Shop menu section header
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get shopCategories;
+
+  /// Shop category filter: all
+  ///
+  /// In en, this message translates to:
+  /// **'All categories'**
+  String get shopAllCategories;
+
+  /// Shop empty state
+  ///
+  /// In en, this message translates to:
+  /// **'No tools listed yet, check back soon.'**
+  String get shopNoTools;
+
+  /// Shop empty search state
+  ///
+  /// In en, this message translates to:
+  /// **'No tools match your search.'**
+  String get shopNoMatch;
+
+  /// Snackbar for an out-of-stock tool
+  ///
+  /// In en, this message translates to:
+  /// **'This tool is currently unavailable'**
+  String get shopUnavailable;
 }
 
 class _AppLocalizationsDelegate

@@ -788,4 +788,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tasksNoJobsBody => 'New booking requests will appear here.';
+
+  @override
+  String get shopSearchProducts => 'Search Products';
+
+  @override
+  String get shopSavedTools => 'Saved tools';
+
+  @override
+  String get shopMyOrders => 'My orders';
+
+  @override
+  String get shopCategories => 'Categories';
+
+  @override
+  String get shopAllCategories => 'All categories';
+
+  @override
+  String get shopNoTools => 'No tools listed yet, check back soon.';
+
+  @override
+  String get shopNoMatch => 'No tools match your search.';
+
+  @override
+  String get shopUnavailable => 'This tool is currently unavailable';
 }
