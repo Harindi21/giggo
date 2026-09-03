@@ -1675,6 +1675,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Order placed, thank you!'**
   String get checkoutOrderPlaced;
+
+  /// Orders empty state
+  ///
+  /// In en, this message translates to:
+  /// **'No orders yet'**
+  String get ordersEmpty;
+
+  /// Orders empty state body
+  ///
+  /// In en, this message translates to:
+  /// **'Tools you buy from the Shop will appear here.'**
+  String get ordersEmptyBody;
+
+  /// Order quantity, unit price and total
+  ///
+  /// In en, this message translates to:
+  /// **'{qty} × {unit}  ·  Total {total}'**
+  String ordersLine(int qty, String unit, String total);
+
+  /// Order status
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get ordersPending;
+
+  /// Snackbar after paying for an order
+  ///
+  /// In en, this message translates to:
+  /// **'Payment complete.'**
+  String get ordersPaymentComplete;
+
+  /// Snackbar after cancelling an order
+  ///
+  /// In en, this message translates to:
+  /// **'Order cancelled.'**
+  String get ordersCancelled;
+
+  /// Wishlist empty state
+  ///
+  /// In en, this message translates to:
+  /// **'No saved tools yet.\nTap the heart on a tool to save it.'**
+  String get wishlistEmpty;
+
+  /// Remove-from-wishlist tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get wishlistRemove;
 }
 
 class _AppLocalizationsDelegate

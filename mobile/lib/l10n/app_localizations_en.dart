@@ -852,4 +852,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get checkoutOrderPlaced => 'Order placed, thank you!';
+
+  @override
+  String get ordersEmpty => 'No orders yet';
+
+  @override
+  String get ordersEmptyBody => 'Tools you buy from the Shop will appear here.';
+
+  @override
+  String ordersLine(int qty, String unit, String total) {
+    return '$qty × $unit  ·  Total $total';
+  }
+
+  @override
+  String get ordersPending => 'Pending';
+
+  @override
+  String get ordersPaymentComplete => 'Payment complete.';
+
+  @override
+  String get ordersCancelled => 'Order cancelled.';
+
+  @override
+  String get wishlistEmpty =>
+      'No saved tools yet.\nTap the heart on a tool to save it.';
+
+  @override
+  String get wishlistRemove => 'Remove';
 }

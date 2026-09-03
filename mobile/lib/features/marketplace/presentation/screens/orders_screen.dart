@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -23,7 +24,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
   Widget build(BuildContext context) {
     final async = ref.watch(myOrdersProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('My Orders')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context).shopMyOrders)),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(myOrdersProvider);
@@ -39,31 +40,32 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
   }
 
   Widget _list(List<ToolOrder> items) {
+    final l = AppLocalizations.of(context);
     if (items.isEmpty) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        children: const [
-          SizedBox(height: 120),
-          Icon(
+        children: [
+          const SizedBox(height: 120),
+          const Icon(
             Icons.receipt_long_outlined,
             size: 56,
             color: AppColors.textMuted,
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Text(
-            'No orders yet',
+            l.ordersEmpty,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           Text(
-            'Tools you buy from the Shop will appear here.',
+            l.ordersEmptyBody,
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.textMuted),
+            style: const TextStyle(color: AppColors.textMuted),
           ),
         ],
       );
@@ -76,6 +78,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
   }
 
   Widget _card(ToolOrder o) {
+    final l = AppLocalizations.of(context);
     final busy = _busyId == o.id;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -106,7 +109,11 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            '${o.quantity} × Rs. ${o.unitPrice.toStringAsFixed(0)}  ·  Total Rs. ${o.totalPrice.toStringAsFixed(0)}',
+            l.ordersLine(
+              o.quantity,
+              '${l.pricePrefix} ${o.unitPrice.toStringAsFixed(0)}',
+              '${l.pricePrefix} ${o.totalPrice.toStringAsFixed(0)}',
+            ),
             style: const TextStyle(fontSize: 13, color: AppColors.textBody),
           ),
           if (o.isPending) ...[
@@ -116,7 +123,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: busy ? null : () => _run(o.id, 'cancel'),
-                    child: const Text('Cancel'),
+                    child: Text(l.commonCancel),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -132,7 +139,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                               color: Colors.white,
                             ),
                           )
-                        : const Text('Pay'),
+                        : Text(l.payStepPay),
                   ),
                 ),
               ],
@@ -144,12 +151,13 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
   }
 
   Future<void> _run(String id, String action) async {
+    final l = AppLocalizations.of(context);
     setState(() => _busyId = id);
     try {
       final repo = ref.read(orderRepositoryProvider);
       await (action == 'pay' ? repo.pay(id) : repo.cancel(id));
       ref.invalidate(myOrdersProvider);
-      _snack(action == 'pay' ? 'Payment complete.' : 'Order cancelled.');
+      _snack(action == 'pay' ? l.ordersPaymentComplete : l.ordersCancelled);
     } catch (e) {
       _snack(e.toString());
     } finally {
@@ -163,10 +171,11 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
   }
 
   Widget _statusChip(String status) {
+    final l = AppLocalizations.of(context);
     final (label, color) = switch (status) {
-      'PAID' => ('Paid', AppColors.success),
-      'CANCELLED' => ('Cancelled', AppColors.error),
-      _ => ('Pending', AppColors.accent),
+      'PAID' => (l.statusPaid, AppColors.success),
+      'CANCELLED' => (l.statusCancelled, AppColors.error),
+      _ => (l.ordersPending, AppColors.accent),
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),

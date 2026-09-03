@@ -858,4 +858,31 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get checkoutOrderPlaced => 'ඇණවුම සිදු කරන ලදී, ස්තූතියි!';
+
+  @override
+  String get ordersEmpty => 'තවම ඇණවුම් නැත';
+
+  @override
+  String get ordersEmptyBody => 'ඔබ සාප්පුවෙන් මිලදී ගන්නා මෙවලම් මෙහි දිස්වේ.';
+
+  @override
+  String ordersLine(int qty, String unit, String total) {
+    return '$qty × $unit  ·  එකතුව $total';
+  }
+
+  @override
+  String get ordersPending => 'පොරොත්තුවෙන්';
+
+  @override
+  String get ordersPaymentComplete => 'ගෙවීම සම්පූර්ණයි.';
+
+  @override
+  String get ordersCancelled => 'ඇණවුම අවලංගු කරන ලදී.';
+
+  @override
+  String get wishlistEmpty =>
+      'තවම සුරැකි මෙවලම් නැත.\nමෙවලමක් සුරැකීමට හදවත මත තට්ටු කරන්න.';
+
+  @override
+  String get wishlistRemove => 'ඉවත් කරන්න';
 }
