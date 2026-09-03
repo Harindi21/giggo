@@ -628,4 +628,164 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get receiptCopied => 'Receipt copied to clipboard.';
+
+  @override
+  String get tasksRequested => 'Tasks Requested';
+
+  @override
+  String get tasksToGetDone => 'Tasks To Get Done';
+
+  @override
+  String get tasksOngoing => 'Ongoing Tasks';
+
+  @override
+  String get tasksCompleted => 'Tasks Completed';
+
+  @override
+  String get tasksRequests => 'Tasks Requests';
+
+  @override
+  String get tasksToDo => 'Tasks To Do';
+
+  @override
+  String get tasksTaskFallback => 'Task';
+
+  @override
+  String get tasksJobFallback => 'Job';
+
+  @override
+  String get tasksViewFee => 'View Fee';
+
+  @override
+  String get tasksViewJourney => 'View Journey';
+
+  @override
+  String get tasksPayFee => 'Pay Fee';
+
+  @override
+  String get tasksRate => 'Rate';
+
+  @override
+  String get tasksViewMap => 'View Map';
+
+  @override
+  String get tasksAccept => 'Accept';
+
+  @override
+  String get tasksDeny => 'Deny';
+
+  @override
+  String get tasksStartJourney => 'Start Journey';
+
+  @override
+  String get tasksStartTask => 'Start Task';
+
+  @override
+  String get tasksEndTask => 'End Task';
+
+  @override
+  String get jobAccepted => 'Job accepted';
+
+  @override
+  String get jobOnTheWay => 'On the way';
+
+  @override
+  String get jobStarted => 'Job started';
+
+  @override
+  String get jobCompleted => 'Job completed';
+
+  @override
+  String get requestDeclined => 'Request declined';
+
+  @override
+  String get jobCancelled => 'Job cancelled';
+
+  @override
+  String tasksProviderStartedAt(String time) {
+    return 'Provider started the task at : $time';
+  }
+
+  @override
+  String tasksEndedAt(String time) {
+    return 'Ended the task at : $time';
+  }
+
+  @override
+  String tasksDuration(String dur) {
+    return 'Duration : $dur';
+  }
+
+  @override
+  String tasksStartedAt(String time) {
+    return 'Started the task at : $time';
+  }
+
+  @override
+  String get tasksKeep => 'Keep';
+
+  @override
+  String get tasksCancelTaskTitle => 'Cancel this task?';
+
+  @override
+  String get tasksCancelTaskBody =>
+      'This cancels your request. You can book again anytime.';
+
+  @override
+  String get tasksCancelTask => 'Cancel task';
+
+  @override
+  String get tasksTaskCancelled => 'Task cancelled';
+
+  @override
+  String tasksCouldNotCancel(String error) {
+    return 'Could not cancel: $error';
+  }
+
+  @override
+  String get tasksDeclineTitle => 'Decline this request?';
+
+  @override
+  String get tasksDeclineBody =>
+      'The customer will be notified that you can\'t take this job.';
+
+  @override
+  String get tasksDecline => 'Decline';
+
+  @override
+  String get tasksCancelJobTitle => 'Cancel this job?';
+
+  @override
+  String get tasksCancelJobBody =>
+      'This cancels an accepted job. The customer will be notified.';
+
+  @override
+  String get tasksCancelJob => 'Cancel job';
+
+  @override
+  String tasksComingSoon(String what) {
+    return '$what is coming soon';
+  }
+
+  @override
+  String get tasksCalling => 'Calling';
+
+  @override
+  String get tasksChat => 'Chat';
+
+  @override
+  String get tasksNoTasks => 'No tasks yet';
+
+  @override
+  String get tasksNoTasksBody =>
+      'Find a trusted professional and book your first service.';
+
+  @override
+  String get tasksFindProvider => 'Find a provider';
+
+  @override
+  String get tasksNoJobs => 'No jobs yet';
+
+  @override
+  String get tasksNoJobsBody => 'New booking requests will appear here.';
 }

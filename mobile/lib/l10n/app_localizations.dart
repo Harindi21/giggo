@@ -1267,6 +1267,294 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Receipt copied to clipboard.'**
   String get receiptCopied;
+
+  /// Customer tasks section
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks Requested'**
+  String get tasksRequested;
+
+  /// Customer tasks section
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks To Get Done'**
+  String get tasksToGetDone;
+
+  /// Tasks section
+  ///
+  /// In en, this message translates to:
+  /// **'Ongoing Tasks'**
+  String get tasksOngoing;
+
+  /// Tasks section
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks Completed'**
+  String get tasksCompleted;
+
+  /// Provider jobs section
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks Requests'**
+  String get tasksRequests;
+
+  /// Provider jobs section
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks To Do'**
+  String get tasksToDo;
+
+  /// Fallback title for a booking
+  ///
+  /// In en, this message translates to:
+  /// **'Task'**
+  String get tasksTaskFallback;
+
+  /// Fallback title for a job
+  ///
+  /// In en, this message translates to:
+  /// **'Job'**
+  String get tasksJobFallback;
+
+  /// Task action
+  ///
+  /// In en, this message translates to:
+  /// **'View Fee'**
+  String get tasksViewFee;
+
+  /// Task action
+  ///
+  /// In en, this message translates to:
+  /// **'View Journey'**
+  String get tasksViewJourney;
+
+  /// Task action
+  ///
+  /// In en, this message translates to:
+  /// **'Pay Fee'**
+  String get tasksPayFee;
+
+  /// Task action
+  ///
+  /// In en, this message translates to:
+  /// **'Rate'**
+  String get tasksRate;
+
+  /// Job action
+  ///
+  /// In en, this message translates to:
+  /// **'View Map'**
+  String get tasksViewMap;
+
+  /// Job action
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get tasksAccept;
+
+  /// Job action
+  ///
+  /// In en, this message translates to:
+  /// **'Deny'**
+  String get tasksDeny;
+
+  /// Job action
+  ///
+  /// In en, this message translates to:
+  /// **'Start Journey'**
+  String get tasksStartJourney;
+
+  /// Job action
+  ///
+  /// In en, this message translates to:
+  /// **'Start Task'**
+  String get tasksStartTask;
+
+  /// Job action
+  ///
+  /// In en, this message translates to:
+  /// **'End Task'**
+  String get tasksEndTask;
+
+  /// Snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'Job accepted'**
+  String get jobAccepted;
+
+  /// Snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'On the way'**
+  String get jobOnTheWay;
+
+  /// Snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'Job started'**
+  String get jobStarted;
+
+  /// Snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'Job completed'**
+  String get jobCompleted;
+
+  /// Snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'Request declined'**
+  String get requestDeclined;
+
+  /// Snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'Job cancelled'**
+  String get jobCancelled;
+
+  /// Customer view of task start time
+  ///
+  /// In en, this message translates to:
+  /// **'Provider started the task at : {time}'**
+  String tasksProviderStartedAt(String time);
+
+  /// Task end time
+  ///
+  /// In en, this message translates to:
+  /// **'Ended the task at : {time}'**
+  String tasksEndedAt(String time);
+
+  /// Task duration
+  ///
+  /// In en, this message translates to:
+  /// **'Duration : {dur}'**
+  String tasksDuration(String dur);
+
+  /// Provider view of task start time
+  ///
+  /// In en, this message translates to:
+  /// **'Started the task at : {time}'**
+  String tasksStartedAt(String time);
+
+  /// Dialog dismiss button
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get tasksKeep;
+
+  /// Customer cancel dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this task?'**
+  String get tasksCancelTaskTitle;
+
+  /// Customer cancel dialog body
+  ///
+  /// In en, this message translates to:
+  /// **'This cancels your request. You can book again anytime.'**
+  String get tasksCancelTaskBody;
+
+  /// Customer cancel confirm
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel task'**
+  String get tasksCancelTask;
+
+  /// Snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'Task cancelled'**
+  String get tasksTaskCancelled;
+
+  /// Cancel error snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'Could not cancel: {error}'**
+  String tasksCouldNotCancel(String error);
+
+  /// Provider decline dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Decline this request?'**
+  String get tasksDeclineTitle;
+
+  /// Provider decline dialog body
+  ///
+  /// In en, this message translates to:
+  /// **'The customer will be notified that you can\'t take this job.'**
+  String get tasksDeclineBody;
+
+  /// Provider decline confirm
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get tasksDecline;
+
+  /// Provider cancel dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this job?'**
+  String get tasksCancelJobTitle;
+
+  /// Provider cancel dialog body
+  ///
+  /// In en, this message translates to:
+  /// **'This cancels an accepted job. The customer will be notified.'**
+  String get tasksCancelJobBody;
+
+  /// Provider cancel confirm
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel job'**
+  String get tasksCancelJob;
+
+  /// Placeholder feature snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'{what} is coming soon'**
+  String tasksComingSoon(String what);
+
+  /// Coming-soon feature name
+  ///
+  /// In en, this message translates to:
+  /// **'Calling'**
+  String get tasksCalling;
+
+  /// Coming-soon feature name
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get tasksChat;
+
+  /// Customer empty state
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks yet'**
+  String get tasksNoTasks;
+
+  /// Customer empty state body
+  ///
+  /// In en, this message translates to:
+  /// **'Find a trusted professional and book your first service.'**
+  String get tasksNoTasksBody;
+
+  /// Customer empty state action
+  ///
+  /// In en, this message translates to:
+  /// **'Find a provider'**
+  String get tasksFindProvider;
+
+  /// Provider empty state
+  ///
+  /// In en, this message translates to:
+  /// **'No jobs yet'**
+  String get tasksNoJobs;
+
+  /// Provider empty state body
+  ///
+  /// In en, this message translates to:
+  /// **'New booking requests will appear here.'**
+  String get tasksNoJobsBody;
 }
 
 class _AppLocalizationsDelegate

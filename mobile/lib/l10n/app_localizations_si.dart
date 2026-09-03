@@ -633,4 +633,164 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get receiptCopied => 'රිසිට්පත පසුරු පුවරුවට පිටපත් කරන ලදී.';
+
+  @override
+  String get tasksRequested => 'ඉල්ලූ කාර්යයන්';
+
+  @override
+  String get tasksToGetDone => 'කළ යුතු කාර්යයන්';
+
+  @override
+  String get tasksOngoing => 'ක්‍රියාත්මක කාර්යයන්';
+
+  @override
+  String get tasksCompleted => 'සම්පූර්ණ කළ කාර්යයන්';
+
+  @override
+  String get tasksRequests => 'කාර්ය ඉල්ලීම්';
+
+  @override
+  String get tasksToDo => 'කළ යුතු කාර්යයන්';
+
+  @override
+  String get tasksTaskFallback => 'කාර්යය';
+
+  @override
+  String get tasksJobFallback => 'රැකියාව';
+
+  @override
+  String get tasksViewFee => 'ගාස්තුව බලන්න';
+
+  @override
+  String get tasksViewJourney => 'ගමන බලන්න';
+
+  @override
+  String get tasksPayFee => 'ගාස්තුව ගෙවන්න';
+
+  @override
+  String get tasksRate => 'ශ්‍රේණිගත කරන්න';
+
+  @override
+  String get tasksViewMap => 'සිතියම බලන්න';
+
+  @override
+  String get tasksAccept => 'පිළිගන්න';
+
+  @override
+  String get tasksDeny => 'ප්‍රතික්ෂේප කරන්න';
+
+  @override
+  String get tasksStartJourney => 'ගමන අරඹන්න';
+
+  @override
+  String get tasksStartTask => 'කාර්යය අරඹන්න';
+
+  @override
+  String get tasksEndTask => 'කාර්යය අවසන් කරන්න';
+
+  @override
+  String get jobAccepted => 'රැකියාව පිළිගන්නා ලදී';
+
+  @override
+  String get jobOnTheWay => 'පැමිණෙමින්';
+
+  @override
+  String get jobStarted => 'රැකියාව ආරම්භ විය';
+
+  @override
+  String get jobCompleted => 'රැකියාව සම්පූර්ණ විය';
+
+  @override
+  String get requestDeclined => 'ඉල්ලීම ප්‍රතික්ෂේප කරන ලදී';
+
+  @override
+  String get jobCancelled => 'රැකියාව අවලංගු කරන ලදී';
+
+  @override
+  String tasksProviderStartedAt(String time) {
+    return 'සේවා සපයන්නා කාර්යය ආරම්භ කළේ : $time';
+  }
+
+  @override
+  String tasksEndedAt(String time) {
+    return 'කාර්යය අවසන් කළේ : $time';
+  }
+
+  @override
+  String tasksDuration(String dur) {
+    return 'කාලය : $dur';
+  }
+
+  @override
+  String tasksStartedAt(String time) {
+    return 'කාර්යය ආරම්භ කළේ : $time';
+  }
+
+  @override
+  String get tasksKeep => 'තබා ගන්න';
+
+  @override
+  String get tasksCancelTaskTitle => 'මෙම කාර්යය අවලංගු කරන්නද?';
+
+  @override
+  String get tasksCancelTaskBody =>
+      'මෙය ඔබේ ඉල්ලීම අවලංගු කරයි. ඔබට ඕනෑම විටෙක නැවත වෙන්කරවා ගත හැක.';
+
+  @override
+  String get tasksCancelTask => 'කාර්යය අවලංගු කරන්න';
+
+  @override
+  String get tasksTaskCancelled => 'කාර්යය අවලංගු කරන ලදී';
+
+  @override
+  String tasksCouldNotCancel(String error) {
+    return 'අවලංගු කළ නොහැකි විය: $error';
+  }
+
+  @override
+  String get tasksDeclineTitle => 'මෙම ඉල්ලීම ප්‍රතික්ෂේප කරන්නද?';
+
+  @override
+  String get tasksDeclineBody =>
+      'ඔබට මෙම රැකියාව භාර ගත නොහැකි බව ගනුදෙනුකරුට දැනුම් දෙනු ලැබේ.';
+
+  @override
+  String get tasksDecline => 'ප්‍රතික්ෂේප කරන්න';
+
+  @override
+  String get tasksCancelJobTitle => 'මෙම රැකියාව අවලංගු කරන්නද?';
+
+  @override
+  String get tasksCancelJobBody =>
+      'මෙය පිළිගත් රැකියාවක් අවලංගු කරයි. ගනුදෙනුකරුට දැනුම් දෙනු ලැබේ.';
+
+  @override
+  String get tasksCancelJob => 'රැකියාව අවලංගු කරන්න';
+
+  @override
+  String tasksComingSoon(String what) {
+    return '$what ළඟදීම';
+  }
+
+  @override
+  String get tasksCalling => 'ඇමතුම';
+
+  @override
+  String get tasksChat => 'කතාබහ';
+
+  @override
+  String get tasksNoTasks => 'තවම කාර්යයන් නැත';
+
+  @override
+  String get tasksNoTasksBody =>
+      'විශ්වාසනීය වෘත්තිකයෙකු සොයා ඔබේ පළමු සේවාව වෙන්කරවා ගන්න.';
+
+  @override
+  String get tasksFindProvider => 'සේවා සපයන්නෙකු සොයන්න';
+
+  @override
+  String get tasksNoJobs => 'තවම රැකියා නැත';
+
+  @override
+  String get tasksNoJobsBody => 'නව වෙන්කරවා ගැනීමේ ඉල්ලීම් මෙහි දිස්වේ.';
 }

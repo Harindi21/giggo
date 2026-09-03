@@ -212,5 +212,62 @@
   "receiptProviderReceived": "සේවා සපයන්නාට ලැබුණේ",
   "receiptMethod": "ක්‍රමය",
   "receiptComputerGenerated": "මෙය පරිගණකයෙන් ජනනය කළ රිසිට්පතකි.",
-  "receiptCopied": "රිසිට්පත පසුරු පුවරුවට පිටපත් කරන ලදී."
+  "receiptCopied": "රිසිට්පත පසුරු පුවරුවට පිටපත් කරන ලදී.",
+
+  "tasksRequested": "ඉල්ලූ කාර්යයන්",
+  "tasksToGetDone": "කළ යුතු කාර්යයන්",
+  "tasksOngoing": "ක්‍රියාත්මක කාර්යයන්",
+  "tasksCompleted": "සම්පූර්ණ කළ කාර්යයන්",
+  "tasksRequests": "කාර්ය ඉල්ලීම්",
+  "tasksToDo": "කළ යුතු කාර්යයන්",
+
+  "tasksTaskFallback": "කාර්යය",
+  "tasksJobFallback": "රැකියාව",
+
+  "tasksViewFee": "ගාස්තුව බලන්න",
+  "tasksViewJourney": "ගමන බලන්න",
+  "tasksPayFee": "ගාස්තුව ගෙවන්න",
+  "tasksRate": "ශ්‍රේණිගත කරන්න",
+  "tasksViewMap": "සිතියම බලන්න",
+  "tasksAccept": "පිළිගන්න",
+  "tasksDeny": "ප්‍රතික්ෂේප කරන්න",
+  "tasksStartJourney": "ගමන අරඹන්න",
+  "tasksStartTask": "කාර්යය අරඹන්න",
+  "tasksEndTask": "කාර්යය අවසන් කරන්න",
+
+  "jobAccepted": "රැකියාව පිළිගන්නා ලදී",
+  "jobOnTheWay": "පැමිණෙමින්",
+  "jobStarted": "රැකියාව ආරම්භ විය",
+  "jobCompleted": "රැකියාව සම්පූර්ණ විය",
+  "requestDeclined": "ඉල්ලීම ප්‍රතික්ෂේප කරන ලදී",
+  "jobCancelled": "රැකියාව අවලංගු කරන ලදී",
+
+  "tasksProviderStartedAt": "සේවා සපයන්නා කාර්යය ආරම්භ කළේ : {time}",
+  "tasksEndedAt": "කාර්යය අවසන් කළේ : {time}",
+  "tasksDuration": "කාලය : {dur}",
+  "tasksStartedAt": "කාර්යය ආරම්භ කළේ : {time}",
+
+  "tasksKeep": "තබා ගන්න",
+  "tasksCancelTaskTitle": "මෙම කාර්යය අවලංගු කරන්නද?",
+  "tasksCancelTaskBody": "මෙය ඔබේ ඉල්ලීම අවලංගු කරයි. ඔබට ඕනෑම විටෙක නැවත වෙන්කරවා ගත හැක.",
+  "tasksCancelTask": "කාර්යය අවලංගු කරන්න",
+  "tasksTaskCancelled": "කාර්යය අවලංගු කරන ලදී",
+  "tasksCouldNotCancel": "අවලංගු කළ නොහැකි විය: {error}",
+
+  "tasksDeclineTitle": "මෙම ඉල්ලීම ප්‍රතික්ෂේප කරන්නද?",
+  "tasksDeclineBody": "ඔබට මෙම රැකියාව භාර ගත නොහැකි බව ගනුදෙනුකරුට දැනුම් දෙනු ලැබේ.",
+  "tasksDecline": "ප්‍රතික්ෂේප කරන්න",
+  "tasksCancelJobTitle": "මෙම රැකියාව අවලංගු කරන්නද?",
+  "tasksCancelJobBody": "මෙය පිළිගත් රැකියාවක් අවලංගු කරයි. ගනුදෙනුකරුට දැනුම් දෙනු ලැබේ.",
+  "tasksCancelJob": "රැකියාව අවලංගු කරන්න",
+
+  "tasksComingSoon": "{what} ළඟදීම",
+  "tasksCalling": "ඇමතුම",
+  "tasksChat": "කතාබහ",
+
+  "tasksNoTasks": "තවම කාර්යයන් නැත",
+  "tasksNoTasksBody": "විශ්වාසනීය වෘත්තිකයෙකු සොයා ඔබේ පළමු සේවාව වෙන්කරවා ගන්න.",
+  "tasksFindProvider": "සේවා සපයන්නෙකු සොයන්න",
+  "tasksNoJobs": "තවම රැකියා නැත",
+  "tasksNoJobsBody": "නව වෙන්කරවා ගැනීමේ ඉල්ලීම් මෙහි දිස්වේ."
 }
