@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/giggo_top_bar.dart';
@@ -11,8 +12,8 @@ import '../../data/models/booking_models.dart';
 import '../providers/booking_providers.dart';
 
 /// Customer tasks dashboard (P4.11), aligned to the Figma: a navy header over
-/// four status sections — Tasks Requested, Tasks To Get Done, Ongoing Tasks and
-/// Tasks Completed — each a light-blue card with the relevant actions.
+/// four status sections (Tasks Requested, Tasks To Get Done, Ongoing Tasks and
+/// Tasks Completed), each a light-blue card with the relevant actions.
 class CustomerBookingsScreen extends ConsumerStatefulWidget {
   const CustomerBookingsScreen({super.key});
 
@@ -55,6 +56,7 @@ class _CustomerBookingsScreenState
   }
 
   Widget _content(UserModel me, List<Booking> all) {
+    final l = AppLocalizations.of(context);
     final mine = all.where((b) => b.customerId == me.id).toList()
       ..sort((a, b) => b.scheduledAt.compareTo(a.scheduledAt));
 
@@ -79,10 +81,10 @@ class _CustomerBookingsScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _section('Tasks Requested', requested),
-          _section('Tasks To Get Done', toDo),
-          _section('Ongoing Tasks', ongoing),
-          _section('Tasks Completed', completed),
+          _section(l.tasksRequested, requested),
+          _section(l.tasksToGetDone, toDo),
+          _section(l.tasksOngoing, ongoing),
+          _section(l.tasksCompleted, completed),
         ],
       ),
     );
@@ -111,9 +113,10 @@ class _CustomerBookingsScreenState
   }
 
   Widget _card(Booking b) {
+    final l = AppLocalizations.of(context);
     final title = _notBlank(b.taskTitle)
         ? b.taskTitle!
-        : (b.skillName ?? 'Task');
+        : (b.skillName ?? l.tasksTaskFallback);
     final subtitle = _notBlank(b.taskTitle) ? b.skillName : null;
     final canCancel = b.status == 'REQUESTED' || b.status == 'ACCEPTED';
     final awaitingPay = b.status == 'COMPLETED';
@@ -143,7 +146,7 @@ class _CustomerBookingsScreenState
               ),
               if (canCancel) ...[
                 const SizedBox(width: 8),
-                _pill('Cancel', () => _cancel(b)),
+                _pill(l.commonCancel, () => _cancel(b)),
               ],
             ],
           ),
@@ -177,13 +180,14 @@ class _CustomerBookingsScreenState
 
   /// Started / ended / duration block shown once the provider ends the task.
   Widget _times(Booking b) {
+    final l = AppLocalizations.of(context);
     final lines = <String>[
       if (b.startedAt != null)
-        'Provider started the task at : ${_fmtTime(b.startedAt!.toLocal())}',
+        l.tasksProviderStartedAt(_fmtTime(b.startedAt!.toLocal())),
       if (b.completedAt != null)
-        'Ended the task at : ${_fmtTime(b.completedAt!.toLocal())}',
+        l.tasksEndedAt(_fmtTime(b.completedAt!.toLocal())),
       if (b.startedAt != null && b.completedAt != null)
-        'Duration : ${_duration(b.startedAt!, b.completedAt!)}',
+        l.tasksDuration(_duration(b.startedAt!, b.completedAt!)),
     ];
     if (lines.isEmpty) return const SizedBox.shrink();
     return Padding(
@@ -191,9 +195,9 @@ class _CustomerBookingsScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (final l in lines)
+          for (final line in lines)
             Text(
-              l,
+              line,
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -206,26 +210,33 @@ class _CustomerBookingsScreenState
   }
 
   Widget _actions(Booking b) {
+    final l = AppLocalizations.of(context);
     final pills = <Widget>[];
     switch (b.status) {
       case 'REQUESTED':
       case 'ACCEPTED':
-        pills.add(_pill('View Fee', () => context.push('/booking/${b.id}')));
+        pills.add(
+          _pill(l.tasksViewFee, () => context.push('/booking/${b.id}')),
+        );
         break;
       case 'EN_ROUTE':
       case 'STARTED':
-        pills.add(_pill('View Journey', () => _openJourney(b)));
-        pills.add(_pill('View Fee', () => context.push('/booking/${b.id}')));
+        pills.add(_pill(l.tasksViewJourney, () => _openJourney(b)));
+        pills.add(
+          _pill(l.tasksViewFee, () => context.push('/booking/${b.id}')),
+        );
         break;
       case 'COMPLETED':
-        pills.add(_pill('Pay Fee', () => context.push('/payment/${b.id}')));
-        pills.add(_pill('View Fee', () => context.push('/booking/${b.id}')));
+        pills.add(_pill(l.tasksPayFee, () => context.push('/payment/${b.id}')));
+        pills.add(
+          _pill(l.tasksViewFee, () => context.push('/booking/${b.id}')),
+        );
         break;
       case 'PAID':
-        pills.add(_pill('Rate', () => context.push('/review/${b.id}')));
+        pills.add(_pill(l.tasksRate, () => context.push('/review/${b.id}')));
         pills.add(
           _pill(
-            'Receipt',
+            l.receiptTitle,
             () => context.push('/receipt/${b.id}'),
             subtle: true,
           ),
@@ -234,7 +245,7 @@ class _CustomerBookingsScreenState
       case 'RATED':
         pills.add(
           _pill(
-            'Receipt',
+            l.receiptTitle,
             () => context.push('/receipt/${b.id}'),
             subtle: true,
           ),
@@ -259,9 +270,9 @@ class _CustomerBookingsScreenState
         for (final p in pills) ...[p, const SizedBox(width: 10)],
         const Spacer(),
         if (showContact) ...[
-          _circle(Icons.call, () => _comingSoon('Calling')),
+          _circle(Icons.call, () => _comingSoon(l.tasksCalling)),
           const SizedBox(width: 10),
-          _circle(Icons.chat_bubble, () => _comingSoon('Chat')),
+          _circle(Icons.chat_bubble, () => _comingSoon(l.tasksChat)),
         ] else
           Text(
             _fmtDate((b.completedAt ?? b.scheduledAt).toLocal()),
@@ -280,23 +291,22 @@ class _CustomerBookingsScreenState
   }
 
   Future<void> _cancel(Booking b) async {
+    final l = AppLocalizations.of(context);
     final ok = await showDialog<bool>(
       context: context,
       builder: (dctx) => AlertDialog(
-        title: const Text('Cancel this task?'),
-        content: const Text(
-          'This cancels your request. You can book again anytime.',
-        ),
+        title: Text(l.tasksCancelTaskTitle),
+        content: Text(l.tasksCancelTaskBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dctx, false),
-            child: const Text('Keep'),
+            child: Text(l.tasksKeep),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dctx, true),
-            child: const Text(
-              'Cancel task',
-              style: TextStyle(color: AppColors.error),
+            child: Text(
+              l.tasksCancelTask,
+              style: const TextStyle(color: AppColors.error),
             ),
           ),
         ],
@@ -309,21 +319,23 @@ class _CustomerBookingsScreenState
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Task cancelled')));
+        ).showSnackBar(SnackBar(content: Text(l.tasksTaskCancelled)));
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Could not cancel: $e')));
+        ).showSnackBar(SnackBar(content: Text(l.tasksCouldNotCancel('$e'))));
       }
     }
   }
 
   void _comingSoon(String what) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('$what is coming soon')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context).tasksComingSoon(what)),
+      ),
+    );
   }
 
   // ---- Small building blocks ----
@@ -368,10 +380,11 @@ class _CustomerBookingsScreenState
   }
 
   Widget _statusTag(String status) {
+    final l = AppLocalizations.of(context);
     final (label, color) = switch (status) {
-      'CANCELLED' => ('Cancelled', AppColors.error),
-      'DECLINED' => ('Declined', AppColors.error),
-      'EXPIRED' => ('Expired', AppColors.textMuted),
+      'CANCELLED' => (l.statusCancelled, AppColors.error),
+      'DECLINED' => (l.statusDeclined, AppColors.error),
+      'EXPIRED' => (l.statusExpired, AppColors.textMuted),
       _ => (status, AppColors.textMuted),
     };
     return Container(
@@ -392,6 +405,7 @@ class _CustomerBookingsScreenState
   }
 
   Widget _empty() {
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 80, 24, 24),
       child: Column(
@@ -402,26 +416,26 @@ class _CustomerBookingsScreenState
             color: AppColors.textMuted,
           ),
           const SizedBox(height: 12),
-          const Text(
-            'No tasks yet',
+          Text(
+            l.tasksNoTasks,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
-            'Find a trusted professional and book your first service.',
+          Text(
+            l.tasksNoTasksBody,
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.textMuted),
+            style: const TextStyle(color: AppColors.textMuted),
           ),
           const SizedBox(height: 20),
           ElevatedButton.icon(
             onPressed: () => context.go('/home'),
             icon: const Icon(Icons.search, size: 18),
-            label: const Text('Find a provider'),
+            label: Text(l.tasksFindProvider),
           ),
         ],
       ),

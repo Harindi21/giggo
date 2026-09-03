@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/giggo_top_bar.dart';
@@ -11,7 +12,7 @@ import '../../data/models/booking_models.dart';
 import '../providers/booking_providers.dart';
 
 /// Provider job management (P4.10), aligned to the Figma: a navy header over
-/// four sections — Tasks Requests, Tasks To Do, Ongoing Tasks, Tasks Completed —
+/// four sections (Tasks Requests, Tasks To Do, Ongoing Tasks, Tasks Completed)
 /// with the lifecycle actions (accept/deny, start journey, start task, end task)
 /// that drive the exact timeline the customer sees.
 class ProviderJobsScreen extends ConsumerStatefulWidget {
@@ -56,6 +57,7 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
   }
 
   Widget _content(UserModel me, List<Booking> all) {
+    final l = AppLocalizations.of(context);
     final mine = all.where((b) => b.providerId == me.id).toList()
       ..sort((a, b) => b.scheduledAt.compareTo(a.scheduledAt));
     if (mine.isEmpty) return _empty();
@@ -80,10 +82,10 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _section('Tasks Requests', requests),
-          _section('Tasks To Do', toDo),
-          _section('Ongoing Tasks', ongoing),
-          _section('Tasks Completed', completed),
+          _section(l.tasksRequests, requests),
+          _section(l.tasksToDo, toDo),
+          _section(l.tasksOngoing, ongoing),
+          _section(l.tasksCompleted, completed),
         ],
       ),
     );
@@ -112,9 +114,12 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
   }
 
   Widget _card(Booking b) {
+    final l = AppLocalizations.of(context);
     final name = _notBlank(b.contactName)
         ? b.contactName!
-        : (_notBlank(b.taskTitle) ? b.taskTitle! : (b.skillName ?? 'Job'));
+        : (_notBlank(b.taskTitle)
+              ? b.taskTitle!
+              : (b.skillName ?? l.tasksJobFallback));
     final service = _notBlank(b.contactName)
         ? (b.taskTitle ?? b.skillName)
         : (_notBlank(b.taskTitle) ? b.skillName : null);
@@ -174,7 +179,7 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
           if (b.status == 'STARTED' && b.startedAt != null) ...[
             const SizedBox(height: 6),
             Text(
-              'Started the task at : ${_fmtTime(b.startedAt!.toLocal())}',
+              l.tasksStartedAt(_fmtTime(b.startedAt!.toLocal())),
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -189,83 +194,89 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
     );
   }
 
-  /// Accept/Deny (requests) or Cancel (accepted / en route) — top-right of card.
+  /// Accept/Deny (requests) or Cancel (accepted / en route), top-right of card.
   List<Widget> _topRightActions(Booking b, bool busy) {
+    final l = AppLocalizations.of(context);
     switch (b.status) {
       case 'REQUESTED':
         return [
           _pill(
-            'Accept',
+            l.tasksAccept,
             busy
                 ? null
                 : () => _run(
                     b.id,
                     () => ref.read(bookingRepositoryProvider).accept(b.id),
-                    'Job accepted',
+                    l.jobAccepted,
                   ),
           ),
           const SizedBox(width: 8),
-          _pill('Deny', busy ? null : () => _decline(b), subtle: true),
+          _pill(l.tasksDeny, busy ? null : () => _decline(b), subtle: true),
         ];
       case 'ACCEPTED':
       case 'EN_ROUTE':
-        return [_pill('Cancel', busy ? null : () => _cancel(b))];
+        return [_pill(l.commonCancel, busy ? null : () => _cancel(b))];
       default:
         return const [];
     }
   }
 
   Widget _bottomActions(Booking b, bool busy) {
+    final l = AppLocalizations.of(context);
     final pills = <Widget>[];
     switch (b.status) {
       case 'REQUESTED':
-        pills.add(_pill('View Map', () => _openMap(b)));
-        pills.add(_pill('View Fee', () => context.push('/booking/${b.id}')));
+        pills.add(_pill(l.tasksViewMap, () => _openMap(b)));
+        pills.add(
+          _pill(l.tasksViewFee, () => context.push('/booking/${b.id}')),
+        );
         break;
       case 'ACCEPTED':
         pills.add(
           _pill(
-            'Start Journey',
+            l.tasksStartJourney,
             busy
                 ? null
                 : () => _run(
                     b.id,
                     () => ref.read(bookingRepositoryProvider).enRoute(b.id),
-                    'On the way',
+                    l.jobOnTheWay,
                   ),
           ),
         );
-        pills.add(_pill('View Map', () => _openMap(b)));
+        pills.add(_pill(l.tasksViewMap, () => _openMap(b)));
         break;
       case 'EN_ROUTE':
         pills.add(
           _pill(
-            'Start Task',
+            l.tasksStartTask,
             busy
                 ? null
                 : () => _run(
                     b.id,
                     () => ref.read(bookingRepositoryProvider).start(b.id),
-                    'Job started',
+                    l.jobStarted,
                   ),
           ),
         );
-        pills.add(_pill('View Journey', () => _openMap(b)));
+        pills.add(_pill(l.tasksViewJourney, () => _openMap(b)));
         break;
       case 'STARTED':
         pills.add(
           _pill(
-            'End Task',
+            l.tasksEndTask,
             busy
                 ? null
                 : () => _run(
                     b.id,
                     () => ref.read(bookingRepositoryProvider).complete(b.id),
-                    'Job completed',
+                    l.jobCompleted,
                   ),
           ),
         );
-        pills.add(_pill('View Fee', () => context.push('/booking/${b.id}')));
+        pills.add(
+          _pill(l.tasksViewFee, () => context.push('/booking/${b.id}')),
+        );
         break;
       default: // COMPLETED / PAID / RATED / CANCELLED / DECLINED / EXPIRED
         return Row(
@@ -284,9 +295,9 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
       children: [
         for (final p in pills) ...[p, const SizedBox(width: 10)],
         const Spacer(),
-        _circle(Icons.call, () => _comingSoon('Calling')),
+        _circle(Icons.call, () => _comingSoon(l.tasksCalling)),
         const SizedBox(width: 10),
-        _circle(Icons.chat_bubble, () => _comingSoon('Chat')),
+        _circle(Icons.chat_bubble, () => _comingSoon(l.tasksChat)),
       ],
     );
   }
@@ -301,9 +312,11 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
 
   void _comingSoon(String what) {
     if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('$what is coming soon')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context).tasksComingSoon(what)),
+      ),
+    );
   }
 
   // ---- actions plumbing ----
@@ -325,30 +338,32 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
   }
 
   Future<void> _decline(Booking b) async {
+    final l = AppLocalizations.of(context);
     final ok = await _confirm(
-      'Decline this request?',
-      "The customer will be notified that you can't take this job.",
-      'Decline',
+      l.tasksDeclineTitle,
+      l.tasksDeclineBody,
+      l.tasksDecline,
     );
     if (!ok) return;
     await _run(
       b.id,
       () => ref.read(bookingRepositoryProvider).decline(b.id),
-      'Request declined',
+      l.requestDeclined,
     );
   }
 
   Future<void> _cancel(Booking b) async {
+    final l = AppLocalizations.of(context);
     final ok = await _confirm(
-      'Cancel this job?',
-      'This cancels an accepted job. The customer will be notified.',
-      'Cancel job',
+      l.tasksCancelJobTitle,
+      l.tasksCancelJobBody,
+      l.tasksCancelJob,
     );
     if (!ok) return;
     await _run(
       b.id,
       () => ref.read(bookingRepositoryProvider).cancelBooking(b.id),
-      'Job cancelled',
+      l.jobCancelled,
     );
   }
 
@@ -357,6 +372,7 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
     String message,
     String confirmLabel,
   ) async {
+    final l = AppLocalizations.of(context);
     final res = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -365,7 +381,7 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Keep'),
+            child: Text(l.tasksKeep),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
@@ -442,13 +458,14 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
   }
 
   Widget _statusTag(String status) {
+    final l = AppLocalizations.of(context);
     final (label, color) = switch (status) {
-      'COMPLETED' => ('Completed', AppColors.success),
-      'PAID' => ('Paid', AppColors.success),
-      'RATED' => ('Reviewed', AppColors.success),
-      'CANCELLED' => ('Cancelled', AppColors.error),
-      'DECLINED' => ('Declined', AppColors.error),
-      'EXPIRED' => ('Expired', AppColors.textMuted),
+      'COMPLETED' => (l.statusCompleted, AppColors.success),
+      'PAID' => (l.statusPaid, AppColors.success),
+      'RATED' => (l.statusRated, AppColors.success),
+      'CANCELLED' => (l.statusCancelled, AppColors.error),
+      'DECLINED' => (l.statusDeclined, AppColors.error),
+      'EXPIRED' => (l.statusExpired, AppColors.textMuted),
       _ => (status, AppColors.textMuted),
     };
     return Container(
@@ -469,26 +486,27 @@ class _ProviderJobsScreenState extends ConsumerState<ProviderJobsScreen> {
   }
 
   Widget _empty() {
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 80, 24, 24),
       child: Column(
-        children: const [
-          Icon(Icons.work_outline, size: 56, color: AppColors.textMuted),
-          SizedBox(height: 12),
+        children: [
+          const Icon(Icons.work_outline, size: 56, color: AppColors.textMuted),
+          const SizedBox(height: 12),
           Text(
-            'No jobs yet',
+            l.tasksNoJobs,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           Text(
-            'New booking requests will appear here.',
+            l.tasksNoJobsBody,
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.textMuted),
+            style: const TextStyle(color: AppColors.textMuted),
           ),
         ],
       ),
