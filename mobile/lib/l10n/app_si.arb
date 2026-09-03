@@ -278,5 +278,19 @@
   "shopAllCategories": "සියලු කාණ්ඩ",
   "shopNoTools": "තවම මෙවලම් ලැයිස්තුගත කර නැත, ඉක්මනින් නැවත පරීක්ෂා කරන්න.",
   "shopNoMatch": "ඔබේ සෙවීමට ගැලපෙන මෙවලම් නැත.",
-  "shopUnavailable": "මෙම මෙවලම දැනට ලබා ගත නොහැක"
+  "shopUnavailable": "මෙම මෙවලම දැනට ලබා ගත නොහැක",
+
+  "toolAboutTool": "මෙම මෙවලම ගැන",
+  "toolBuyPrice": "මිලදී ගන්න · {amount}",
+  "wishlistSaved": "සුරකින ලදී",
+  "wishlistSaveForLater": "පසුව සඳහා සුරකින්න",
+
+  "checkoutTitle": "ඇණවුම අවසන් කිරීම",
+  "checkoutQuantity": "ප්‍රමාණය",
+  "checkoutDelivery": "බෙදාහැරීම",
+  "checkoutShippingAddress": "බෙදාහැරීමේ ලිපිනය",
+  "checkoutPriceEach": "{amount} බැගින්",
+  "checkoutUnits": "ඒකක",
+  "checkoutPlacePay": "ඇණවුම් කර ගෙවන්න",
+  "checkoutOrderPlaced": "ඇණවුම සිදු කරන ලදී, ස්තූතියි!"
 }

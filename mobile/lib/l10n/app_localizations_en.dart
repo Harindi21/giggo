@@ -812,4 +812,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shopUnavailable => 'This tool is currently unavailable';
+
+  @override
+  String get toolAboutTool => 'About this tool';
+
+  @override
+  String toolBuyPrice(String amount) {
+    return 'Buy · $amount';
+  }
+
+  @override
+  String get wishlistSaved => 'Saved';
+
+  @override
+  String get wishlistSaveForLater => 'Save for later';
+
+  @override
+  String get checkoutTitle => 'Checkout';
+
+  @override
+  String get checkoutQuantity => 'Quantity';
+
+  @override
+  String get checkoutDelivery => 'Delivery';
+
+  @override
+  String get checkoutShippingAddress => 'Shipping address';
+
+  @override
+  String checkoutPriceEach(String amount) {
+    return '$amount each';
+  }
+
+  @override
+  String get checkoutUnits => 'Units';
+
+  @override
+  String get checkoutPlacePay => 'Place & pay';
+
+  @override
+  String get checkoutOrderPlaced => 'Order placed, thank you!';
 }

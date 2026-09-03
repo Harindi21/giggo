@@ -679,5 +679,37 @@
   "shopNoMatch": "No tools match your search.",
   "@shopNoMatch": { "description": "Shop empty search state" },
   "shopUnavailable": "This tool is currently unavailable",
-  "@shopUnavailable": { "description": "Snackbar for an out-of-stock tool" }
+  "@shopUnavailable": { "description": "Snackbar for an out-of-stock tool" },
+
+  "toolAboutTool": "About this tool",
+  "@toolAboutTool": { "description": "Tool detail section title" },
+  "toolBuyPrice": "Buy · {amount}",
+  "@toolBuyPrice": {
+    "description": "Buy button with price",
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "wishlistSaved": "Saved",
+  "@wishlistSaved": { "description": "Wishlist heart tooltip when saved" },
+  "wishlistSaveForLater": "Save for later",
+  "@wishlistSaveForLater": { "description": "Wishlist heart tooltip when not saved" },
+
+  "checkoutTitle": "Checkout",
+  "@checkoutTitle": { "description": "Checkout header" },
+  "checkoutQuantity": "Quantity",
+  "@checkoutQuantity": { "description": "Checkout section title" },
+  "checkoutDelivery": "Delivery",
+  "@checkoutDelivery": { "description": "Checkout section title" },
+  "checkoutShippingAddress": "Shipping address",
+  "@checkoutShippingAddress": { "description": "Shipping address field" },
+  "checkoutPriceEach": "{amount} each",
+  "@checkoutPriceEach": {
+    "description": "Unit price on the checkout tool card",
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "checkoutUnits": "Units",
+  "@checkoutUnits": { "description": "Quantity stepper label" },
+  "checkoutPlacePay": "Place & pay",
+  "@checkoutPlacePay": { "description": "Place order button" },
+  "checkoutOrderPlaced": "Order placed, thank you!",
+  "@checkoutOrderPlaced": { "description": "Snackbar after placing an order" }
 }

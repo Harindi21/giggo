@@ -818,4 +818,44 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get shopUnavailable => 'මෙම මෙවලම දැනට ලබා ගත නොහැක';
+
+  @override
+  String get toolAboutTool => 'මෙම මෙවලම ගැන';
+
+  @override
+  String toolBuyPrice(String amount) {
+    return 'මිලදී ගන්න · $amount';
+  }
+
+  @override
+  String get wishlistSaved => 'සුරකින ලදී';
+
+  @override
+  String get wishlistSaveForLater => 'පසුව සඳහා සුරකින්න';
+
+  @override
+  String get checkoutTitle => 'ඇණවුම අවසන් කිරීම';
+
+  @override
+  String get checkoutQuantity => 'ප්‍රමාණය';
+
+  @override
+  String get checkoutDelivery => 'බෙදාහැරීම';
+
+  @override
+  String get checkoutShippingAddress => 'බෙදාහැරීමේ ලිපිනය';
+
+  @override
+  String checkoutPriceEach(String amount) {
+    return '$amount බැගින්';
+  }
+
+  @override
+  String get checkoutUnits => 'ඒකක';
+
+  @override
+  String get checkoutPlacePay => 'ඇණවුම් කර ගෙවන්න';
+
+  @override
+  String get checkoutOrderPlaced => 'ඇණවුම සිදු කරන ලදී, ස්තූතියි!';
 }
