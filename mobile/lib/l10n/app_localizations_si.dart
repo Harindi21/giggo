@@ -793,4 +793,29 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get tasksNoJobsBody => 'නව වෙන්කරවා ගැනීමේ ඉල්ලීම් මෙහි දිස්වේ.';
+
+  @override
+  String get shopSearchProducts => 'නිෂ්පාදන සොයන්න';
+
+  @override
+  String get shopSavedTools => 'සුරැකි මෙවලම්';
+
+  @override
+  String get shopMyOrders => 'මගේ ඇණවුම්';
+
+  @override
+  String get shopCategories => 'කාණ්ඩ';
+
+  @override
+  String get shopAllCategories => 'සියලු කාණ්ඩ';
+
+  @override
+  String get shopNoTools =>
+      'තවම මෙවලම් ලැයිස්තුගත කර නැත, ඉක්මනින් නැවත පරීක්ෂා කරන්න.';
+
+  @override
+  String get shopNoMatch => 'ඔබේ සෙවීමට ගැලපෙන මෙවලම් නැත.';
+
+  @override
+  String get shopUnavailable => 'මෙම මෙවලම දැනට ලබා ගත නොහැක';
 }

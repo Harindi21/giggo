@@ -269,5 +269,14 @@
   "tasksNoTasksBody": "විශ්වාසනීය වෘත්තිකයෙකු සොයා ඔබේ පළමු සේවාව වෙන්කරවා ගන්න.",
   "tasksFindProvider": "සේවා සපයන්නෙකු සොයන්න",
   "tasksNoJobs": "තවම රැකියා නැත",
-  "tasksNoJobsBody": "නව වෙන්කරවා ගැනීමේ ඉල්ලීම් මෙහි දිස්වේ."
+  "tasksNoJobsBody": "නව වෙන්කරවා ගැනීමේ ඉල්ලීම් මෙහි දිස්වේ.",
+
+  "shopSearchProducts": "නිෂ්පාදන සොයන්න",
+  "shopSavedTools": "සුරැකි මෙවලම්",
+  "shopMyOrders": "මගේ ඇණවුම්",
+  "shopCategories": "කාණ්ඩ",
+  "shopAllCategories": "සියලු කාණ්ඩ",
+  "shopNoTools": "තවම මෙවලම් ලැයිස්තුගත කර නැත, ඉක්මනින් නැවත පරීක්ෂා කරන්න.",
+  "shopNoMatch": "ඔබේ සෙවීමට ගැලපෙන මෙවලම් නැත.",
+  "shopUnavailable": "මෙම මෙවලම දැනට ලබා ගත නොහැක"
 }
