@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../discovery/data/discovery_repository.dart';
@@ -31,8 +32,9 @@ class _RateReviewScreenState extends ConsumerState<RateReviewScreen> {
   }
 
   Future<void> _submit() async {
+    final l = AppLocalizations.of(context);
     if (_stars < 1) {
-      setState(() => _error = 'Please tap a star rating first.');
+      setState(() => _error = l.reviewErrStars);
       return;
     }
     setState(() {
@@ -56,8 +58,8 @@ class _RateReviewScreenState extends ConsumerState<RateReviewScreen> {
         SnackBar(
           content: Text(
             sentiment == null
-                ? 'Thanks for your review!'
-                : 'Thanks! We read your review as "$sentiment".',
+                ? l.reviewThanks
+                : l.reviewThanksSentiment(sentiment),
           ),
         ),
       );
@@ -94,16 +96,17 @@ class _RateReviewScreenState extends ConsumerState<RateReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Rate your provider')),
+      appBar: AppBar(title: Text(l.reviewTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'How was the service?',
-              style: TextStyle(
+            Text(
+              l.reviewHowWasService,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
                 color: AppColors.textPrimary,
@@ -131,33 +134,37 @@ class _RateReviewScreenState extends ConsumerState<RateReviewScreen> {
             const SizedBox(height: 8),
             const Divider(),
             const SizedBox(height: 4),
-            const Text(
-              'Rate the details (optional)',
-              style: TextStyle(
+            Text(
+              l.reviewRateDetails,
+              style: const TextStyle(
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 4),
             _dimensionRow(
-              'Service',
+              l.bookingSectionService,
               _service,
               (v) => setState(() => _service = v),
             ),
             _dimensionRow(
-              'Punctuality',
+              l.reviewPunctuality,
               _punctuality,
               (v) => setState(() => _punctuality = v),
             ),
-            _dimensionRow('Value', _value, (v) => setState(() => _value = v)),
+            _dimensionRow(
+              l.reviewValue,
+              _value,
+              (v) => setState(() => _value = v),
+            ),
             const SizedBox(height: 12),
             TextField(
               controller: _bodyCtrl,
               maxLines: 4,
               maxLength: 2000,
               enabled: !_submitting,
-              decoration: const InputDecoration(
-                hintText: 'Tell others about your experience (optional)…',
+              decoration: InputDecoration(
+                hintText: l.reviewBodyHint,
                 alignLabelWithHint: true,
               ),
             ),
@@ -177,7 +184,7 @@ class _RateReviewScreenState extends ConsumerState<RateReviewScreen> {
                         color: Colors.white,
                       ),
                     )
-                  : const Text('Submit review'),
+                  : Text(l.reviewSubmit),
             ),
           ],
         ),

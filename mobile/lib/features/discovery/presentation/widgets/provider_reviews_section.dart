@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../data/discovery_repository.dart';
@@ -14,13 +15,14 @@ class ProviderReviewsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final reviews = ref.watch(providerReviewsProvider(providerId));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Reviews',
-          style: TextStyle(
+        Text(
+          l.reviewsTitle,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w800,
             color: AppColors.textPrimary,
@@ -32,15 +34,15 @@ class ProviderReviewsSection extends ConsumerWidget {
             padding: EdgeInsets.all(16),
             child: Center(child: CircularProgressIndicator()),
           ),
-          error: (e, _) => const Text(
-            'Could not load reviews.',
-            style: TextStyle(color: AppColors.textMuted),
+          error: (e, _) => Text(
+            l.reviewsLoadError,
+            style: const TextStyle(color: AppColors.textMuted),
           ),
           data: (list) {
             if (list.isEmpty) {
-              return const Text(
-                'No reviews yet — be the first after your booking.',
-                style: TextStyle(color: AppColors.textMuted),
+              return Text(
+                l.reviewsEmpty,
+                style: const TextStyle(color: AppColors.textMuted),
               );
             }
             return Column(
@@ -65,21 +67,20 @@ class ProviderReviewsSection extends ConsumerWidget {
     WidgetRef ref,
     String reviewId,
   ) async {
+    final l = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Report this review?'),
-        content: const Text(
-          'Our team will review it for abusive or fake content.',
-        ),
+        title: Text(l.reviewReportTitle),
+        content: Text(l.reviewReportBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l.commonCancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Report'),
+            child: Text(l.reviewReport),
           ),
         ],
       ),
@@ -88,9 +89,9 @@ class ProviderReviewsSection extends ConsumerWidget {
     try {
       await ref.read(discoveryRepositoryProvider).reportReview(reviewId);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Thanks — reported for review.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.reviewReported)));
       }
     } catch (e) {
       if (context.mounted) {

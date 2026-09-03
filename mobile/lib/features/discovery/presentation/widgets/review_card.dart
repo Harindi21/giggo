@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/provider_avatar.dart';
@@ -21,6 +22,7 @@ class ReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -33,7 +35,7 @@ class ReviewCard extends StatelessWidget {
           Row(
             children: [
               ProviderAvatar(
-                name: review.reviewerName ?? 'Customer',
+                name: review.reviewerName ?? l.reviewCustomer,
                 radius: 18,
               ),
               const SizedBox(width: 10),
@@ -42,7 +44,7 @@ class ReviewCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      review.reviewerName ?? 'Customer',
+                      review.reviewerName ?? l.reviewCustomer,
                       style: const TextStyle(
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -66,7 +68,7 @@ class ReviewCard extends StatelessWidget {
                   visualDensity: VisualDensity.compact,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
-                  tooltip: 'Report',
+                  tooltip: l.reviewReport,
                   onPressed: onReport,
                   icon: const Icon(
                     Icons.flag_outlined,
